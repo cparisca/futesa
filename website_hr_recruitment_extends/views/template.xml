@@ -1,0 +1,79 @@
+<odoo>
+    <template id="default_website_job_description">
+
+        <section class="pt32">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 pb32">
+                        <p class="lead" t-field="job_id.description"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="s_comparisons pt24 pb24 bg-200" data-snippet="s_comparisons">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16" data-name="Box">
+                        <div class="card bg-primary">
+                            <h4 class="card-header">Responsibilities</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">comply adequately and efficiently with their obligations and functions</li>
+                                <li class="list-group-item">Carry properly the Elements of Personal protection</li>
+                                <li class="list-group-item">Be complete in your work</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16" data-name="Box">
+                        <div class="card bg-primary">
+                            <h4 class="card-header">Must Have</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Quality</li>
+                                <li class="list-group-item">Responsibility</li>
+                                <li class="list-group-item">Commitment</li>
+                                <li class="list-group-item">Respect</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 s_col_no_bgcolor pt16 pb16" data-name="Box">
+                        <div class="card bg-primary">
+                            <h4 class="card-header">Nice to have</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Punctuality</li>
+                                <li class="list-group-item">Motivation towards job</li>
+                                <li class="list-group-item">Growth staff and professional</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="s_features pt40 pb40 bg-200" data-name="Features" data-snippet="s_features">
+            <div class="container">
+                <h2>What We Offer</h2>
+                <br/>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Great smart work team, in a friendly and open culture, willing to listen to your needs.</li>
+                    <li class="list-group-item">Opportunity to have a job according to your skills, abilities and motivations.</li>
+                    <li class="list-group-item">Employment contract with all legal benefits guaranteed.</li>
+                    <li class="list-group-item">We improve your quality of life and allow you to project your goals.</li>
+                    <li class="list-group-item">Access to exclusive benefits for Futesa employees.</li>
+                </ul>
+            </div>
+        </section>
+    </template>
+
+    <record id="website_hr_recruitment_detail_inherit_job_webdesc" model="ir.ui.view">
+        <field name="name">Add Job Desctiption</field>
+        <field name="inherit_id" search="[('key', '=', 'website_hr_recruitment.detail')]"/>
+        <field name="type">qweb</field>
+        <field name="key">website_hr_recruitment_extends.website_hr_recruitment_detail_inherit_job_webdesc</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@t-field='job.website_description']" position="replace">
+                <div t-field="job.website_job_description"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Website HR Recruitment Extends',
-    'version': '15.0.1',
+    'version': '15.0',
     'category': 'Website/Website',
     'summary': 'Website HR Recruitment Extends',
     'sequence': '10',

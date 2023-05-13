@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="helpdesk_config_setting_view" model="ir.ui.view">
+        <field name="name">helpdesk.config.setting.view</field>
+        <field name="model">res.config.settings</field>
+       <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Helpdesk Settings" string="Helpdesk" data-key="sh_helpdesk_enterprise">
+                    <div>
+                        <h2>Ticket Settings</h2>
+                        <field name="company_id" invisible="1" />
+
+                        <div class="row o_settings_container">
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="category" />
+                                    <br/>
+                                    <field name="category" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="sub_category" />
+                                    <br/>
+                                    <field name="sub_category" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                        </div>
+                        <div class="row o_settings_container">
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="customer_rating" />
+                                    <br />
+                                    <field name="customer_rating" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="sh_file_size" />
+                                    <br />
+                                    <field name="sh_file_size" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2>Ticket Stage Settings</h2>
+                        <div class="row o_settings_container">
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="new_stage_id" />
+                                    <br />
+                                    <field name="new_stage_id" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="reopen_stage_id" />
+                                    <br />
+                                    <field name="reopen_stage_id" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                        </div>
+                        <div class="row o_settings_container">
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="cancel_stage_id" />
+                                    <br />
+                                    <field name="cancel_stage_id" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="done_stage_id" />
+                                    <br />
+                                    <field name="done_stage_id" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                        </div>
+                        <div class="row o_settings_container">
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="close_stage_id" />
+                                    <br />
+                                    <field name="close_stage_id" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                        </div>
+                        <div class="row o_settings_container">
+                            <div class="col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="sh_customer_replied" />
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="sh_customer_replied" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="sh_staff_replied" />
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="sh_staff_replied" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row o_settings_container">
+                            <div class="col-lg-6 o_setting_box" attrs="{'invisible':[('sh_customer_replied','=',False)]}">
+                                <div class="o_setting_right_pane">
+                                    <label for="sh_customer_replied_stage_id" />
+                                    <br />
+                                    <field name="sh_customer_replied_stage_id" class="oe_inline" attrs="{'required':[('sh_customer_replied','=',True)]}" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                            <div class="col-lg-6 o_setting_box" attrs="{'invisible':[('sh_staff_replied','=',False)]}">
+                                <div class="o_setting_right_pane">
+                                    <label for="sh_staff_replied_stage_id" />
+                                    <br />
+                                    <field name="sh_staff_replied_stage_id" class="oe_inline" attrs="{'required':[('sh_staff_replied','=',True)]}" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2>Ticket Mail Template Settings</h2>
+
+                        <div class="row o_settings_container">
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="allocation_mail_template_id" />
+                                    <br />
+                                    <field name="allocation_mail_template_id" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                            <div class="col-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <label for="reply_mail_template_id" />
+                                    <br />
+                                    <field name="reply_mail_template_id" class="oe_inline" />
+                                </div>
+                                <div class="o_setting_left_pane"></div>
+                            </div>
+                            
+                        </div>
+                        <div class="row o_settings_container">
+                        	<div class="col-6 o_setting_box">
+                        		<div class="o_setting_left_pane">
+                                    <field name="access_for_everyone" />
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="access_for_everyone" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2 id="multi_users">Multi Users in Ticket Configuration</h2>
+                    <div class="row mt16 o_settings_container" id="multi_users_div">
+                        <div class="col-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_display_multi_user" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_display_multi_user" />
+                                <div class="text-muted"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2 id="manage_products">Manage Multi Products Inside Helpdesk Ticket</h2>
+                    <div class="row mt16 o_settings_container" id="manage_products_div">
+                        <div class="col-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_configure_activate" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_configure_activate" />
+                                <div class="text-muted"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2 id="manage_reminder">Helpdesk Ticket Reminder Configuration</h2>
+                    <div class="row mt16 o_settings_container" id="manage_reminder_div">
+                        <div class="col-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_display_ticket_reminder" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_display_ticket_reminder" />
+                                <div class="text-muted"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <h2 id="manage_whatsapp">Helpdesk Ticket Send Whatsapp Configuration</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_ticket_product_detail" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_ticket_product_detail" />
+                                <div class="text-muted">
+	                                Show Ticket Product details in message
+	                            </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_pdf_in_message" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_pdf_in_message" />
+                                <div class="text-muted">
+	                                Send Report Url in Message
+	                            </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_signature" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_signature" />
+                                <div class="text-muted">
+	                                Show Signature
+	                            </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_display_in_chatter" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_display_in_chatter" />
+                                <div class="text-muted">
+	                                Show Message in Chatter
+	                            </div>
+                            </div>
+                        </div> 
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="sh_ticket_url_in_message" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="sh_ticket_url_in_message" />
+                                <div class="text-muted">
+	                                Send Ticket Url in Message
+	                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="sh_action_helpdesk_configuration" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'sh_helpdesk_enterprise'}</field>
+    </record>
+    <menuitem id="menu_config_helpdesk" name="Settings" parent="helpdesk.helpdesk_menu_config" sequence="11" action="sh_action_helpdesk_configuration"  />
+</odoo>

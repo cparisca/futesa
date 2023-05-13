@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data noupdate="1">
+		<record id="sh_ticket_reminder_mail_template_enterprise" model="mail.template">
+			<field name="name">Ticket Reminder</field>
+			<field name="model_id" ref="helpdesk.model_helpdesk_ticket" />
+			<field name="email_from">{{ (object.company_id.partner_id.email_formatted) }}</field>
+			<field name="subject">{{object.company_id.name}} Ticket Reminder (Ref {{object.name or 'n/a' }})</field>
+			<field name="auto_delete" eval="False" />
+			<field name="body_html" type="html">
+				<div style="margin: 0px; padding: 0px;">
+					<table border="0" width="100%" cellpadding="0" bgcolor="#ededed" style="padding: 20px; background-color: #ededed; border-collapse:separate;">
+						<tbody>
+
+							<!-- HEADER -->
+							<tr>
+								<td align="center" style="min-width: 590px;">
+									<table width="590" border="0" cellpadding="0" bgcolor="#875A7B" style="min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;">
+										<tr>
+											<td valign="middle">
+												<span style="font-size:20px; color:white; font-weight: bold;">
+													<strong>Ticket Remainder (<t t-out="object.name" />)</strong>
+												</span>
+											</td>
+											
+										</tr>
+									</table>
+								</td>
+							</tr>
+
+							<!-- CONTENT -->
+							<tr>
+								<td align="center" style="min-width: 590px;">
+									<table width="590" border="0" cellpadding="0" bgcolor="#ffffff" style="min-width: 590px; background-color: rgb(255, 255, 255); padding: 20px; border-collapse:separate;">
+										<tbody>
+											<td valign="top" style="font-family:Arial,Helvetica,sans-serif; color: #555; font-size: 14px;">
+												<p style="margin: 0px; padding: 0px; font-size: 13px;">
+													<h2>Ticket Information</h2>
+													<strong>Ticket :</strong>
+													<t t-out="object.name" />
+													<br />
+													<br />
+													<strong>Create Date :</strong>
+													<t t-out="object.create_date" />
+													<br />
+													<br />
+													<strong>Due Date : </strong>
+													<t t-out="object.sh_due_date" />
+													<br />
+													<br />
+							    					<t t-if="object.category_id">
+														<strong>Category : </strong>
+														<t t-out="object.category_id.name" />
+														<br />
+														<br />
+							                      	</t>
+													<t t-if="object.sub_category_id">
+														<strong>Sub Category : </strong>
+														<t t-out="object.sub_category_id.name" />
+														<br />
+														<br />
+							                      	</t>
+													<t t-if="object.priority">
+														<strong>Priority : </strong>
+														<t t-out="object.priority" />
+														<br />
+														<br />
+							                      	</t>
+													<t t-if="object.team_id">
+														<strong>Team : </strong>
+														<t t-out="object.team_id.name" />
+														<br />
+														<br />
+							                      	</t>
+													<t t-if="object.user_id">
+														<strong>Assigned To : </strong>
+														<t t-out="object.user_id.name" />
+														<br />
+														<br />
+							                      	</t>
+													<t t-if="object.sh_user_ids">
+														<strong>Assign Multi Users : </strong>
+														<t t-foreach="object.sh_user_ids" t-as="row">
+															<span class="badge badge-info" style="padding-right:5px">
+									    						<t t-out="row.name" />
+									    					</span>
+									    				</t>
+									    				<br />
+														<br />
+							                      	</t>
+													<t t-if="object.tag_ids">
+														<strong>Tags : </strong>
+														<t t-foreach="object.tag_ids" t-as="tag">
+															<span class="badge badge-info" style="padding-right:5px">
+									    						<t t-out="tag.name" />
+									    					</span>
+									    				</t>
+									    				<br />
+														<br />
+							                      	</t>
+													<t t-if="object.product_ids">
+														<strong>Products : </strong>
+														<t t-foreach="object.product_ids" t-as="product">
+															<span class="badge badge-info" style="padding-right:5px">
+									    						<t t-out="product.name_get()[0][1]" />
+									    					</span>
+									    				</t>
+									    				<br />
+														<br />
+							                      	</t>
+													<strong>Partner : </strong>
+													<t t-out="object.partner_id.name" />
+													<br />
+													<br />
+													<strong>Person Name : </strong>
+													<t t-out="object.person_name" />
+													<br />
+													<br />
+													<strong>Email : </strong>
+													<t t-out="object.email" />
+													<br />
+													<br />
+													<center>
+														<a t-attf-href="{{object.form_url}}" style="background-color: #1abc9c; padding: 10px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">View Ticket</a>
+													</center>
+												</p>
+											</td>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+
+							<!-- FOOTER -->
+							<tr>
+				              <td align="center" style="min-width: 590px;">
+				                <table width="590" border="0" cellpadding="0" bgcolor="#875A7B" style="min-width: 590px; background-color: rgb(135,90,123); padding: 20px; border-collapse:separate;">
+				                  <tr>
+				                    <td valign="middle" align="left" style="color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;">
+				                      <t t-out="object.company_id.name" />
+				                      <br />
+				                      <t t-out="object.company_id.phone or ''" />
+				                    </td>
+				                    <td valign="middle" align="right" style="color: #fff; padding-top: 10px; padding-bottom: 10px; font-size: 12px;">
+				
+				                      <t t-if="object.company_id.email">
+				                        <a t-attf-href="mailto:{{object.company_id.email}}" style="text-decoration:none; color: white;">
+				                          <t t-out="object.company_id.email" />
+				                        </a>
+				                      </t>
+				
+				                      <br />
+				                      <t t-if="object.company_id.website">
+				                        <a t-attf-href="{{object.company_id.website}}" style="text-decoration:none; color: white;">
+				                          <t t-out="object.company_id.website" />
+				                        </a>
+				                      </t>
+				                    </td>
+				                  </tr>
+				                </table>
+				              </td>
+				            </tr>
+						</tbody>
+					</table>
+				</div>
+			</field>
+		</record>
+	</data>
+</odoo>

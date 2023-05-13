@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="helpdesk_stage_view_form_inherit_sh_helpdesk_enterprise" model="ir.ui.view">
+        <field name='name'>helpdesk.stage.form.inherit</field>
+        <field name="model">helpdesk.stage</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_stage_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sequence']" position="after">
+                <field name="sh_next_stage" />
+                <field name="is_cancel_button_visible" />
+            </xpath>
+             <xpath expr="//field[@name='team_ids']" position="after">
+                <field name="sh_group_ids" widget="many2many_tags"/>
+                <field name="is_done_button_visible" />
+            </xpath>
+            <xpath expr="//field[@name='template_id']" position="attributes">
+                <attribute name="domain">[('model_id', '=', 'helpdesk.ticket')]</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sh_helpdesk_alarm_view_form" model="ir.ui.view">
+        <field name="name">sh.ticket.alarm</field>
+        <field name="model">sh.ticket.alarm</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1" force_save="1" />
+                            <field name="sh_remind_before" />
+                            <field name="sh_reminder_unit" />
+                        </group>
+                        <group>
+                            <field name="type" />
+                            <field name="company_id" groups="base.group_multi_company" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="sh_helpdesk_alarm_tree_view" model="ir.ui.view">
+        <field name="name">sh.ticket.alarm</field>
+        <field name="model">sh.ticket.alarm</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="type" />
+                <field name="sh_remind_before" />
+                <field name="sh_reminder_unit" />
+                <field name="company_id" groups="base.group_multi_company" />
+            </tree>
+        </field>
+    </record>
+    <record id="sh_helpdesk_enterprise_alarm_action" model="ir.actions.act_window">
+        <field name="name">Ticket Alarm</field>
+        <field name="res_model">sh.ticket.alarm</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="sh_helpdesk_alarm_manu" name="Helpdesk Ticket Alarm" action="sh_helpdesk_enterprise_alarm_action" parent="helpdesk.helpdesk_menu_config" sequence="10" />
+</odoo>

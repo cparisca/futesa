@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="sh_helpdesk_enterprise_ticket_template">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="container">
+                    <br />
+                    <br />
+                    <br />
+                    <div class="row">
+                        <div class="col-12">
+                            <h2>
+                                <span t-field="o.sudo().name" />
+                            </h2>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                     <div class="row">
+                        <div class="col-6">
+                     <div class="row">
+                        <div class="col-6">
+                            <strong>Ticket Number </strong>
+                        </div>
+                        <div class="col-6">
+                            <span t-field="o.sudo().id" />
+                        </div>
+                    </div>
+                    <div class="col-6"></div>
+                    </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Ticket Type</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().ticket_type_id.name" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Create Date</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().create_date" t-options='{"widget": "date"}' />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Team</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().team_id" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Last Update Date</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().write_date" t-options='{"widget": "date"}' />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Team Head</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.team_head" />
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Customer</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().partner_id" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Assigned User</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().user_id" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Person Name</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().person_name" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Ticket Subject Type</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.subject_id" />
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Email</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().email" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Category</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().category_id" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Replied Date</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().replied_date" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Sub Category</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().sub_category_id" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Closed Date</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().close_date" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Priority</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().priority" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Closed By</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().close_by" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"></div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Cancelled Date</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().cancel_date" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"></div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Cancelled Reason</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().cancel_reason" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <strong>Product</strong>
+                        </div>
+                        <div class="col-9">
+                            <span t-if='o.sh_display_product'>
+                                <span t-field="o.sudo().product_ids" />
+                            </span>
+                        </div>
+                    </div>
+                      <br />
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <h4>Description</h4>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <span t-field="o.sudo().description" />
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Customer Rating</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span title="Rating" role="img" t-attf-aria-label="Rating: #{o.priority_new} on 3">
+                                        <t t-foreach="range(2, 5)" t-as="i">
+                                            <t t-if="o.priority_new=='top'">
+                                                <span t-attf-class="fa fa-lg fa-star#{'' if i &lt;= 4 else '-o'}" />
+                                            </t>
+                                            <t t-elif="o.priority_new=='ok'">
+                                                <span t-attf-class="fa fa-lg fa-star#{'' if i &lt;= 3 else '-o'}" />
+                                            </t>
+                                            <t t-elif="o.priority_new=='ko'">
+                                                <span t-attf-class="fa fa-lg fa-star#{'' if i &lt;= 2 else '-o'}" />
+                                            </t>
+                                            <t t-else="">
+                                                <span t-attf-class="fa fa-lg fa-star#{'' if i &lt;= 1 else '-o'}" />
+                                            </t>
+                                        </t>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Customer Comment</strong>
+                                </div>
+                                <div class="col-6">
+                                    <span t-field="o.sudo().customer_comment" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="sh_report_helpdesk_enterprise_ticket">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="sh_helpdesk_enterprise.sh_helpdesk_enterprise_ticket_template" t-lang="o.partner_id.sudo().lang" />
+            </t>
+        </t>
+    </template>
+</odoo>

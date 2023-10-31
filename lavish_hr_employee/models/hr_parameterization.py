@@ -40,7 +40,7 @@ class lavish_economic_activity_level_risk(models.Model):
     def name_get(self):
         result = []
         for record in self:
-            result.append((record.id, "{}{}{} | {}".format(record.risk_class_id.code, record.code_ciiu_id.code, record.code, record.name)))
+            result.append((record.id, "{}{}{} | {}".format(record.risk_class_id.code, record.code_ciiu_id.code, record.code, record.code_ciiu_id.name)))
         return result
 
 #Tabla tipos de entidades

@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_lavish_payment_file,lavish.payment.file,model_lavish_payment_file,,1,1,1,1
+access_fiscal_accounting_code,fiscal.accounting.code,model_fiscal_accounting_code,,1,1,1,1
+access_fiscal_accounting_code_details,fiscal.accounting.code.details,model_fiscal_accounting_code_details,,1,1,1,1
+access_fiscal_accounting_group,fiscal.accounting.group,model_fiscal_accounting_group,,1,1,1,1
+access_format_encab,format.encab,model_format_encab,,1,1,1,1
+access_format_detail,format.detail,model_format_detail,,1,1,1,1
+access_res_company_note,res.company.note,model_res_company_note,,1,1,1,1
+access_annual_accounting_closing,annual.accounting.closing,model_annual_accounting_closing,,1,1,1,1
+access_generate_media_magnetic,generate.media.magnetic,model_generate_media_magnetic,,1,1,1,1
+access_lavish_bank_statements_report,lavish.bank.statements.report,model_lavish_bank_statements_report,,1,1,1,1
+access_lavish_reconciling_items_encab,lavish.reconciling.items.encab,model_lavish_reconciling_items_encab,,1,1,1,1
+access_lavish_reconciling_items_detail,lavish.reconciling.items.detail,model_lavish_reconciling_items_detail,,1,1,1,1

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+
+    <record id="product_template_only_form_view_extend" model="ir.ui.view">
+        <field name="name">Products</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"></field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="fe_dian" string="FE">
+                	<group>
+                		<field name="operation_type" />
+                	</group>
+                    <group>
+                        <field name="product_UNSPSC_id" />
+                        <field name="segment_name" />
+                        <field name="family_name" />
+                        <field name="class_name" />
+                    </group>
+                    <group>
+                        <field name="brand_id" />
+                        <field name="model_id" />
+                        <field name="enable_charges" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_template_only_form_view_extend" model="ir.ui.view">
+        <field name="name">Products</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"></field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_standard_price']" position="inside">
+                <label for="line_price_reference"/>
+                <div name="Precio de referencia">
+                  <field name="line_price_reference" class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_normal_form_view_view_extended_fe" model="ir.ui.view">
+        <field name="name">Products</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"></field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="fe_dian" string="FE">
+                	<group>
+                		<field name="operation_type" />
+                	</group>
+                    <group>
+                        <field name="product_UNSPSC_id" />
+                        <field name="segment_name" />
+                        <field name="family_name" />
+                        <field name="class_name" />
+                    </group>
+                    <group>
+                        <field name="brand_id" />
+                        <field name="model_id" />
+                        <field name="enable_charges" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

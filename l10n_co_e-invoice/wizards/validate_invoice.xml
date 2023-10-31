@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="validate_multiple_invoice_view" model="ir.ui.view">
+            <field name="name">ati.validate.invoice.form</field>
+            <field name="model">ati.validate.invoice</field>
+            <field name="arch" type="xml">
+                <form string="Validar Facturas">
+                    <p class="oe_grey">
+                        Se validaran todas las facturas seleccionadas.
+                    </p>
+                    <footer>
+                        <button
+                            string="Confirmar"
+                            name="validate_invoice"
+                            type="object"
+                            default_focus="1"
+                            class="btn-primary"
+                        />
+                        <button
+                            string="Cancelar"
+                            class="btn-default"
+                            special="cancel"
+                        />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_validate_invoice" model="ir.actions.act_window">
+            <field name="name">Validar Facturas</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ati.validate.invoice</field>
+            <field name="binding_model_id" ref="model_account_move" />
+            <field name="binding_view_types">list</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <record id="view_account_move_reversal" model="ir.ui.view">
+        <field name="name">view.account.move.reversal.form</field>
+        <field name="model">account.move.reversal</field>
+        <field name="inherit_id" ref="account.view_account_move_reversal" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='date_mode']" position="before">
+                <field name="concepto_credit_note" />
+                <field name="concept_debit_note" />
+            </xpath>
+        </field>
+    </record>
+    </data>
+</odoo>

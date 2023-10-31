@@ -1,0 +1,65 @@
+<odoo>
+    <data>
+        <record id="lavish_action_lavish_pivot_report_cxc" model="ir.actions.act_window">
+            <field name="name">Reporte CXC - Recaudos</field>
+            <field name="res_model">lavish.pivot.report.cxc</field>
+            <field name="view_mode">tree,pivot</field>
+            <field name="context">{'search_default_group_mov_origin': 1}</field>
+        </record>
+
+        <record id="lavish_search_pivot_report_cxc" model="ir.ui.view">
+            <field name="name">Reporte CXC - Recaudos search</field>
+            <field name="model">lavish.pivot.report.cxc</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="mov_origin" filter_domain="[('mov_origin','ilike',self)]" string="Movimiento origen"/>
+                    <field name="journal_id" filter_domain="[('journal_id','ilike',self)]" string="Diario"/>
+                    <field name="mov_sequence" filter_domain="[('mov_sequence','ilike',self)]" string="Secuencia"/>
+
+                    <group expand="1" string="Group By">
+                        <filter string="Movimiento origen" name="group_mov_origin" context="{'group_by':'mov_origin'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="lavish_tree_pivot_report_cxc" model="ir.ui.view">
+            <field name="name">Reporte CXC - Recaudos tree</field>
+            <field name="model">lavish.pivot.report.cxc</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" delete="false" create="false">
+                    <field name="mov_origin" readonly="1"/>
+                    <field name="journal_id" optional="show" readonly="1"/>
+                    <field name="mov_sequence" optional="show" readonly="1"/>
+                    <field name="period" optional="hide" readonly="1"/>
+                    <field name="date_mov" optional="hide" readonly="1"/>
+                    <field name="type_document" optional="hide" readonly="1"/>
+                    <field name="vat" optional="hide" readonly="1"/>
+                    <field name="partner_id" optional="hide" readonly="1"/>
+                    <field name="invoice_user_id" optional="hide" readonly="1"/>
+                    <field name="account_id" optional="hide" readonly="1"/>
+                    <field name="amount_untaxed_signed" optional="hide" readonly="1"/>
+                    <field name="debit" sum='Total Débito' optional="show" readonly="1"/>
+                    <field name="credit" sum='Total Crédito' optional="show" readonly="1"/>
+                    <field name="balance" sum='Total Balance' readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="lavish_pivot_report_cxc" model="ir.ui.view">
+            <field name="name">Reporte CXC - Recaudos pivot</field>
+            <field name="model">lavish.pivot.report.cxc</field>
+            <field name="arch" type="xml">
+                <pivot string="Reporte CXC - Recaudos">
+                    <field name="mov_origin" type="row"/>
+                    <field name="journal_id" type="row"/>
+                    <field name="mov_sequence" type="row"/>
+                    <field name="debit" type="measure"/>
+                    <field name="credit" type="measure"/>
+                    <field name="balance" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+    </data>
+</odoo>

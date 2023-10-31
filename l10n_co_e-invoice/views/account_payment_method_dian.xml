@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="account_payment_method_dian" model="ir.ui.view">
+            <field name="name">Account.Payment.Dian.tree</field>
+            <field name="model">account.payment.method.dian</field>
+            <field name="arch" type="xml">
+                <tree string="Metodo de pago dian" editable="bottom">
+                    <field name="code" />
+                    <field name="name" />
+                </tree>
+            </field>
+        </record>
+        <record id="account_payment_method_act_window" model="ir.actions.act_window">
+            <field name="name">Payment Method Dian</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.payment.method.dian</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    There is no examples click here to add new Payment Method Dian.
+                </p>
+            </field>
+        </record>
+        <menuitem
+            name="Metodo Pago Dian"
+            id="method_payment_dian_menu_item"
+            parent="account.menu_finance_configuration"
+            action="account_payment_method_act_window"
+        />
+    </data>
+</odoo>

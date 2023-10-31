@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <data>
+
+        <record id="view_account_journal_form_inherit" model="ir.ui.view">
+            <field name="name">account.journal.form.inherit</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="lavish_erp.view_account_journal_form"></field>
+            <field name="arch" type="xml">
+
+                <xpath expr="//page[@name='sequence']" position="inside">
+                    <group string="Debit Sequence">
+                        <field name="debit_note_sequence"  attrs="{'invisible': [('type', 'not in', ['sale', 'purchase'])]}"  />
+                        <label for="debit_note_sequence_number_next" attrs="{'invisible': ['|',('type', 'not in', ['sale', 'purchase']), ('debit_note_sequence', '!=', True)]}"/>
+                        <div attrs="{'invisible': ['|',('type', 'not in', ['sale', 'purchase']), ('debit_note_sequence', '!=', True)]}">
+                            <field name="debit_note_sequence_number_next" style="padding-right: 1.0em"/>
+                            <field name="debit_note_sequence_id" required="0" attrs="{'readonly': 1}" />
+                        </div>
+                    </group>
+                </xpath>
+            </field>    
+        </record>
+
+    </data>
+</odoo>

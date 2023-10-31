@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- BALANCE DE PRUEBA -->
+        <record id="action_account_balance_report_filters" model="ir.actions.act_window">
+            <field name="name">Generar Balance de prueba</field>
+            <field name="res_model">account.balance.report.filters</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="account_balance_report_filters_form" model="ir.ui.view">
+            <field name="name">Reporte balance contabilidad</field>
+            <field name="model">account.balance.report.filters</field>
+            <field name="arch" type="xml">
+                <form string="Balance">
+                    <group string="BALANCE DE PRUEBA" attrs="{'invisible':[('preview', '!=', False)]}">
+                        <group>
+                            <field name="company_id" string="Compañia" readonly="1" force_save="1"/>
+                            <field name="modality" widget='radio'/>
+                        </group>
+                        <group>
+                            <field name="type_balance" widget='radio'/>
+                        </group>
+                    </group>
+                    <group string="PERIODO" attrs="{'invisible':[('preview', '!=', False)]}">
+                        <group>
+                            <field name="ano_filter" string="Año"/>
+                            <field name="month_filter" string="Mes"/>
+                        </group>
+                        <group>
+                             <field name="ano_filter_two" string="Año Final"
+                                       attrs="{'invisible':[('modality', '!=', '3')], 'required': [('modality', '=', '3')]}"/>
+                             <field name="month_filter_two" string="Mes Final"
+                                   attrs="{'invisible':[('modality', '!=', '3')], 'required': [('modality', '=', '3')]}"/>
+                        </group>
+                        <div class="oe_grey" colspan="4">
+                            El balance por generar tomara como saldo inicial todos los movimientos realizados antes
+                            de la fecha seleccionada.
+                        </div>
+                    </group>
+                    <group string="FILTROS" attrs="{'invisible':[('preview', '!=', False)]}">
+                        <group string="Cuentas" colspan="4">
+                            <field name="filter_higher_level"/>
+                            <field name="filter_account_group_ids" widget="many2many_tags"/>
+                            <field name="filter_account_ids" widget="many2many_tags"/>
+                            <field name="filter_accounting_class"/>
+                            <field name="filter_show_only_terminal_accounts"/>
+                            <field name="filter_exclude_balance_test"/>
+                        </group>
+                        <group string="Terceros" colspan="4" attrs="{'invisible':[('type_balance', 'not in', ['2','2.1'])]}">
+                            <field name="filter_partner_ids" widget="many2many_tags"/>
+                            <field name="filter_not_accumulated_partner"/>
+                        </group>
+                        <group string="Cuentas Analíticas" colspan="4" attrs="{'invisible':[('type_balance', 'not in', ['3','3.1'])]}">
+                            <field name="filter_higher_level_analytic"/>
+                            <!-- <field name="filter_account_analytic_group_ids" widget="many2many_tags"/> -->
+                            <field name="filter_account_analytic_ids" widget="many2many_tags"/>
+                            <field name="filter_show_only_terminal_account_analytic"/>
+                        </group>
+                        <group string="Diarios">
+                            <field name="filter_account_journal_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Cierre de año" attrs="{'invisible':[('month_filter', '!=', '12')]}">
+                            <field name="filter_with_close"/>
+                        </group>
+                    </group>
+                    <group attrs="{'invisible':[('preview', '=', False)]}">
+                        <field name="preview" readonly="1" nolabel="1"/>
+                    </group>
+                    <footer attrs="{'invisible':[('preview', '!=', False)]}">
+                        <button name="generate_report_html" string="Ver en Pantalla" type="object" class="oe_highlight"/>
+                        <button name="generate_report" string="Generar Excel" type="object" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

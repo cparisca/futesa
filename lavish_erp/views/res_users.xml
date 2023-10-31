@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+
+        <record id="view_res_users_lavish_erp_form" model="ir.ui.view">
+            <field name="name">res.users.lavish.erp.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="priority">40</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='access_rights']/group[1]" position="after">
+                    <group>
+                        <field string="Sucursales permitidas" name="branch_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                </xpath> 
+                <xpath expr="//field[@name='signature']" position="before">                
+                    <field name="signature_documents"/>
+                    <field name="signature_certification_laboral"/>
+                </xpath> 
+            </field>
+        </record>
+
+    </data>
+</odoo>

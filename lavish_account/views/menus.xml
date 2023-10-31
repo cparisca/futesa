@@ -1,0 +1,16 @@
+<odoo>
+    <data>
+        <!-- Menu Archivo de pago proveedores -->
+        <menuitem name="Archivo de pago" id="lavish_account.lavish_payment_file_menu" parent="account.menu_finance_payables" sequence="30" action="lavish_account.action_payment_file"/>
+        <!-- Menu información exógeno -->
+        <menuitem name="Información exógena" id="lavish_account.lavish_menu_exogenous_information" parent="account_accountant.menu_accounting"/> 
+            <menuitem name="Código Fiscal" id="lavish_account.lavish_menu_fiscal_accounting_code" sequence="1" parent="lavish_account.lavish_menu_exogenous_information" action="action_fiscal_accounting_code"/> 
+            <menuitem name="Grupo Fiscal" id="lavish_account.lavish_menu_fiscal_accounting_group" sequence="2" parent="lavish_account.lavish_menu_exogenous_information" action="action_fiscal_accounting_group"/>
+            <menuitem name="Informe Formatos" id="lavish_account.lavish_menu_format_encab" sequence="3" parent="lavish_account.lavish_menu_exogenous_information" action="action_format_encab"/>
+            <menuitem name="Generar Medios Magnético" id="lavish_account.lavish_menu_generate_media_magnetic" sequence="4" parent="lavish_account.lavish_menu_exogenous_information" action="action_generate_media_magnetic"/>
+            <menuitem name="Cierre contable" id="lavish_account.menu_accounting_closing" sequence="30" parent="account.menu_finance_entries_actions" action="action_annual_accounting_closing"/>
+            <menuitem name="Cierre de Partidas Conciliatorias" id="lavish_account.menu_reconciling_items" sequence="31" parent="account.menu_finance_entries_actions" action="action_lavish_reconciling_items_encab"/>
+        <!-- Reporte extracto bancario -->
+        <menuitem name="Extracto bancario" id="lavish_account.menu_lavish_bank_statements" parent="account.account_banks_menu" action="action_bank_statements_report" sequence="5"/>
+    </data>
+</odoo>

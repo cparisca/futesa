@@ -1,0 +1,32 @@
+<odoo>
+    <data>
+        <menuitem name="Reportes Financieros CO" id="lavish_erp_reports_accounting.menu_account_report_lavish" parent="account.menu_finance_reports"/>
+            <!-- Menu Balance de prueba -->
+            <menuitem name="Balance de Prueba" id="lavish_erp_reports_accounting.menu_balance_report" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_account_balance_report_filters" sequence="1"/>
+            <!-- Menu Libros Oficiales -->
+            <!-- <menuitem name="Libros Oficiales" id="lavish_erp_reports_accounting.menu_account_books_report_lavish" parent="lavish_erp_reports_accounting.menu_account_report_lavish" sequence="2"/> -->
+            <!-- Menu Libro mayor -->
+            <menuitem name="Libro mayor" id="lavish_erp_reports_accounting.menu_libro_mayor" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_account_libro_mayor_filters" sequence="2"/>
+            <!-- Menu auditoria consecutivos -->
+            <menuitem name="Informe de auditoria de consecutivos" id="lavish_erp_reports_accounting.menu_consecutive_audit" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_lavish_consecutive_audit_report" sequence="3"/>
+            <!-- Menu Libro diario -->
+            <menuitem name="Libro diario" id="lavish_erp_reports_accounting.menu_libro_diario" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_account_libro_diario_filters" sequence="3"/>
+            <!-- Menu Consultas -->
+            <menuitem name="Balance Pivot" id="lavish_erp_reports_accounting.menu_lavish_report_balance_pivot" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_lavish_report_balance_pivot" sequence="5"/>
+            <!-- Menu Consultas -->
+            <menuitem name="Auxiliar Pivot" id="lavish_erp_reports_accounting.menu_lavish_report_auxiliar_pivot" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_lavish_report_auxiliar_pivot" sequence="6"/>
+            <!-- Menu Consultas -->
+            <menuitem name="Balance analítico Pivot" id="lavish_erp_reports_accounting.menu_lavish_report_balance_analytic_pivot" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_lavish_report_balance_analytic_pivot" sequence="7"/>
+            <!-- Menu Consultas -->
+            <menuitem name="Consultas" id="lavish_erp_reports_accounting.menu_lavish_report_account_query" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_lavish_reports_account" sequence="8"/>
+            <!-- Menu Informe -->
+            <menuitem name="Informe de ventas/compras" id="lavish_inform_sales_purchases" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_lavish_inform_sales_purchases" sequence="9"/>
+            <!-- menu Seguimiento de actividades -->
+            <menuitem name="Seguimiento de actividades" id="lavish_account.lavish_tracking_activities" sequence="10" parent="account.account_reports_management_menu" action="action_lavish_tracking_activities"/>
+            <!-- menu Informe de CO-CGN -->
+            <menuitem name="Informe CGN y Operaciones Recíprocas" id="lavish_account.lavish_co_cgn_inform" sequence="11" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="action_lavish_co_cgn_inform"/>
+        <!-- Reporte saldos de CxC-CxP -->
+        <menuitem name="Saldos de CxC-CxP" id="lavish_account.menu_report_cxc_cxp" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="actions_balance_cxc_cxp_report"     sequence="6"/>
+        <menuitem name="Reporte CXC - Recaudos" id="lavish_account.menu_lavish_pivot_report_cxc" parent="lavish_erp_reports_accounting.menu_account_report_lavish" action="lavish_action_lavish_pivot_report_cxc" sequence="7"/>
+    </data>
+</odoo>

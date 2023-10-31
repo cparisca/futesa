@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_lavish_tracking_activities" model="ir.actions.act_window">
+            <field name="name">Seguimiento De Actividades</field>
+            <field name="res_model">lavish.tracking.activities</field>
+            <field name="view_mode">tree,form,pivot</field>
+            <field name="target">current</field>
+        </record>
+
+         <record model="ir.ui.view" id="actions_lavish_tracking_activities_list">
+            <field name="name">Seguimiento de Actividades</field>
+            <field name="model">lavish.tracking.activities</field>
+            <field name="arch" type="xml">
+                <tree create="0" edit="0" delete="0">
+                    <field name="activity"/>
+                    <field name="activity_type_id"/>
+                    <field name="create_uid"/>
+                    <field name="create_date"/>
+                    <field name="user_id"/>
+                    <field name="date_deadline"/>
+                    <field name="date_done"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+         </record>
+
+        <record model="ir.ui.view" id="actions_lavish_tracking_activities_pivot">
+            <field name="name">Seguimiento de Actividades</field>
+            <field name="model">lavish.tracking.activities</field>
+            <field name="arch" type="xml">
+                <pivot string="Seguimiento de Actividades"/>
+            </field>
+        </record>
+
+    </data>
+</odoo>

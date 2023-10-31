@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="invoice_tree_extended_fe" model="ir.ui.view">
+            <field name="name">documento DIAN de una factura</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree" />
+            <field name="arch" type="xml">
+                <field name="state" position="after">
+                    <field name="state_dian_document" string="Estado DIAN" />
+                </field>
+            </field>
+        </record>
+        <record id="invoice_form_extended" model="ir.ui.view">
+            <field name="name">documento DIAN de una factura</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='team_id']" position="before">
+                    <field name="method_payment_id" />
+                    <field name="document_from_other_system" attrs="{'invisible':[('move_type', 'not in', ['out_refund'])]}"/>
+                    <field name="date_from_other_system" attrs="{'invisible':[('move_type', 'not in', ['out_refund'])]}"/>
+                    <field name="cufe_cuds_other_system"  attrs="{'invisible':[('move_type', 'not in', ['out_refund'])]}"/>
+                    <field name="document_without_reference"  attrs="{'invisible':[('move_type', 'not in', ['out_refund'])]}"/>
+                </xpath>
+                <xpath expr="//header" position="after">
+                    <field name="count_error_DIAN" invisible="1" />
+                    <field name="in_contingency_4" invisible="1" />
+                    <field name="exists_invoice_contingency_4" invisible="1" />
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                        style="margin-top:10px;"
+                        attrs="{'invisible' : ['|',('count_error_DIAN', '=', 0),('in_contingency_4', '=', True)]}"
+                    >
+                        Existen problemas tecnológicos de comunicación a cargo de la <b
+                        >DIAN</b> para el envío de la factura. Por favor, realice tres intentos más, pulsando nuevamente el botón <b
+                        >Validar DIAN</b> cada 20 segundos, de no existir respuesta por parte de la DIAN el sistema entrará en contigencia tipo 4.
+                    </div>
+                    <div
+                        class="alert alert-danger"
+                        role="alert"
+                        style="margin-top:10px;"
+                        attrs="{'invisible' : [('in_contingency_4', '=', False)]}"
+                    >
+                        El sistema se encuentra en <b
+                        >Contigencia tipo 4</b>,  por causas atribuibles a situaciones de índole tecnológico a cargo de la DIAN. Al pulsar el botón <b
+                        >Validar DIAN</b> las facturas serán enviadas al cliente, pero no serán reportadas a la DIAN hasta tanto se restablezca el servicio.
+                    </div>
+                    <div
+                        class="alert alert-dark"
+                        role="alert"
+                        style="margin-top:10px;"
+                        attrs="{'invisible' : [('exists_invoice_contingency_4', '=', False)]}"
+                    >
+                        Existe facturas que fueron enviadas a los clientes con <b
+                        >tipo de contingencia 4</b>. Por favor, filtre la vista listas de factura por facturas con contigencia 4 sin enviar a la DIAN y proceda a <b
+                        >enviar cada una de las facturas a la DIAN pulsando el botón Validar DIAN</b>. Recuerde que solo tiene  <b
+                        >48 horas</b> para reportarlas.
+                    </div>
+                </xpath>
+                <xpath expr="//sheet//div[2]" position="after">
+                    <grpup>
+                        <h3
+                            attrs="{'invisible' : [('debit_origin_id', '=', False)]}"
+                            style="color:rgb(124,123,173);"
+                        >Nota Débito</h3>
+                    </grpup>
+                </xpath>
+                <xpath
+                    expr="//field[@name='invoice_payment_term_id']"
+                    position="attributes"
+                >
+                    <attribute name="required" />
+                </xpath>
+                <xpath expr="//field[@name='invoice_date_due']" position="attributes">
+                    <attribute name="required">False</attribute>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page name="dian" string="DIAN">
+                        <div
+                            class="alert alert-info"
+                            role="alert"
+                            style="margin-top:10px;"
+                            attrs="{'invisible': [('diancode_id','!=',False)]}"
+                        >
+                            Presione en el boton <b
+                            >Validar DIAN</b> para enviar la factura
+                        </div>
+                        <group attrs="{'invisible' : [('diancode_id', '=', False)]}">
+                            <field name="diancode_id" />
+                            <field name="QR_code" widget="image" />
+                            <field name="cufe" />
+                            <field name="state_dian_document" />
+                            <field name="response_message_dian" />
+                            <field
+                                name="xml_response_dian"
+                                attrs="{'invisible' : [('state_dian_document', '=', 'exitoso')]}"
+                            />
+                            <field name="email_response" />
+                            <field name="refusal_reason" />
+                            <field name="move_type" invisible="1" />
+                            <field name="xml_adjunto_ids">
+                              <tree>
+                                <field name="name"/>
+                              </tree>
+                            </field>
+                            <button
+                                type="object"
+                                name="action_invoice_email_dian"
+                                string="Re-envio de email"
+                            />
+                            <button type="object" name="action_invoice_dian_resend" string="Reenviar el documento DIAN por email"/>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//label[@for='journal_id']" position="before">
+                    <field name="mandante_id" />
+                    <field name="amount_letters" />
+                    <field name="total_withholding_amount" />
+                    <field name="invoice_trade_sample" />
+                    <field name="trade_sample_price" />
+                </xpath>
+                <xpath expr="////form/sheet/notebook/page[1]/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after" attrs="{'invisible': [('invoice_trade_sample', '!=', True)], 'required': [('invoice_trade_sample', '=', True)]}">
+                    <field name="line_trade_sample" invisible="1" />
+                    <field name="line_price_reference" />
+                </xpath>
+                <!-- Apuntes contables - precio de referencia -->
+                <xpath expr="////form/sheet/notebook/page[@id='aml_tab']/field[@name='line_ids']/tree/field[@name='credit']" position="after">
+                    <field name="line_price_reference" invisible="1" />
+                </xpath>
+                <xpath expr="//div[@name='journal_div']" position="after">
+                    
+                    <field
+                        name="contingency_3"
+                        attrs="{'invisible' : ['|',('contingency_4', '=', True),('move_type', '!=', 'out_invoice')], 'readonly' : ['|',('in_contingency_4', '=', True),('state_dian_document', '=', 'exitoso')]}"
+                    />
+                    <field
+                        name="contingency_invoice_number"
+                        attrs="{'invisible' : [('contingency_3', '=', False)], 'readonly' : [('state_dian_document', '=', 'exitoso')]}"
+                    />
+                    <field
+                        name="contingency_4"
+                        readonly="1"
+                        attrs="{'invisible' : [('contingency_4', '=', False)]}"
+                    />
+                </xpath>
+                <xpath expr="//field[@name='state']" position="before">
+                    <field name="state_dian_document" invisible="1" />
+                    <field name="hide_button_dian" invisible="1" />
+                    <button
+                        style="background: #f34e4e; border: black;"
+                        name="validate_dian"
+                        string="Validar DIAN"
+                        type="object"
+                        attrs="{'invisible' : [('hide_button_dian', '=', True)]}"
+                        groups="account.group_account_invoice"
+                        class="oe_highlight"
+                    />
+                </xpath>
+                <field name="invoice_user_id" position="after">
+                    <field name="validate_cron" />
+                </field>
+            </field>
+        </record>
+        <record id="view_account_invoice_filter_extended_fe" model="ir.ui.view">
+            <field name="name">documento DIAN de una factura</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter" />
+            <field name="arch" type="xml">
+                <xpath expr="//group[1]" position="before">
+                    <separator />
+                    <group>
+                        <filter
+                            string="Contingencia 4 sin notificar al Cliente"
+                            name="contigency4_Cliente"
+                            domain="[('contingency_4','=',True),('state_contingency', '=', 'por_notificar'),('move_type', '=', 'out_invoice'),('debit_origin_id', '=', False)]"
+                        />
+                        <filter
+                            string="Contingencia 4 sin notificar a la DIAN"
+                            name="contigency4_DIAN"
+                            domain="[('contingency_4','=',True),('state_dian_document', '=', 'por_notificar'),('move_type', '=', 'out_invoice'),('debit_origin_id', '=', False)]"
+                        />
+                        <filter
+                            string="Contingencia 3 sin notificar a la DIAN"
+                            name="contigency3_DIAN"
+                            domain="[('contingency_3','=',True),('state_dian_document', '=', 'por_notificar'),('move_type', '=', 'out_invoice'),('debit_origin_id', '=', False)]"
+                        />
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        <!--Email dian template -->
+        <record id="email_template_edi_invoice_dian" model="mail.template">
+            <field name="name">Envio de documento DIAN por email</field>
+            <field
+                name="email_from"
+            >{{( object.user_id.email and '%s &lt;%s&gt;' % (object.user_id.name, object.user_id.email) or '') }}</field>
+            <field name="email_to">{{(object.partner_id.email or '')}}</field>
+            <field
+                name="subject"
+            >{{object.company_id.partner_id.vat}};{{object.company_id.name}};{{object.diancode_id.dian_code or ''}};01;{{object.company_id.name}}</field>
+            <field name="partner_to" />
+            <field name="model_id" ref="account.model_account_move" />
+            <field name="auto_delete" eval="False" />
+            
+            <!-- <field name="report_template" ref="account.account_invoices" /> -->
+            <!-- <field name="report_name">{{object.diancode_id.dian_code}}</field> -->
+            <field name="lang">{{object.partner_id.lang}}</field>
+            <field
+                name="body_html"
+            ><![CDATA[
+<div style="font-family: 'Lucida Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+    <span>Hola
+        <t t-if="object.partner_id.name" data-oe-t-group="0" data-oe-t-selectable="true" data-oe-t-group-active="true" data-oe-t-inline="true">
+            <t t-out="object.partner_id.name or ''" contenteditable="false" data-oe-t-inline="true">Brandon Freeman</t>
+        </t>,
+    </span>
+    <p>Nuevo documento DIAN disponible para Ud.: </p>
+    <p style="border-left: 1px solid #8e0000; margin-left: 30px;">
+       &nbsp;&nbsp;<strong>Referencias del documento DIAN:</strong><br />
+       &nbsp;&nbsp;Numero: <strong t-out="object.name or ''" contenteditable="false">INV/2021/05/0005</strong><br />
+       &nbsp;&nbsp;Total: <strong t-out="format_amount(object.amount_total, object.currency_id) or ''" contenteditable="false">$ 143,750.00</strong><br />
+       &nbsp;&nbsp;Fecha: <strong t-out="object.invoice_date or ''" contenteditable="false">28/04/2022</strong><br />
+
+       <t t-if="object.invoice_origin" data-oe-t-group="1" data-oe-t-selectable="true" data-oe-t-group-active="true" data-oe-t-inline="true">
+       &nbsp;&nbsp;Factura: <strong t-out="object.invoice_origin or ''" contenteditable="false">INV/2021/05/0005</strong><br />
+       </t>
+
+    </p>
+
+    <div style="text-align: left; margin-top: 16px;">
+        <a t-attf-href="/l10n_co_e-invoice/accept_dian_invoice?dian_document={{ object.diancode_id.cufe }}" style="padding: 5px 10px; font-size: 12px; line-height: 18px; color: #FFFFFF; border-color:#222222b8; text-decoration: none; display: inline-block; margin-bottom: 0px; font-weight: 400; text-align: center; vertical-align: middle; cursor: pointer; white-space: nowrap; background-image: none; background-color: #7c7bad; border-radius:3px">Aceptar</a>
+        <a t-attf-href="/l10n_co_e-invoice/reject_dian_invoice?dian_document={{ object.diancode_id.cufe }}" style="padding: 5px 10px; font-size: 12px; line-height: 18px; color: #000000; border-color:#222222b8; text-decoration: none; display: inline-block; margin-bottom: 0px; font-weight: 400; text-align: center; vertical-align: middle; cursor: pointer; white-space: nowrap; background-image: none; background-color: #FFFFFF; border-radius:3px">Rechazar</a>
+    </div>
+
+<!--    <t t-if="object.paypal_url" data-oe-t-group="1" data-oe-t-selectable="true" data-oe-t-group-active="true" data-oe-t-inline="true">-->
+<!--        <br/>-->
+<!--        <p>Tambien es posible pagar directamente con Paypal:</p>-->
+<!--            <a style="margin-left: 120px;" href="#">-->
+<!--                <img class="oe_edi_paypal_button" src="/account/static/src/img/btn_paynowcc_lg.gif"/>-->
+<!--            </a>-->
+<!--    </t>-->
+    <br/>
+    <br/>
+    <p>Si tiene alguna pregunta, no dude en contactarnos.</p>
+    <p>Gracias por escoger <span t-out="object.company_id.name or 'nos'">Nos</span>!</p>
+    <br/>
+    <br/>
+    <div style="width: 375px; margin: 0px; padding: 0px; background-color: #7c7bad; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+            <strong style="text-transform:uppercase;" t-out="object.company_id.name">My Company</strong></h3>
+    </div>
+    <div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+        <span style="color: #222; margin-bottom: 5px; display: block; " t-out="object.company_id.partner_id.sudo().with_context(show_address=True).name_get()[0][1] or ''">
+            Safe
+        </span>
+        <t t-if="object.company_id.phone" data-oe-t-group="0" data-oe-t-selectable="true" data-oe-t-group-active="true" data-oe-t-inline="true">
+            <div style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; ">
+                Telefono: <t t-out="object.company_id.phone or ''" contenteditable="false" data-oe-t-inline="true">0914141197</t>
+            </div>
+        </t>
+        <t t-if="object.company_id.website" data-oe-t-group="0" data-oe-t-selectable="true" data-oe-t-group-active="true" data-oe-t-inline="true">
+            <div style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; ">
+                Sitio Web: <t t-out="object.company_id.website or ''" contenteditable="false" data-oe-t-inline="true">0914141197</t>
+            </div>
+        </t>
+        <p></p>
+    </div>
+</div>
+            ]]></field>
+        </record>
+    </data>
+</odoo>

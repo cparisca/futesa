@@ -1,0 +1,213 @@
+<odoo>
+    <data>
+        <!-- Código Fiscal -->
+        <record model="ir.actions.act_window" id="action_fiscal_accounting_code">
+            <field name="name">Código Fiscal</field>
+            <field name="res_model">fiscal.accounting.code</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Crear record rule para filtrar las compañias-->
+        <record id="rule_fiscal_accounting_code_company" model="ir.rule">
+            <field name="name">Permisos compañia codigo fiscal</field>
+            <field name="model_id" ref="model_fiscal_accounting_code"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record model="ir.ui.view" id="fiscal_accounting_code_tree">
+            <field name="name">fiscal accounting code list</field>
+            <field name="model">fiscal.accounting.code</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="company_id"/>
+                    <field name="concept_dian"/>
+                    <field name="code_description"/>
+                    <field name="account_type"/>
+                    <field name="format_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="fiscal_accounting_code_form">
+            <field name="name">fiscal accounting code form</field>
+            <field name="model">fiscal.accounting.code</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="concept_dian"/>
+                                <field name="format_id"/>
+                                <field name="account_type"/>
+                                <field name="company_id" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="code_description"/>
+                                <field name="move_type"/>
+                                <field name="retention_associated"/>
+                                <field name="required_retention_associated"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Cuentas">
+                                <field name="accounting_details_ids"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Grupo fiscal -->
+        <record model="ir.actions.act_window" id="action_fiscal_accounting_group">
+            <field name="name">Grupo Fiscal</field>
+            <field name="res_model">fiscal.accounting.group</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Crear record rule para filtrar las compañias-->
+        <record id="rule_fiscal_accounting_group_company" model="ir.rule">
+            <field name="name">Permisos compañia grupo fiscal</field>
+            <field name="model_id" ref="model_fiscal_accounting_group"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record model="ir.ui.view" id="fiscal_accounting_group_tree">
+            <field name="name">fiscal accounting group list</field>
+            <field name="model">fiscal.accounting.group</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="company_id"/>
+                    <field name="fiscal_group"/>
+                    <field name="group_description"/>
+                    <field name="operator"/>
+                    <field name="amount"/>
+                    <field name="tax_type"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="fiscal_accounting_group_form">
+            <field name="name">fiscal accounting group form</field>
+            <field name="model">fiscal.accounting.group</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="fiscal_group"/>
+                                <field name="operator"/>
+                                <field name="tax_type"/>
+                                <field name="partner_minor_amounts" widget="many2one_tags"/>
+                            </group>
+                            <group>
+                                <field name="group_description"/>
+                                <field name="amount"/>
+                                <field name="company_id" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Conceptos DIAN">
+                                <field name="concept_dian_ids"/>
+                            </page>
+                            <page string="Terceros Excluidos">
+                                <field name="excluded_thirdparty_ids"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        
+
+        <!-- Formato -->
+        <record model="ir.actions.act_window" id="action_format_encab">
+            <field name="name">Formato de Código Fiscal</field>
+            <field name="res_model">format.encab</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Crear record rule para filtrar las compañias -->
+        <record id="rule_format_encab" model="ir.rule">
+            <field name="name">Permisos compañia Formato Código Fiscal</field>
+            <field name="model_id" ref="model_format_encab"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record model="ir.ui.view" id="format_encab_tree">
+            <field name="name">format encab</field>
+            <field name="model">format.encab</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="company_id"/>
+                    <field name="format_id"/>
+                    <field name="description"/>
+                    <field name="format_associated_id"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="format_encab_group_form">
+            <field name="name">format encab group form</field>
+            <field name="model">format.encab</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="format_id"/>
+                                <field name="description"/>
+                            </group>
+                            <group>
+                                <field name="format_associated_id"/>
+                                <field name="fields_associated_code_fiscal_ids" widget="many2many_tags" readonly="1" force_save="1"/>
+                                <field name="company_id" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Campos Disponibles">
+                                 <field name="details_ids">
+                                        <tree editable="bottom">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="available_fields"/>
+                                        </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="action_generate_media_magnetic">
+            <field name="name">Generar Medios Magnético</field>
+            <field name="res_model">generate.media.magnetic</field>
+            <field name="view_mode">form</field>
+        </record>
+
+        <record id="generate_media_magnetic_form" model="ir.ui.view">
+            <field name="name">Generar Medios Magnético</field>
+            <field name="model">generate.media.magnetic</field>
+            <field name="arch" type="xml">
+                <form string="Medios Magnético">
+                    <sheet>
+                        <group>
+                            <h1>Generar Medios Magnético</h1>
+                            <br></br>
+                            <field name="company_id" />
+                            <field name="type_media_magnetic" widget="radio"/>
+                            <field name="year" />
+                            <br></br>
+                            <button name="generate_media_magnetic" string="Generar" type="object" class="oe_highlight"/>
+                        </group>
+                    </sheet>
+                    <footer></footer>
+                </form>
+            </field>
+        </record>
+        
+    </data>
+</odoo>

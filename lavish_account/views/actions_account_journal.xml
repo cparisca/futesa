@@ -1,0 +1,39 @@
+<odoo>
+    <data>
+		<record id="view_lavish_account_form_account_journal" model="ir.ui.view">
+			<field name="name">lavish_account.account_journal_inherit</field>
+			<field name="model">account.journal</field>
+			<field name="priority">20</field>
+			<field name="inherit_id" ref="account.view_account_journal_form"/>
+			<field name="arch" type="xml">
+<!--                <xpath expr="//field[@name='restrict_mode_hash_table']" position="after">-->
+<!--					<hr/><br/>-->
+<!--					<label for="dian_authorization_number" string="Resolución DIAN (lavish)"/>-->
+<!--					<br/>-->
+<!--					<field name="dian_authorization_number" type="object"/>-->
+<!--					<field name="dian_authorization_date" type="object"/>-->
+<!--					<field name="dian_authorization_end_date" type="object"/>-->
+<!--					<field name="dian_min_range_number" type="object"/>-->
+<!--					<field name="dian_max_range_number" type="object"/>-->
+<!--                </xpath>-->
+				<xpath expr="//page[@name='bank_account']/group[1]/group[1]" position="inside">
+					<field name="default_account_id" string="Cuenta predeterminada"
+					   attrs="{'invisible': [('type', '!=', 'general')]}"/>
+				</xpath>
+			</field>
+		</record>
+
+		<record id="view_lavish_account_product_template" model="ir.ui.view">
+            <field name="name">lavish.account.product.template</field>
+            <field name="model">product.template</field>
+            <field name="priority">70</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='property_account_income_id']" position="after">
+                    <field name="income_return_account"/>
+					<field name="account_analytic_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

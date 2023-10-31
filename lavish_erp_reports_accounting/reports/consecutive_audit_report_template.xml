@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="lavish_consecutive_audit_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="inside_foreach_docs or docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <h1>
+                        <strong>INFORME DE AUDITORIA DE CONSECUTIVOS</strong>
+                    </h1>
+                    <p>
+                        Fechas: <span t-esc="o.initial_date"/> - <span t-esc="o.end_date"/>
+                    </p>
+                    <t t-foreach="o.generate_info()" t-as="i">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <td colspan="5">
+                                        <h3>
+                                            <span t-esc="i.get('journal_name','')"/>
+                                        </h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 25%;">
+                                        <b>Primer documento</b>
+                                    </td>
+                                    <td style="width: 25%;">
+                                        <b>Último documento</b>
+                                    </td>
+                                    <td style="width: 50%;">
+                                        <b>Documentos faltantes</b>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span t-esc="i.get('min_sequence_number',0)"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="i.get('max_sequence_number',0)"/>
+                                    </td>
+                                    <td>
+                                        <t t-if="len(i.get('missing_sequence_number',[]))>0">
+                                            <span t-esc="str(i.get('missing_sequence_number',[])).replace('[', '').replace(']', '')"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span>Consecutivos correctos para este documento</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

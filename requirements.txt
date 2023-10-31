@@ -1,0 +1,17 @@
+xmltodict
+PyQRCode
+pypng
+crypto
+phonenumbers
+openpyxl
+img2pdf
+fpdf
+num2words
+pyopenssl
+lxml
+pycountry
+validators
+xmlsig>=0.1.3
+cryptography>=2.7
+enum34>=1.1.6
+

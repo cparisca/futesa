@@ -59,16 +59,16 @@ class lavish_inform_sales_purchases(models.TransientModel):
                         case when a.invoice_payment_term_id = null then a.invoice_date + h.days
                         else a.invoice_date_due
                         end as fecha_ven, a.name as serie, 
-                        case when c.x_document_type = '11' then '11 - Registro civil de nacimiento'
-                            else case when c.x_document_type = '12' then '12 - Tarjeta de identidad'
-                                else case when c.x_document_type = '13' then '13 - Cédula de ciudadania'
-                                    else case when c.x_document_type = '21' then '21 - Tarjeta de extranjeria'
-                                        else case when c.x_document_type = '22' then '22 - Cédula de extranjeria'
-                                            else case when c.x_document_type = '31' then '31 - NIT'
-                                                else case when c.x_document_type = '41' then '41 - Pasaporte'
-                                                    else case when c.x_document_type = '42' then '42 - Tipo de documento extranjero'
-                                                        else case when c.x_document_type = '43' then '43 - Sin indetificación del exterior o para uso definido por la DIAN'
-                                                            else case when c.x_document_type = '44' then '44 - Documento de identificación extranjero persona juridica'
+                        case when c.document_type = '11' then '11 - Registro civil de nacimiento'
+                            else case when c.document_type = '12' then '12 - Tarjeta de identidad'
+                                else case when c.document_type = '13' then '13 - Cédula de ciudadania'
+                                    else case when c.document_type = '21' then '21 - Tarjeta de extranjeria'
+                                        else case when c.document_type = '22' then '22 - Cédula de extranjeria'
+                                            else case when c.document_type = '31' then '31 - NIT'
+                                                else case when c.document_type = '41' then '41 - Pasaporte'
+                                                    else case when c.document_type = '42' then '42 - Tipo de documento extranjero'
+                                                        else case when c.document_type = '43' then '43 - Sin indetificación del exterior o para uso definido por la DIAN'
+                                                            else case when c.document_type = '44' then '44 - Documento de identificación extranjero persona juridica'
                                                                 else ''
                                                                 end
                                                             end
@@ -233,7 +233,7 @@ class lavish_inform_sales_purchases(models.TransientModel):
                         left join account_payment_term as g on a.invoice_payment_term_id = g.id
                         left join account_payment_term_line as h on g.id = h.payment_id
                         %s
-                        group by f."name",a.move_type,a.invoice_date,a."date",b.code,a.name,a.invoice_payment_term_id,a.invoice_date_due,a.invoice_date,h.days,c.x_document_type,c.vat,
+                        group by f."name",a.move_type,a.invoice_date,a."date",b.code,a.name,a.invoice_payment_term_id,a.invoice_date_due,a.invoice_date,h.days,c.document_type,c.vat,
                         c.x_digit_verification,c."name",a.amount_untaxed_signed,a.amount_total_signed,e."name",a.amount_total_in_currency_signed,
                         a."ref",a.supplier_invoice_number,aa."name"
                     ) as a  

@@ -62,8 +62,8 @@ class lavish_report_cxc_cxp(models.TransientModel):
                         from (
                             select to_char(a."date",'yyyyMM') as periodo,a."date" as fecha_movimiento,
                                     d."name" as diario,a.move_name as secuencia,rc."name" as currency,
-                                    case when e.x_document_type = '13' then 'Cédula de ciudadania'
-                                    else case when e.x_document_type = '31' then 'NIT'
+                                    case when e.document_type = '13' then 'Cédula de ciudadania'
+                                    else case when e.document_type = '31' then 'NIT'
                                     else ''
                                     end 
                                     end as tipo_documento,e.vat as ruc,b.invoice_partner_display_name as partner,
@@ -80,13 +80,13 @@ class lavish_report_cxc_cxp(models.TransientModel):
                             inner join account_account as f on a.account_id = f.id
                             inner join account_account_type as g on f.user_type_id = g.id and g.type in ('receivable','payable')
                             %s
-                            group by a."date",rc."name",d."name",a.move_name,e.x_document_type,e.vat,b.invoice_partner_display_name,b.supplier_invoice_number,f.code,f."name",
+                            group by a."date",rc."name",d."name",a.move_name,e.document_type,e.vat,b.invoice_partner_display_name,b.supplier_invoice_number,f.code,f."name",
 			                        b.amount_untaxed_signed, b.amount_total, b.amount_residual_signed
 			                Union
 			                select to_char(a."date",'yyyyMM') as periodo,a."date" as fecha_movimiento,
                                     d."name" as diario,a.move_name as secuencia,rc."name" as currency,
-                                    case when e.x_document_type = '13' then 'Cédula de ciudadania'
-                                    else case when e.x_document_type = '31' then 'NIT'
+                                    case when e.document_type = '13' then 'Cédula de ciudadania'
+                                    else case when e.document_type = '31' then 'NIT'
                                     else ''
                                     end 
                                     end as tipo_documento,e.vat as ruc,b.invoice_partner_display_name as partner,
@@ -113,7 +113,7 @@ class lavish_report_cxc_cxp(models.TransientModel):
                             inner join res_partner as m on i.partner_id = m.id
                             inner join account_account as n on i.account_id = n.id 
                             %s
-                            group by a."date",rc."name",d."name",a.move_name,e.x_document_type,e.vat,b.invoice_partner_display_name,b.supplier_invoice_number,f.code,f."name",
+                            group by a."date",rc."name",d."name",a.move_name,e.document_type,e.vat,b.invoice_partner_display_name,b.supplier_invoice_number,f.code,f."name",
                                     b.amount_untaxed_signed, b.amount_total, b.amount_residual_signed
                         ) as a
                         group by periodo,fecha_movimiento,diario,secuencia,currency,tipo_documento,ruc,partner,td,no_factura_provedor,fecha_doc,cuenta_contable
@@ -130,8 +130,8 @@ class lavish_report_cxc_cxp(models.TransientModel):
                     select to_char(a."date",'yyyyMM') as periodo,a."date" as fecha_movimiento,
                             d."name" as diario,a.move_name as secuencia, a.move_name as mov_original,
                             rc."name" as currency,
-                            case when e.x_document_type = '13' then 'Cédula de ciudadania'
-                            else case when e.x_document_type = '31' then 'NIT'
+                            case when e.document_type = '13' then 'Cédula de ciudadania'
+                            else case when e.document_type = '31' then 'NIT'
                             else ''
                             end 
                             end as tipo_documento,e.vat as ruc,b.invoice_partner_display_name as partner,
@@ -152,8 +152,8 @@ class lavish_report_cxc_cxp(models.TransientModel):
                     select to_char(coalesce(i."date",a."date"),'yyyyMM') as periodo,coalesce(i."date",a."date") as fecha_movimiento,
                             coalesce(l."name",d."name") as diario,coalesce(i.move_name,a.move_name) as secuencia, a.move_name as mov_original,
                             coalesce(rcc."name",rc."name") as currency,
-                            case when coalesce(m.x_document_type,e.x_document_type) = '13' then 'Cédula de ciudadania'
-                            else case when coalesce(m.x_document_type,e.x_document_type) = '31' then 'NIT'
+                            case when coalesce(m.document_type,e.document_type) = '13' then 'Cédula de ciudadania'
+                            else case when coalesce(m.document_type,e.document_type) = '31' then 'NIT'
                             else ''
                             end 
                             end as tipo_documento,coalesce(m.vat,e.vat) as ruc,coalesce(j.invoice_partner_display_name,b.invoice_partner_display_name) as partner,

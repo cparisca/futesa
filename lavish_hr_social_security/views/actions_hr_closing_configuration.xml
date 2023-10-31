@@ -1,0 +1,56 @@
+<odoo>
+    <data>
+
+        <record model="ir.actions.act_window" id="action_hr_closing_configuration">
+            <field name="name">Conf. Contabilización cierre de nómina (Seguridad social y Provisiones)</field>
+            <field name="res_model">hr.closing.configuration.header</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.ui.view" id="hr_closing_configuration_list">
+            <field name="name">hr closing configuration list</field>
+            <field name="model">hr.closing.configuration.header</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="process"/>
+                    <field name="description"/>
+                    <field name="journal_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="hr_closing_configuration_form">
+            <field name="name">hr closing configuration form</field>
+            <field name="model">hr.closing.configuration.header</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="process"/>
+                            <field name="description"/>
+                            <field name="journal_id"/>
+                        </group>
+                        <group string="Contabilización">
+                            <field name="detail_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="department"/>
+                                    <field name="company"/>
+                                    <field name="work_location"/>
+                                    <field name="third_debit"/>
+                                    <field name="debit_account"/>
+                                    <field name="third_credit"/>
+                                    <field name="credit_account"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Cuentas de diferencias" attrs="{'invisible': [['process','not in',['ss_empresa_salud','ss_empresa_pension']]]}">
+                            <p>En la contabilización de la seguridad social, los valores de diferencias por aproximaciones al peso de aportes a salud y pensión si no superan los $1.000 pesos colombianos se contabilizaran en</p>
+                            <field name="debit_account_difference"/>
+                            <field name="credit_account_difference"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

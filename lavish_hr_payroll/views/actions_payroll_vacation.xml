@@ -1,0 +1,85 @@
+<odoo>
+    <data>
+        <record model="ir.actions.act_window"  id="action_hr_vacation">
+            <field name="name">Historico de vacaciones</field>
+            <field name="res_model">hr.vacation</field>
+            <field name="view_mode">tree,form</field>
+		</record>
+        <!-- Crear record rule para filtrar las compañias-->
+        <record id="rule_hr_vacation" model="ir.rule">
+            <field name="name">Permisos compañia Historico de vacaciones</field>
+            <field name="model_id" ref="model_hr_vacation"/>
+            <field name="domain_force">['|',('employee_id.company_id','=',False),('employee_id.company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record model="ir.ui.view" id="lavish_hr_payroll.list_hr_vacation">
+            <field name="name">lavish list hr vacation</field>
+            <field name="model">hr.vacation</field>
+            <field name="arch" type="xml">
+				<tree>
+					<field name="employee_id"/>  
+                    <field name="contract_id"/>               
+					<field name="initial_accrual_date"/>           
+					<field name="final_accrual_date"/>           
+					<field name="departure_date"/>           
+					<field name="return_date"/> 
+                    <field name="payslip"/>            
+				</tree>
+			</field>
+		</record>
+
+        <record model="ir.ui.view" id="lavish_hr_payroll.form_hr_vacation">
+            <field name="name">lavish form hr vacation</field>
+            <field name="model">hr.vacation</field>
+            <field name="arch" type="xml">
+				<form>
+                    <sheet>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="contract_id" readonly="1"/> 
+                        </group> 
+                        <group>
+                        <group string="Fecha de causación">
+                                <field name="initial_accrual_date" readonly="1"/>           
+                                <field name="final_accrual_date" readonly="1"/>
+                        </group>
+                        <group string="Fecha de disfrute">         
+                                <field name="departure_date" readonly="1"/>  
+                                <field name="return_date" readonly="1"/>  
+                        </group>
+                        <group string="Días hábiles/festivos">   
+                                <field name="base_value" readonly="1"/>               
+                                <field name="business_units" readonly="1"/>  
+                                <field name="value_business_days" readonly="1"/>  
+                                <field name="holiday_units" readonly="1"/>  
+                                <field name="holiday_value" readonly="1"/>  
+                            </group> 
+                            <group string="Días en dinero"> 
+                                <field name="base_value_money" readonly="1"/>
+                                <field name="units_of_money" readonly="1"/> 
+                                <field name="money_value" readonly="1"/>     
+                            </group> 
+                            </group>  
+                            <group>
+                                <field name="total" readonly="1"/>
+                                <field name="payslip" readonly="1"/>
+                                <field name="leave_id" readonly="1"/>
+                            </group> 
+                    </sheet>        
+				</form>
+			</field>
+		</record>
+
+        <record id="hr_vacation_concepts_view_search" model="ir.ui.view">
+                    <field name="name">hr.vacation.view.search </field>
+                    <field name="model">hr.vacation</field>
+                    <field name="arch" type="xml">
+                        <search string="Historico de vacaciones">
+                            <field name="employee_id"/>
+                            <field name="contract_id"/>
+                            <field name="payslip"/>
+                        </search>
+                    </field>
+        </record>
+    </data>
+</odoo>

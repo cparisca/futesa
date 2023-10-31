@@ -1,0 +1,57 @@
+<odoo>
+    <data>
+        <!-- Proceso de generar archivo plano de pago nómina -->
+        <record model="ir.actions.act_window" id="action_hr_payroll_report_lavish_filter">
+            <field name="name">Filtros - Informe de Liquidación</field>
+            <field name="res_model">hr.payroll.report.lavish.filter</field>
+            <field name="target">new</field>
+            <field name="view_mode">form</field>
+        </record>
+
+        <record id="hr_payroll_report_lavish_filter_form" model="ir.ui.view">
+            <field name="name">Liquidación</field>
+            <field name="model">hr.payroll.report.lavish.filter</field>
+            <field name="arch" type="xml">
+                <form string="Liquidación">
+                    <sheet>
+                        <h1>Liquidación</h1>
+                        <group>
+                            <field name="payslip_ids" widget="many2many_tags"/>
+                            <field name="liquidations_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="not_show_rule_entity"/>
+                            </group>
+                            <group>
+                                <field name="not_show_quantity" invisible="1"/>
+                            </group>
+                        </group>
+                        <group string="Campos a mostrar">
+                            <button name="show_all_fields" string="Seleccionar Todos" type="object"/>
+                            <button name="not_show_all_fields" string="Borrar Todos" type="object"/>
+                            <group>
+                                <field name="show_date_of_entry"/>
+                                <field name="show_job_placement"/>
+                                <field name="show_sectional"/>
+                                <field name="show_department"/>
+                            </group>
+                            <group>
+                                <field name="show_analytical_account"/>
+                                <field name="show_job"/>
+                                <field name="show_sena_code"/>
+                                <field name="show_basic_salary"/>
+                            </group>
+                        </group>
+                        <br/>
+                        <button name="generate_excel" string="Generar Excel" type="object" class="oe_highlight" style="margin:5px;"/>
+                        <button name="generate_pdf" string="Generar PDF" type="object" class="oe_highlight" style="margin:5px;"/>
+                        <p>Al descargar en formato PDF, unicamente se visualizaran las columnas (Item, Identificación, Empleado, Días, Total.Dev, Total.Ded, Neto a Pagar)</p>
+                    </sheet>
+                    <footer/>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
+      

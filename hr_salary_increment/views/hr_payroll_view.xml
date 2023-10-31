@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="hr_increases_payslip_form_view" model="ir.ui.view">
+			<field name="name">hr.payslip.inherit.form</field>
+			<field name="model">hr.payslip</field>
+			<field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//page[2]" position="after">
+					<page string="Bonus">
+ 						<button name="get_increase" string="Update Bonus" type="object"/>
+ 						<field name="increase_ids">
+							<tree string="Bonus" editable="bottom">
+								<field name="payroll_id" invisible="1"/>
+								<field name="employee_id"/>
+								<field name="date"/>
+								<field name="date_applied_on"/>
+								<field name="no_of_month"/>
+								<field name="amount"/>
+								
+							</tree>
+							<form>
+								<group>
+									<group>
+										<field name="payroll_id" invisible="1"/>
+										<field name="employee_id"/>
+										<field name="date"/>
+										<field name="date_applied_on"/>
+									</group>
+									<group>
+										<field name="no_of_month"/>
+										<field name="amount"/>
+									</group>
+								</group>
+							</form>
+						</field>
+						<group class="oe_subtotal_footer oe_right">
+							<field name="total_increase"/>
+							
+						</group>
+					</page>
+				</xpath>
+			</field>
+		</record>
+	
+	</data>
+</odoo>

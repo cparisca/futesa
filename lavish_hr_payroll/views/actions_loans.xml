@@ -1,0 +1,156 @@
+<odoo>
+    <data>
+        
+        <!-- Sequence prestamos para el campo name -->
+        <record id="ir_seq_hr_loans" model="ir.sequence">
+            <field name="name">RRHH Préstamos Empleados</field>
+            <field name="code">hr.loans.seq</field>
+            <field name="prefix">RHPR/%(range_year)s/</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">True</field>
+            <field name="number_next_actual">1</field>
+            <field name="implementation">standard</field>
+        </record>            
+
+        <!-- Accion -->
+        <record id="action_hr_prestamo_request" model="ir.actions.act_window">
+            <field name="name">Solicitudes de Préstamo</field>
+            <field name="res_model">hr.loans</field>
+            <!-- <field name="search_view_id" ref="view_prestamo_request_search_form"/> -->
+            <field name="help" type="html">
+                    <p class="o_view_nocontent_smiling_face">Crear Solicitud de Préstamo de RRHH</p>
+                    <p>Acá podrá crear solicitudes de préstamos para empleados. Los préstamos se pueden pagar en cuotas que serán descontadas automáticamente a través de la nómina de remuneraciones</p>
+            </field>
+        </record>
+
+        <!-- Vista de Lista -->
+        <record id="hr_prestamo_tree_view" model="ir.ui.view">
+            <field name="name">hr.loans.tree</field>
+            <field name="model">hr.loans</field>
+            <field name="arch" type="xml">
+                <tree string="Solicitudes de Préstamo">
+                    <field name="department_id"/>
+                    <field name="employee_id"/>
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="payment_date"/>
+                    <field name="state"/>
+                    <field name="currency_id"/>
+                    <field name="prestamo_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="prestamo_pending_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="prestamo_pending_count"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista de Formulario -->
+        <record id="hr_prestamo_form_view" model="ir.ui.view">
+            <field name="name">hr.loans.form</field>
+            <field name="model">hr.loans</field>
+            <field name="arch" type="xml">
+                <form string="Solicitudes de Préstamo">
+                    <header>
+                        <button name="action_submit" type="object" string="Enviar" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_cancel" type="object" string="Cancelar"  attrs="{'invisible': [('state','!=', 'approve')]}"/>
+                        <button name="action_approve" type="object" string="Aprobar" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting_approval')]}"/>
+                        <button name="action_refuse" type="object" string="Rechazar" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting_approval')]}"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_title oe_left">
+                            <h1><strong>
+                                <field name="name" class="oe_inline" readonly="1"/>
+                            </strong></h1>
+                        </div>
+                        <group>
+                            <group string="Empleado Solicitante">
+                                <field name="employee_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="department_id" readonly="True"/> 
+                                <field name="contract_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="entity_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="salary_rule" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="description"/>
+                            </group>
+                            <group string="Solicitud de Préstamo">
+                                <field name="currency_id" options="{'no_create': True}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="prestamo_original_amount" widget="monetary" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="prestamo_amount" widget="monetary" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="apply_charge" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="payment_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="type_installment" attrs="{'readonly': [('state', '!=', 'draft')]}" widget="radio"/>
+                                <field name="installment" attrs="{'readonly': [('state', '!=', 'draft')],'invisible':[('type_installment', '=', 'counts')]}"/>
+                                <field name="installment_count" attrs="{'readonly': [('state', '!=', 'draft')],'invisible':[('type_installment', '=', 'period')]}"/>
+                            </group>
+                            <group col="4" string="Préstamos Pendientes" attrs="{'invisible': [('prestamo_pending_count', '=', '0')]}">
+                                <field name="prestamo_pending_amount" readonly="1" attrs="{'invisible': [('prestamo_pending_count', '=', '0')]}" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="prestamo_pending_count" readonly="1" attrs="{'invisible': [('prestamo_pending_count', '=', '0')]}"/>
+                                <field name="payment_date_end" readonly="1" attrs="{'invisible': [('prestamo_pending_count', '=', '0')]}"/>
+                            </group>
+                        </group>
+                        <button type="object" name="compute_installment" string="Calcular Cuotas"  colspan="2" 
+                                attrs="{'invisible':[('state','=','approve')]}" class="oe_highlight" icon="fa-clock-o"/>
+                        <div class="oe_clear"/>
+                        <br/>
+                        <button type="object" name="clean_installment" string="Limpiar Cuotas"  colspan="2" 
+                                attrs="{'invisible':[('state','=','approve')]}" icon="fa-minus-circle"/>
+                        <div class="oe_clear"/>
+                        <notebook>
+                            <page string="Cuotas">
+                                <field name="prestamo_lines" attrs="{'readonly':[('state','=','approve')]}">
+                                    <tree string="Installments" editable="bottom">
+                                        <field name="date"/>
+                                        <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'readonly':[('payslip_id', '>=','1')]}"/>
+                                        <field name="currency_id" invisible="True"/>
+                                        <field name="paid" readonly="1" widget="toggle_button"/>
+                                        <field name="payslip_id" readonly="1"/>                                        
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" >
+                                    <field name="total_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="total_paid_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="balance_amount" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                </group>                                
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Formulario de contratos - ajustes -->    
+        <!-- <record id="view_lavish_hr_loans_form_contract" model="ir.ui.view">
+            <field name="name">hr.contract.lavish.hr.loans.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="priority">25</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="loan_id"/>
+                </xpath> 
+                <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='dev_and_ded']/group[1]/field[@name='concepts_ids']/form[1]/sheet[1]/group[1]/group[3]/field[@name='partner_id']" position="after">
+                    <field name="loan_id"/>
+                </xpath>
+            </field>
+        </record>   -->
+
+        <record id="hr_prestamo_view_search" model="ir.ui.view">
+                    <field name="name">hr.loans.view.search </field>
+                    <field name="model">hr.loans</field>
+                    <field name="arch" type="xml">
+                        <search string="Prestamo">
+                            <field name="employee_id"/>
+                            <field name="contract_id"/>
+                            <field name="entity_id"/>
+                        </search>
+                    </field>
+        </record>
+
+    </data>
+</odoo>

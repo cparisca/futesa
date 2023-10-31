@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <!-- Proceso de generar archivo plano de pago nómina -->
+        <record model="ir.actions.act_window" id="action_hr_payroll_flat_file">
+            <field name="name">Archivo plano de pago de nómina</field>
+            <field name="res_model">hr.payroll.flat.file</field>
+            <field name="view_mode">form</field>
+        </record>
+
+        <record id="hr_payroll_flat_file_form" model="ir.ui.view">
+            <field name="name">Archivo plano de pago de nómina</field>
+            <field name="model">hr.payroll.flat.file</field>
+            <field name="arch" type="xml">
+                <form string="Archivo plano de pago de nómina">
+                    <sheet>
+                        <group>
+                            <h1>Generar archivo plano de pago de nómina</h1>
+                            <br></br>
+                            <field name="payment_type" />
+                            <field name="type_flat_file" widget="radio"/>
+                            <field name="source_information" widget="radio"/>
+                            <field name="journal_id" />
+                            <field name="company_id" />
+                            <field name="vat_payer" />
+                            <field name="payslip_id" attrs="{'invisible': [('source_information', '!=', 'lote')],'required': [('source_information', '=', 'lote')]}"/>
+                            <field name="liquidations_ids" widget="many2many_tags" attrs="{'invisible': [('source_information', '=', 'lote')],'required': [('source_information', '!=', 'lote')]}"/>
+                            <field name="transmission_date" />
+                            <field name="application_date" />
+                            <field name="description" />
+                            <br></br>
+                            <button name="generate_flat_file" string="Generar" type="object" class="oe_highlight"/>
+                        </group>
+                    </sheet>
+                    <footer></footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
+      

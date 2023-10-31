@@ -1,0 +1,175 @@
+<odoo>
+    <data>
+        <!-- Formulario de ausencias-->
+        <record id="view_lavish_hr_holidays_form" model="ir.ui.view">
+            <field name="name">hr.holidays.lavish.hr.leave.form.inherit</field>
+            <field name="model">hr.leave</field>
+            <field name="priority">20</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='col_right']" position="before">
+                    <group name="entities" string="Novedad">
+                        <field name="is_recovery"
+                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="type_of_entity"
+                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="entity" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="diagnostic"
+                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="radicado"
+                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="ibc" />
+                        <field name="payroll_value" />
+                        <field name="days_used" />
+                        <field name="eps_value"
+                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="payment_date" />
+                        <field name="is_extension"
+                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="extension_id"
+                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                    </group>
+                </xpath>
+                <xpath expr="//group[@name='col_right']" position="before">
+                    <group string="Vacaciones" attrs="{'invisible':[('is_vacation', '=', False)]}"
+                        col="4">
+                        <field name="business_days" readonly="1" force_save="1" />
+                        <field name="days_31_business" readonly="1" force_save="1" />
+                        <field name="holidays" readonly="1" force_save="1" />
+                        <field name="days_31_holidays" readonly="1" force_save="1" />
+                        <field name="is_vacation" invisible="1" />
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_lavish_hr_holidays_form_manager" model="ir.ui.view">
+            <field name="name">hr.holidays.lavish.hr.leave.form.manager.inherit</field>
+            <field name="model">hr.leave</field>
+            <field name="priority">10</field>
+            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form_manager" />
+            <field name="arch" type="xml">
+                <xpath expr="//form[1]/sheet[1]" position="before">
+                    <field name="alert_days_vacation" readonly="1" invisible="1" />
+                    <div class="alert alert-warning oe_edit_only" role="alert"
+                        attrs="{'invisible': [('alert_days_vacation', '=', False)]}"> El empleado
+                        solo dispone de <field name="accumulated_vacation_days" readonly="1" /> días
+                        de vacaciones pendientes. </div>
+                </xpath>
+                <xpath expr="//form[1]/sheet[1]/group[1]/group[1]/label[1]" position="before">
+                    <xpath expr="//field[@name='employee_id']" position="move" />
+                </xpath>
+                <xpath expr="//field[@name='request_date_to']" position="attributes">
+                    <attribute name="attrs">{"invisible":
+                        ["|",["request_unit_half","=",True],["request_unit_hours","=",True]],
+                        "readonly": ["|",["state","not in",["draft","confirm"]],["is_vacation","=",True]]}</attribute>
+                    <attribute name="force_save">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='number_of_days']" position="attributes">
+                    <attribute name="attrs">{"readonly": [('state', 'not in', ('draft', 'confirm'))]}</attribute>
+                    <attribute name="force_save">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="attrs">{"readonly": [('state', 'not in', ('draft', 'confirm'))]}</attribute>
+                    <attribute name="force_save">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_hr_leave_diagnostic">
+            <field name="name">Diagnosticos Ausencias</field>
+            <field name="res_model">hr.leave.diagnostic</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.ui.view" id="hr_leave_diagnostic_list">
+            <field name="name">hr leave diagnostic list</field>
+            <field name="model">hr.leave.diagnostic</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="code" />
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="hr_leave_diagnostic_form">
+            <field name="name">hr leave diagnostic form</field>
+            <field name="model">hr.leave.diagnostic</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name" />
+                            <field name="code" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="hr_leave_diagnostic_search" model="ir.ui.view">
+            <field name="name">hr leave diagnostic search</field>
+            <field name="model">hr.leave.diagnostic</field>
+            <field name="arch" type="xml">
+                <search string="Diagnosticos Ausencias">
+                    <field name="name" string="Nombre o Código"
+                        filter_domain="['|',('name', 'ilike', self), ('code', 'ilike', self)]" />
+                </search>
+            </field>
+        </record>
+
+        <record id="view_lavish_hr_employee_form_contract" model="ir.ui.view">
+            <field name="name">hr.contract.lavish.hr.employee.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="priority">20</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//form[1]/sheet[1]/notebook[1]" position="inside">
+                    <page string="Historico" name="Historico">
+                        <group>
+                            <field name="prima_ids">
+                                <tree string="Primas">
+                                    <field name="employee_id" />
+                                    <field name="contract_id" />
+                                    <field name="initial_accrual_date" />
+                                    <field name="final_accrual_date" />
+                                    <field name="settlement_date" />
+                                    <field name="base_value" />
+                                    <field name="time" />
+                                    <field name="bonus_value" />
+                                </tree>
+                            </field>
+                            <field name="cesantia_ids">
+                                <tree string="Cesantia">
+                                    <field name="employee_id" />
+                                    <field name="contract_id" />
+                                    <field name="initial_accrual_date" />
+                                    <field name="final_accrual_date" />
+                                    <field name="settlement_date" />
+                                    <field name="base_value" />
+                                    <field name="time" />
+                                    <field name="severance_value" />
+                                    <field name="severance_interest_value" />
+                                </tree>
+                            </field>
+                            <field name="vacaciones_ids">
+                                <tree string="Vacaciones">
+                                    <field name="employee_id" />
+                                    <field name="contract_id" />
+                                    <field name="initial_accrual_date" />
+                                    <field name="final_accrual_date" />
+                                    <field name="base_value" />
+                                    <field name="business_units" />
+                                    <field name="holiday_units" />
+                                    <field name="money_value" />
+                                    <field name="total" />
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

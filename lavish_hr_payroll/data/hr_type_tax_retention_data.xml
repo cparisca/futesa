@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data noupdate="1">
+        <record model="hr.type.tax.retention" id="lavish_hr_payroll.type_tax_100">
+            <field name="code">100</field>
+            <field name="name">RETEFUENTE METODO ORDINARIO NÓMINA</field>            
+        </record>
+        <record model="hr.type.tax.retention" id="lavish_hr_payroll.type_tax_102">
+            <field name="code">102</field>
+            <field name="name">RETEFUENTE METODO PROC. 2 NÓMINA</field>            
+        </record>
+        <record model="hr.type.tax.retention" id="lavish_hr_payroll.type_tax_104">
+            <field name="code">104</field>
+            <field name="name">PRIMA</field>            
+        </record>
+        
+    </data>
+</odoo>

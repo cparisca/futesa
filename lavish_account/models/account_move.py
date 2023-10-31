@@ -29,11 +29,6 @@ class account_move(models.Model):
             if record.move_ref_id.name:
                 record.ref = 'Reversión de: ' + record.move_ref_id.name
 
-    # # Borrar
-    # def button_process_edi_web_services(self):
-    #     return
-
-    # supplier_invoice_attachment_name = fields.Char(string="Soporte Filename")
     @api.depends('line_ids', 'invoice_line_ids')
     def _compute_amount_iva(self):
         iva_amount = 0
@@ -59,20 +54,12 @@ class account_move(models.Model):
                 for lines in record.invoice_line_ids:
                     if tax_base_amount > 0:
                         break
-
-                    # for taxes in lines.tax_ids:
-                    #     if not taxes.l10n_co_edi_type.retention:
-                    #         tax_base_amount = record.amount_untaxed
-                    #         break
-
             record.tax_base_amount = tax_base_amount
 
     @api.constrains('line_ids','invoice_line_ids')
     def _check_line_ids(self):
         for record in self:
             for lines in record.line_ids:
-                # if lines.required_partner and not lines.partner_id:
-                    # raise ValidationError(_(str(lines.ref)+' - La cuenta "' + lines.account_id.name + '" obliga un tercero y este no ha sido digitado. Por favor verifique!'))
 
                 if 'stock_move_id' in self.env['account.move']._fields:
                     if lines.required_analytic_account and not lines.analytic_account_id and not record.stock_move_id.picking_id:
@@ -82,11 +69,6 @@ class account_move(models.Model):
                     if lines.required_analytic_account and not lines.analytic_account_id:
                         if lines.price_total > 0:
                             raise ValidationError(_(str(lines.ref)+' - La cuenta "' + lines.account_id.name + '" obliga cuenta analítica y esta no ha sido digitada. Por favor verifique!'))
-
-            # for lines in record.invoice_line_ids:
-            #     if lines.required_partner and not lines.partner_id:
-            #         raise ValidationError(_(str(lines.ref)+' - La cuenta "' + lines.account_id.name + '" obliga un tercero y este no ha sido digitado. Por favor verifique!'))
-
                 if 'stock_move_id' in self.env['account.move']._fields:
                     if lines.required_analytic_account and not lines.analytic_account_id and not record.stock_move_id.picking_id:
                         if lines.price_total > 0:
@@ -104,46 +86,6 @@ class account_move(models.Model):
                 if len(obj_move) > 0:
                     raise ValidationError('El número de factura digitado ya existe, por favor verificar.')
 
-    # @api.constrains('line_ids','invoice_line_ids') # SE COMENTA DEBIDO A QUE AHORA SE HACE EN LA TABLA DE IMPUESTOS ACCOUNT.TAX
-    # def _check_minimum_base(self):
-    #     for record in self:
-    #         for line in record.invoice_line_ids:
-    #             if line.tax_ids:
-    #                 for tax in line.tax_ids:
-    #                     if record.amount_untaxed < tax.minimum_base and tax.has_minimum_base:
-    #                         line.tax_ids -= tax
-    #                         value_tax_debit,value_tax_credit = 0,0
-    #                         for line_tax in record.line_ids.filtered(lambda line: line.tax_ids):
-    #                             if len(line_tax.tax_ids) > 0:
-    #                                 if tax.id in line_tax.tax_ids.ids:# or tax_line.name == tax.name:
-    #                                     try:
-    #                                         line_tax.tax_ids -= tax
-    #                                         #record._onchange_recompute_dynamic_lines()
-    #                                     except Exception as e:
-    #                                         pass
-    #                                         #record._onchange_recompute_dynamic_lines()
-    #                         for tax_line in record.line_ids.filtered(lambda line: line.tax_repartition_line_id):#record.line_ids.filtered(lambda line: line.tax_line_id):
-    #                             if tax_line.tax_repartition_line_id.tax_id.id == tax.id:# or tax.id in tax_line.tax_ids.ids:# or tax_line.name == tax.name:
-    #                                 value_tax_debit += tax_line.debit
-    #                                 value_tax_credit += tax_line.credit
-    #                                 try:
-    #                                     tax_line.unlink()
-    #                                 except Exception as e:
-    #                                     pass
-    #                         try:
-    #                             record._recompute_dynamic_lines(recompute_all_taxes=True)
-    #                         except Exception as e:
-    #                             obj_line_receivable = record.line_ids.filtered(lambda line: line.account_id.user_type_id.type == 'receivable')  # Cuenta por cobrar
-    #                             obj_line_payable = record.line_ids.filtered(lambda line: line.account_id.user_type_id.type == 'payable')  # Cuenta por pagar
-    #                             if len(obj_line_receivable) > 0:
-    #                                 obj_line_receivable.debit += value_tax_debit + value_tax_credit
-    #                                 #obj_line_receivable.debit -= value_tax_credit
-    #                             else:
-    #                                 if len(obj_line_payable) > 0:
-    #                                     #obj_line_payable.credit -= value_tax_debit
-    #                                     obj_line_payable.credit += value_tax_credit + value_tax_debit
-    #                             record._recompute_dynamic_lines(recompute_all_taxes=True)
-
     @api.constrains('tax_totals_json','amount_untaxed_signed','amount_total_signed')
     def _check_minimum_base(self):
         for record in self:
@@ -159,20 +101,6 @@ class account_move(models.Model):
                         record._recompute_dynamic_lines(recompute_all_taxes=True)
                 except:
                     pass
-
-    # def _move_autocomplete_invoice_lines_values(self):
-    #     values = super(account_move, self)._move_autocomplete_invoice_lines_values()
-    #     self._check_minimum_base()
-    #     self.line_ids._onchange_price_subtotal()
-    #     self._recompute_dynamic_lines(recompute_all_taxes=True)
-    #     values = self._convert_to_write(self._cache)
-    #     values.pop('invoice_line_ids', None)
-    #     return values
-
-    @api.onchange('partner_id')
-    def _onchange_assign_invoice_user(self):
-        self.invoice_user_id = self.partner_id.user_id
-
     @api.model
     def create(self, vals):
         invoice = super(account_move, self).create(vals)

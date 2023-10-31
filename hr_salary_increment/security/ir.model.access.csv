@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+hr_salary_increase,HrSalary Increase officer access,model_hr_salary_increase,hr.group_hr_user,1,1,1,1
+hr_salary_increase_manager,HrSalary Increase manager access,model_hr_salary_increase,hr.group_hr_manager,1,1,1,1
+hr_salary_increase_ine,HrSalary Increase line officer access,model_hr_salary_increase_line,hr.group_hr_user,1,1,1,1
+hr_salary_increase__line_manager,HrSalary Increase line manager access,model_hr_salary_increase,hr.group_hr_manager,1,1,1,1
+hr_hr_increment_employees,hr_increment_employees_access,model_hr_increment_employees,hr.group_hr_user,1,1,1,1
+hr_salary_increase_employee,HrSalary Increase line employee access,model_hr_salary_increase,base.group_user,1,0,0,0
+hr_salary_increase_employee_lline,HrSalary Increase line employee access_line,model_hr_salary_increase_line,base.group_user,1,0,0,0

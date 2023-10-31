@@ -1,0 +1,75 @@
+<odoo>
+  <data>
+        <!-- Proceso de generar archivo plano de pago nómina --> 
+        <record model="ir.actions.act_window"  id="action_hr_voucher_sending">
+				<field name="name">Comprobantes de nómina</field>
+				<field name="res_model">hr.voucher.sending</field>
+				<field name="view_mode">tree,form</field>
+		</record>
+
+        <!-- Crear record rule para filtrar las compañias-->
+        <record id="rule_hr_voucher_sending_company" model="ir.rule">
+            <field name="name">Permisos compañia Comprobantes de nómina</field>
+            <field name="model_id" ref="model_hr_voucher_sending"/>
+            <field name="domain_force">['|','|','|',('payslip_run_id.company_id','=',False),('payslip_run_id.company_id', 'in', company_ids),('payslip_id.company_id','=',False),('payslip_id.company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_voucher_sending_tree" model="ir.ui.view">
+            <field name="name">Comprobantes de nómina</field>
+            <field name="model">hr.voucher.sending</field>
+            <field name="arch" type="xml">
+                <tree>                                             
+                    <field name="generation_type"/>
+                    <field name="payslip_run_id"/>
+                    <field name="payslip_id"/>
+                    <field name="subject"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="hr_voucher_sending_form" model="ir.ui.view">
+            <field name="name">Comprobantes de nómina</field>
+            <field name="model">hr.voucher.sending</field>
+            <field name="arch" type="xml">
+                    <form string="Comprobantes de nómina"> 
+                        <sheet>
+                            <h1>Comprobantes de nómina</h1>                             
+                            <group>                                   
+                                <group>                             
+                                    <field name="send_type" widget="radio"/>                                    
+                                </group>
+                                <group>                             
+                                    <field name="generation_type" widget="radio"/>
+                                </group>
+                                <group>  
+                                    <field name="payslip_run_id" attrs="{'invisible':[('generation_type', '=', 'individual')], 'required':[('generation_type', '=', 'lote')]}"/>
+                                    <field name="employee_id" attrs="{'invisible':[('generation_type', '=', 'lote')], 'required':[('generation_type', '=', 'individual')]}"/>
+                                </group>
+                                <group>  
+                                    <field name="payslip_id" attrs="{'invisible':[('generation_type', '=', 'lote')], 'required':[('generation_type', '=', 'individual')]}"/>
+                                </group> 
+                                <group>  
+                                    <field name="subject" attrs="{'invisible':[('send_type', '=', 'save')], 'required':[('send_type', '!=', 'save')]}"/>                                    
+                                </group>  
+                                <!-- <group>  
+                                    <field name="description" attrs="{'invisible':[('send_type', '=', 'save')]}"/>                                
+                                </group>                               -->
+                            </group>  
+                            <button name="generate_voucher" string="Procesar" type="object" class="oe_highlight"/>                                                    
+                            <group>   
+                                <field name="vouchers_failed_ids" readonly="1">
+                                    <tree>
+                                        <field name="employee_id"/>
+                                        <field name="payslip_id"/>
+                                    </tree>
+                                </field>
+                            </group>                                                            
+                            <button name="generate_voucher_failed" string="Procesar Fallidos" type="object"/>                                                    
+                        </sheet>                      
+                        
+                    </form>
+                </field>
+        </record>
+    </data>
+</odoo>
+      

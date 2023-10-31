@@ -1,0 +1,42 @@
+<odoo>
+  <data>
+        
+        <record model="ir.actions.act_window"  id="action_hr_work_entry_refresh">
+				<field name="name">Actualizar entradas de trabajo</field>
+				<field name="res_model">hr.work.entry.refresh</field>
+				<field name="view_mode">form</field>
+                <field name="target">new</field>
+		</record>
+
+        <record id="hr_work_entry_refresh_form" model="ir.ui.view">
+            <field name="name">Actualizar entradas de trabajo</field>
+            <field name="model">hr.work.entry.refresh</field>
+            <field name="arch" type="xml">
+                    <form string="Actualizar entradas de trabajo"> 
+                        <sheet>                            
+                            <group>                                   
+                                <group>                             
+                                    <field name="date_start"/>                                    
+                                    <field name="date_stop"/>                                    
+                                </group>                                                            
+                            </group>    
+                            <group>                                      
+                                <field name="contract_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="employee_id"/>
+                                        <field name="date_start"/>                            
+                                    </tree>
+                                </field>                                           
+                                <!-- <field name="contract_id" domain="[('employee_id', '=', employee_id)]"/> -->
+                            </group>                           
+                        </sheet>
+                        <footer>
+                            <button name="refresh_work_entry" string="Actualizar" type="object" class="oe_highlight"/>                                                 
+                        </footer>
+                    </form>
+                </field>
+        </record>
+    </data>
+</odoo>
+      

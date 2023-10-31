@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <!-- Menu seguridad social -->   
+        <menuitem name="Cierre Mensual" id="lavish_hr_monthly_closure" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_root" sequence="70"/>
+        <!-- <menuitem name="Nómina electrónica" id="lavish_hr_electronic_payroll" parent="lavish_hr_social_security.lavish_hr_monthly_closure" sequence="1"/>
+        <menuitem name="Nómina electrónica" id="lavish_hr_electronic_payroll_process" parent="lavish_hr_social_security.lavish_hr_electronic_payroll" action="lavish_hr_payroll.action_hr_electronic_payroll" sequence="1"/>
+        <menuitem name="Nómina electrónica de Ajuste" id="lavish_hr_electronic_adjust_payroll_process" parent="lavish_hr_social_security.lavish_hr_electronic_payroll" action="lavish_hr_payroll.action_hr_electronic_adjust_payroll" sequence="2"/> -->
+        <menuitem name="Provisiones" id="lavish_hr_executing_provisions_process" parent="lavish_hr_social_security.lavish_hr_monthly_closure" action="action_hr_executing_provisions" sequence="2"/> 
+        <menuitem name="Seguridad social" id="lavish_hr_social_security_process" parent="lavish_hr_social_security.lavish_hr_monthly_closure" action="action_hr_payroll_social_security" sequence="3"/>
+        <menuitem name="Configuración contable cierre de nómina" id="lavish_hr_closing_configuration_menu" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_configuration" action="action_hr_closing_configuration"/>
+        <menuitem name="Sucursales seguridad social" id="lavish_hr_social_security_branches" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_configuration" action="action_hr_social_security_branches"/>
+        <menuitem name="Centros de trabajo seguridad social" id="lavish_hr_social_security_work_center" parent="hr_work_entry_contract_enterprise.menu_hr_payroll_configuration" action="action_hr_social_security_work_center"/>
+        <menuitem name="Reporte entidades empleados" id="hr_entities_reports" parent="hr_payroll.menu_hr_payroll_report" action="action_hr_entities_reports" sequence="26"/>
+        <!-- Menu Informe gastos por empleado-->
+        <menuitem name="Informe de costos por empleado" id="lavish_hr_social_security.hr_report_expenses_employee" parent="hr_payroll.menu_hr_payroll_report" action="actions_hr_report_expenses_employee" sequence="10"/>
+    </data>
+</odoo>

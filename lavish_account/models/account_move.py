@@ -188,7 +188,7 @@ class account_move(models.Model):
         return invoice
 
 class lavish_confirm_wizard(models.TransientModel):
-    _inherit = 'lavish.confirm.wizard'
+    _name = 'lavish.confirm.wizard'
 
     accounting_closing_id = fields.Many2one('annual.accounting.closing', string='Cierre contable anual', ondelete='cascade')
 

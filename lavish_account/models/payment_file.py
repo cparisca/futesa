@@ -127,12 +127,12 @@ class lavish_Payment_File(models.Model):
         
         #Consulta final
         query = '''
-            Select distinct coalesce(case when b.x_document_type = '12' then '4' --Tarjeta de Identidad
-				 when b.x_document_type = '13' then '1' --Cedula de ciudadania
-				 when b.x_document_type = '22' then '2' --Cedula de extranjeria
-				 when b.x_document_type = '31' then '3' --NIT
-				 when b.x_document_type = '41' then '5' --Pasaporte
-				 when b.x_document_type = '44' then '44' --Documento de identificación extranjero persona jurídica
+            Select distinct coalesce(case when b.document_type = '12' then '4' --Tarjeta de Identidad
+				 when b.document_type = '13' then '1' --Cedula de ciudadania
+				 when b.document_type = '22' then '2' --Cedula de extranjeria
+				 when b.document_type = '31' then '3' --NIT
+				 when b.document_type = '41' then '5' --Pasaporte
+				 when b.document_type = '44' then '44' --Documento de identificación extranjero persona jurídica
                     else '' end,'') as TipoDocumentoBeneficiario,
                     coalesce(b.vat,'') as NitBeneficiario,
                     coalesce(substring(b."name" from 1 for 30),'') as NombreBeneficiario,
@@ -709,7 +709,7 @@ class lavish_Payment_File(models.Model):
             nombre_entidad = left(self.journal_id.company_id.partner_id.name + 40 * filler, 40)
             nit_empresa = right(11 * '0' + self.vat_payer + '' + str(self.journal_id.company_id.partner_id.x_digit_verification), 11)
             codigo_transaccion = '022'  # 021 pago nomina- TD plus y abono afc #022 pago provedores #023 pago Transferencias
-            cod_ciudad = '0001'  # right(17 * '0' + self.company_id.partner_id.x_city.code, 4)
+            cod_ciudad = '0001'  # right(17 * '0' + self.company_id.partner_id.city_id.code, 4)
             fecha_creacion = fecha_pago
             codigo_oficina = '999'
             tipo_identificacion_titular = 'N'
@@ -737,18 +737,18 @@ class lavish_Payment_File(models.Model):
                     # Tipo documento
                     if columns == 0:
                         document_type = 'C'
-                        x_document_type = row
-                        if x_document_type == '1':
+                        document_type = row
+                        if document_type == '1':
                             document_type = 'C'
-                        elif x_document_type == '4':
+                        elif document_type == '4':
                             document_type = 'T'
-                        elif x_document_type == '2':
+                        elif document_type == '2':
                             document_type = 'E'
-                        elif x_document_type == '3':
+                        elif document_type == '3':
                             document_type = 'N'
-                        elif x_document_type == '5':
+                        elif document_type == '5':
                             document_type = 'P'
-                        elif x_document_type == '44':
+                        elif document_type == '44':
                             document_type = 'E'
                         else:
                             raise ValidationError(_('No tiene tipo de documento valido, por favor verificar.'))
@@ -780,7 +780,7 @@ class lavish_Payment_File(models.Model):
 
                     forma_de_pago = 'A'
                     codigo_oficina = '000'
-                    cod_ciudad = '0001'  # right(4 * '0' +  payslip.employee_id.address_home_id.x_city.code, 4)
+                    cod_ciudad = '0001'  # right(4 * '0' +  payslip.employee_id.address_home_id.city_id.code, 4)
                     espacios = filler * 80
                     cero = '0'
 

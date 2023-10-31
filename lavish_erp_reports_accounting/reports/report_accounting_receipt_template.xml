@@ -45,7 +45,7 @@
                             </strong>
                             <br/>
                             <strong>Ciudad:
-                                <span t-field="o.partner_id.x_city.name"/>
+                                <span t-field="o.partner_id.city_id.name"/>
                             </strong>
                             <br/>
                         </div>

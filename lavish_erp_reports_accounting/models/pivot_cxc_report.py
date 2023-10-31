@@ -32,8 +32,8 @@ class lavish_pivot_report_cxc(models.Model):
                     -- MOV ORIGINAL
                     select to_char(a."date",'yyyyMM') as period,a."date" as date_mov,
                             d.id as journal_id,a.move_id as mov_sequence, a.move_id as mov_origin,
-                            case when e.x_document_type = '13' then 'Cédula de ciudadania'
-                            else case when e.x_document_type = '31' then 'NIT'
+                            case when e.document_type = '13' then 'Cédula de ciudadania'
+                            else case when e.document_type = '31' then 'NIT'
                             else ''
                             end 
                             end as type_document,e.vat as vat,e.id as partner_id,b.invoice_user_id,
@@ -52,8 +52,8 @@ class lavish_pivot_report_cxc(models.Model):
                     -- PAGOS
                     select to_char(coalesce(i."date",a."date"),'yyyyMM') as period,coalesce(i."date",a."date") as date_mov,
                             coalesce(l.id,d.id) as journal_id,coalesce(i.move_id,a.move_id) as mov_sequence, a.move_id as mov_origin,
-                            case when coalesce(m.x_document_type,e.x_document_type) = '13' then 'Cédula de ciudadania'
-                            else case when coalesce(m.x_document_type,e.x_document_type) = '31' then 'NIT'
+                            case when coalesce(m.document_type,e.document_type) = '13' then 'Cédula de ciudadania'
+                            else case when coalesce(m.document_type,e.document_type) = '31' then 'NIT'
                             else ''
                             end 
                             end as type_document,coalesce(m.vat,e.vat) as vat,coalesce(m.id,e.id) as partner_id,b.invoice_user_id,

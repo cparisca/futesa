@@ -26,6 +26,9 @@
     #    ],
     #},
     'data': [
+        'data/res.city.csv',
+        'data/res_country_state.xml',
+        'data/res.bank.csv',
         'security/ir.model.access.csv',
         'views/journal.xml',
         'views/res_country_state.xml',

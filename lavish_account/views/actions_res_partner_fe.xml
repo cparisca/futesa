@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_partner_bank_form_lavish_account" model="ir.ui.view">
+            <field name="name">res.partner.bank.form.lavish.account.inherit</field>
+            <field name="model">res.partner.bank</field>
+            <field name="priority">10</field>
+            <field name="inherit_id" ref="base.view_partner_bank_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='acc_number']" position="after">
+                    <field name="type_account"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_lavish_account_fe_form" model="ir.ui.view">
+            <field name="name">res.partner.lavish.account.fe.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="priority">50</field>
+            <field name="inherit_id" ref="account.view_partner_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='bank_id']" position="after">
+                    <field name="type_account"/>
+                </xpath>
+                <xpath expr="//field[@name='acc_number']" position="after">
+                    <field name="is_main"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_company_lavish_account_form" model="ir.ui.view">
+            <field name="name">res.company.lavish.account.form.inherit</field>
+            <field name="model">res.company</field>
+            <field name="priority">50</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='social_media']" position="after">
+                    <group string="Notas Facturación Electrónica">
+                        <field name="note_id" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="note"/>
+                                <field name="company_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_partner_lavish_account_orp_form" model="ir.ui.view">
+            <field name="name">res.partner.lavish.account.orp.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="priority">80</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form[1]/sheet[1]/notebook[1]" position="inside">
+                    <page string="Operaciones Recíprocas">
+                        <group>
+                            <field name="partner_with_reciprocal_operations"/>
+                            <field name="code_partner_reciprocal_operations"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!--        <record model="ir.actions.act_window"  id="res_company_note_action">-->
+        <!--			<field name="name">Notas</field>-->
+        <!--			<field name="res_model">res.company.note</field>-->
+        <!--			<field name="view_mode">tree,form</field>-->
+        <!--		</record>-->
+
+        <!--        <record model="ir.ui.view" id="lavish_account.list_res_company_note_action">-->
+        <!--			<field name="name">lavish list Notas</field>-->
+        <!--			<field name="model">res.company.note</field>-->
+        <!--			<field name="arch" type="xml">-->
+        <!--				<tree>-->
+        <!--					<field name="note"/>-->
+        <!--					<field name="company_id" invisible="1"/>-->
+        <!--				</tree>-->
+        <!--			</field>-->
+        <!--		</record>-->
+
+        <!--        <record model="ir.ui.view" id="lavish_account.form_res_company_note_action">-->
+        <!--			<field name="name">lavish form Notas</field>-->
+        <!--			<field name="model">res.company.note</field>-->
+        <!--			<field name="arch" type="xml">-->
+        <!--				<form>-->
+        <!--                    <sheet>-->
+        <!--						<group>-->
+        <!--							<group>-->
+        <!--								<field name="note"/>-->
+        <!--					            <field name="company_id" invisible="1"/>-->
+        <!--							</group>-->
+        <!--						</group>-->
+        <!--                    </sheet>-->
+        <!--                </form>-->
+        <!--			</field>-->
+        <!--		</record>-->
+    </data>
+</odoo>

@@ -1,0 +1,307 @@
+<!-- //////////////////////////////// Parameterization VIEWS //////////////////////////////// -->
+<odoo>
+    <data>
+        <!-- Filtro Balance VIEW -->
+        <record id="action_lavish_report_balance_pivot" model="ir.actions.act_window">
+            <field name="name">Balance Pivot</field>
+            <field name="res_model">account.balance.partner.filter</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+        </record>
+
+        <record id="account_balance_partner_filter__form" model="ir.ui.view">
+            <field name="name">Balance Filter</field>
+            <field name="model">account.balance.partner.filter</field>
+            <field name="arch" type="xml">
+                <form string="Balance">
+                    <group>
+                        <group>
+                            <group>
+                                <field name="x_type_filter" string="Tipo" widget='radio'/>
+                                <field name="x_ano_filter" string="Año"/>
+                                <field name="x_month_filter" string="Mes"/>
+                                <field name="x_ano_filter_two" string="Año Final"
+                                       attrs="{'invisible':[('x_type_filter', '!=', '2')], 'required': [('x_type_filter', '=', '2')]}"/>
+                                <field name="x_month_filter_two" string="Mes Final"
+                                       attrs="{'invisible':[('x_type_filter', '!=', '2')], 'required': [('x_type_filter', '=', '2')]}"/>
+                                <field name="excluded_diaries_ids" string="Diarios excluidos" widget="many2many_tags"/>
+                                <field name="company_id" string="Compañia"/>
+                            </group>
+                            <div class="oe_grey" colspan="4">
+                                El balance por generar tomara como saldo inicial todos los movimientos realizados antes
+                                de la fecha seleccionada.
+                            </div>
+                        </group>
+                        <br></br>
+                        <button name="open_pivot_view" string="Generar Balance" type="object" class="oe_highlight"/>
+                    </group>
+                    <footer></footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Filtro Auxiliar VIEW -->
+        <record id="action_lavish_report_auxiliar_pivot" model="ir.actions.act_window">
+            <field name="name">Auxiliar Pivot</field>
+            <field name="res_model">account.auxiliar.filter</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+        </record>
+
+        <record id="account_auxiliar_filter__form" model="ir.ui.view">
+            <field name="name">Auxiliar Filter</field>
+            <field name="model">account.auxiliar.filter</field>
+            <field name="arch" type="xml">
+                <form string="Auxiliar">
+                    <group>
+                        <group>
+                            <group>
+                                <fieldset>
+                                    <legend>Escoger favorito</legend>
+                                    <field name="schema_favorite" string="Favoritos"/>
+                                    <button name="upload_favorite" string="Cargar favorito" type="object"
+                                            class="oe_highlight"/>
+                                </fieldset>
+                                <fieldset>
+                                    <legend>Filtros</legend>
+                                    Fecha Inicial:
+                                    <field name="date_initial" string="Fecha Inicial"/>
+                                    Fecha Final:
+                                    <field name="date_finally" string="Fecha Final"/>
+                                    Compañia:
+                                    <field name="company_id" string="Compañia"/>
+                                    Cliente:
+                                    <field name="partner_id" string="Cliente"/>
+                                    Cuenta 1:
+                                    <field name="account_one" string="Cuenta 1"/>
+                                    Cuenta 2:
+                                    <field name="account_two" string="Cuenta 2"/>
+                                    Cuenta 3:
+                                    <field name="account_three" string="Cuenta 3"/>
+                                </fieldset>
+                                <field name="save_favorite" string="¿Guardar como favorito?"
+                                       attrs="{'invisible': [('schema_favorite', '!=', False)]}"/>
+                                <field name="name_favorite" string="Nombre favorito"
+                                       attrs="{'invisible': ['|',('save_favorite', '=', False), ('schema_favorite', '!=', False)], 'required': [('save_favorite', '=', True)]}"/>
+                            </group>
+                            <div class="oe_grey" colspan="4">
+                                El Auxiliar por generar tomara como saldo inicial todos los movimientos realizados antes
+                                de la fecha inicial seleccionada y mostrara los movimientos realizados en el rango de
+                                fechas.
+                            </div>
+                        </group>
+                        <br></br>
+                        <button name="open_pivot_view" string="Generar Auxiliar" type="object" class="oe_highlight"/>
+                    </group>
+                    <footer></footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Pivot balance -->
+        <record id="account_balance_partner_lavish_pivot" model="ir.ui.view">
+            <field name="name">Pivot Balance</field>
+            <field name="model">account.balance.partner.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Report - Balance Partner">
+                    <field name="company_id" type="row"/>
+                    <field name="account_level_one" type="row"/>
+                    <field name="account_level_two" type="row"/>
+                    <field name="account_level_three" type="row"/>
+                    <field name="account_level_four" type="row"/>
+                    <field name="account_level_five" type="row"/>
+                    <field name="partner" type="row"/>
+                    <field name="initial_balance" type="measure"/>
+                    <field name="debit" type="measure"/>
+                    <field name="credit" type="measure"/>
+                    <field name="new_balance" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Pivot balance -->
+        <record id="account_auxiliar_lavish_pivot" model="ir.ui.view">
+            <field name="name">Pivot Auxiliar</field>
+            <field name="model">account.auxiliar.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Report - Auxiliar">
+                    <field name="company_id" type="row"/>
+                    <field name="account_level_five" type="row"/>
+                    <field name="partner" type="row"/>
+                    <field name="move" type="row"/>
+                    <field name="initial_balance" type="measure"/>
+                    <field name="debit" type="measure"/>
+                    <field name="credit" type="measure"/>
+                    <field name="new_balance" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Pivot balance Analitico  -->
+        <record id="balance_analytic_partner_lavish_pivot" model="ir.ui.view">
+            <field name="name">Pivot Balance Analitico</field>
+            <field name="model">balance.analytic.partner.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Report - Balance Partner">
+                    <field name="company_id" type="row"/>
+                    <field name="account_level_one" type="row"/>
+                    <field name="account_level_two" type="row"/>
+                    <field name="account_level_three" type="row"/>
+                    <field name="account_level_four" type="row"/>
+                    <field name="account_level_five" type="row"/>
+                    <field name="account_cuenta_financiera" type="row"/>
+                    <field name="initial_balance" type="measure"/>
+                    <field name="debit" type="measure"/>
+                    <field name="credit" type="measure"/>
+                    <field name="new_balance" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Pivot balance cuenta analitica -->
+        <record id="action_lavish_report_balance_analytic_pivot" model="ir.actions.act_window">
+            <field name="name">Balance analítico Pivot</field>
+            <field name="res_model">balance.partner.analytic.filter</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+        </record>
+
+        <record id="balance_analytic_partner_filter__form" model="ir.ui.view">
+            <field name="name">Balance Filter</field>
+            <field name="model">balance.partner.analytic.filter</field>
+            <field name="arch" type="xml">
+                <form string="Balance">
+                    <group>
+                        <group>
+                            <group>
+                                <field name="x_type_filter" string="Tipo" widget='radio'/>
+                                <field name="x_ano_filter" string="Año"/>
+                                <field name="x_month_filter" string="Mes"/>
+                                <field name="x_ano_filter_two" string="Año Final"
+                                       attrs="{'invisible':[('x_type_filter', '!=', '2')], 'required': [('x_type_filter', '=', '2')]}"/>
+                                <field name="x_month_filter_two" string="Mes Final"
+                                       attrs="{'invisible':[('x_type_filter', '!=', '2')], 'required': [('x_type_filter', '=', '2')]}"/>
+                                <field name="company_id" string="Compañia"/>
+                            </group>
+                            <div class="oe_grey" colspan="4">
+                                El balance por generar tomara como saldo inicial todos los movimientos realizados antes
+                                de la fecha seleccionada.
+                            </div>
+                        </group>
+                        <br></br>
+                        <button name="open_pivot_view" string="Generar Balance" type="object" class="oe_highlight"/>
+                    </group>
+                    <footer></footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Pivot Costo Analitico  -->
+        <record id="costo_analytic_partner_lavish_pivot" model="ir.ui.view">
+            <field name="name">Pivot Costo Por Vehículo Analitico</field>
+            <field name="model">costo.analytic.partner.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Report - Costo Partner">
+                    <field name="company_id" type="row"/>
+                    <field name="account_level_one" type="row"/>
+                    <field name="account_level_two" type="row"/>
+                    <field name="account_level_three" type="row"/>
+                    <field name="account_level_four" type="row"/>
+                    <field name="account_level_five" type="row"/>
+                    <field name="account_cuenta_financiera" type="row"/>
+                    <field name="initial_balance" type="measure"/>
+                    <field name="debit" type="measure"/>
+                    <field name="credit" type="measure"/>
+                    <field name="new_balance" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Pivot Costo cuenta analitica -->
+        <record id="costo_analytic_partner_filter__form" model="ir.ui.view">
+            <field name="name">Costo Filter</field>
+            <field name="model">costo.partner.analytic.filter</field>
+            <field name="arch" type="xml">
+                <form string="costo">
+                    <group>
+                        <group>
+                            <group>
+                                <field name="x_type_filter" string="Tipo" widget='radio'/>
+                                <field name="x_ano_filter" string="Año"/>
+                                <field name="x_month_filter" string="Mes"/>
+                                <field name="x_ano_filter_two" string="Año Final"
+                                       attrs="{'invisible':[('x_type_filter', '!=', '2')], 'required': [('x_type_filter', '=', '2')]}"/>
+                                <field name="x_month_filter_two" string="Mes Final"
+                                       attrs="{'invisible':[('x_type_filter', '!=', '2')], 'required': [('x_type_filter', '=', '2')]}"/>
+                                <field name="company_id" string="Compañia"/>
+                            </group>
+                            <div class="oe_grey" colspan="4">
+                                El balance por generar tomara como saldo inicial todos los movimientos realizados antes
+                                de la fecha seleccionada.
+                            </div>
+                        </group>
+                        <br></br>
+                        <button name="open_pivot_view" string="Generar Balance" type="object" class="oe_highlight"/>
+                    </group>
+                    <footer></footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Consultas SQL -->
+        <record id="action_lavish_reports_account" model="ir.actions.act_window">
+            <field name="name">Consultas</field>
+            <field name="res_model">lavish.reports.account</field>
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+        </record>
+
+        <record id="lavish_reports_account_tree" model="ir.ui.view">
+            <field name="name">Consultas Account lavish tree</field>
+            <field name="model">lavish.reports.account</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="lavish_reports_account_form" model="ir.ui.view">
+            <field name="name">Consultas Account lavish form</field>
+            <field name="model">lavish.reports.account</field>
+            <field name="arch" type="xml">
+                <form string="Consultas">
+                    <sheet>
+                        <group col="4">
+                            <button name="get_excel" class="oe_highlight" type="object" string="Generar Excel"/>
+                            <separator/>
+                            <newline/>
+                            <newline/>
+                            <field name="excel_file_name" invisible="1"/>
+                            <field name="excel_file" filename="excel_file_name" invisible="1"/>
+                        </group>
+                        <group string="Filtros">
+                            <group>
+                                <field name="x_ano_initial"/>
+                                <field name="x_month_initial"/>
+                                <field name="only_lavish_developer" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="x_ano_finally"/>
+                                <field name="x_month_finally"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                            <field name="columns"/>
+                            <field name="query" groups = "base.group_no_one" colspan="4"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

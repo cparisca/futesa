@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_lavish_inform_sales_purchases" model="ir.actions.act_window">
+            <field name="name">Informe de ventas y compras</field>
+            <field name="res_model">lavish.inform.sales.purchases</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record model="ir.ui.view" id="actions_lavish_inform_sales_purchases_form">
+            <field name="name">Informes</field>
+            <field name="model">lavish.inform.sales.purchases</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id"/>
+                                <field name="start_date"/>
+                                <field name="finish_date"/>
+                            </group>
+                            <group>
+                                <field name="sales_purchases" widget="radio"/>
+                            </group>
+                        </group>
+                        <footer>
+                            <button name="report_excel" string="Generar Excel" type="object" class="oe_highlight"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

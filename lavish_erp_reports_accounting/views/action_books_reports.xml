@@ -1,0 +1,67 @@
+<!-- //////////////////////////////// Parameterization VIEWS //////////////////////////////// -->
+<odoo>
+    <data>
+        <!-- Filtro Libro Mayor Report VIEW -->
+        <record id="action_account_libro_mayor_filters" model="ir.actions.act_window">
+            <field name="name">Generar Libro mayor</field>
+            <field name="res_model">lavish.libro.mayor.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="lavish_libro_mayor_report_form" model="ir.ui.view">
+            <field name="name">Libro Mayor</field>
+            <field name="model">lavish.libro.mayor.report</field>
+            <field name="arch" type="xml">
+                <form string="Libro Mayor">
+                    <group string="LIBRO MAYOR">
+                        <group>
+                            <field name="company_id" string="Compañia"/>
+                            <field name="ano_filter" string="Año"/>
+                            <field name="month_filter" string="Mes"/>
+                        </group>
+                        <group>
+                            <field name="show_level" string="Nivel Presentación" widget="radio"/>
+                            <field name="num_page_initial" string="Último consecutivo paginación"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="get_pdf" string="Generar" type="object" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Filtro Libro Diario Report VIEW -->
+        <record id="action_account_libro_diario_filters" model="ir.actions.act_window">
+            <field name="name">Generar Libro diario</field>
+            <field name="res_model">lavish.libro.diario.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="lavish_libro_diario_report_form" model="ir.ui.view">
+            <field name="name">Libro Diario</field>
+            <field name="model">lavish.libro.diario.report</field>
+            <field name="arch" type="xml">
+                <form string="Libro Diario">
+                    <group string="Libro Diario">
+                        <group>
+                            <field name="company_id" string="Compañia"/>
+                            <field name="ano_filter" string="Año"/>
+                            <field name="month_filter" string="Mes"/>
+                        </group>
+                        <group>
+                            <field name="num_page_initial" string="Último consecutivo paginación"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="get_pdf" string="Generar" type="object" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

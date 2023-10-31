@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template
+            id="report_electronic_invoice_document_inherit"
+            inherit_id="l10n_co_tax_extension.report_invoice_document_inherit"
+        >
+            <xpath expr="//div/h2/span[1]" position="replace">
+                <span>
+                    <t t-if="o.diancode_id">
+                        <t
+                            t-if="o.diancode_id.document_type == 'f'"
+                        >Factura Electronica de venta</t>
+                        <t t-if="o.diancode_id.document_type == 'd'">Nota de Débito</t>
+                        <t t-if="o.diancode_id.document_type == 'c'">Nota de Crédito</t>
+                    </t>
+                    <t t-if="not o.diancode_id and not o.resolution_number">
+                        <t
+                            t-if="o.move_type == 'out_invoice' and o.state == 'draft' "
+                        >Factura Borrador</t>
+                        <t
+                            t-if="o.move_type == 'out_invoice' and o.state != 'draft' "
+                        >Factura</t>
+                        <t t-if="o.move_type == 'out_refund'">Refund</t>
+                        <t t-if="o.move_type == 'in_refund'">Vendor Refund</t>
+                        <t t-if="o.move_type == 'in_invoice'">Factura de Compra</t>
+                    </t>
+                    <t t-if="not o.diancode_id and o.resolution_number">
+                        <t
+                            t-if="o.move_type == 'out_invoice'"
+                        >Factura Electronica de Venta </t>
+                        <t
+                            t-if="o.move_type == 'out_refund'"
+                        >Factura Electronica Refund </t>
+                        <t t-if="o.move_type == 'in_refund'">Vendor Refund </t>
+                        <t t-if="o.move_type == 'in_invoice'">Factura de Compra</t>
+                    </t>
+                </span>
+            </xpath>
+            <xpath expr="//t[@t-if='o.ref']" position="after">
+                <t t-if="o.diancode_id.cufe">
+                    <br />
+                    <strong
+                        t-if="o.move_type in ['out_invoice','out_refund']"
+                    >CUFE: </strong>
+                    <strong
+                        t-if="o.move_type in ['in_invoice','in_refund']"
+                    >CUDS: </strong>
+                    <span t-field="o.diancode_id.cufe" />
+                </t>
+            </xpath>
+            <xpath expr="//div/h2" position="after">
+                <br />
+                <!--<div class="row" t-if="o.diancode_id" style="margin-left:0px; margin-top: 25px;">
+                    <div class="col-xs-2">
+                        <span style="font-size:23px; margin-bottom: 15px; padding-bottom: 15px; margin-top: 20px;">
+                            <span t-if="o.diancode_id.document_type == 'f'">Factura Electronica de venta</span>
+                            <span t-if="o.diancode_id.document_type == 'd'">Nota de Débito</span>
+                            <span t-if="o.diancode_id.document_type == 'c'">Nota de Crédito</span>
+                        </span>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row" t-if="not o.diancode_id and not o.resolution_number">
+                    <span style="font-size:23px; margin-left: 15px; padding-bottom: 15px; margin-top: 20px;">
+                        <span t-if="o.move_type == 'out_invoice' and o.state == 'draft' ">Factura Borrador</span>
+                        <span t-if="o.move_type == 'out_invoice' and o.state != 'draft' ">Factura</span>
+                        <span t-if="o.move_type == 'out_refund'">Refund</span>
+                        <span t-if="o.move_type == 'in_refund'">Vendor Refund</span>
+                        <span t-if="o.move_type == 'in_invoice'">Vendor Bill</span>
+                    </span>
+                    <br/>
+                </div>
+                <div class="row" t-if="not o.diancode_id and o.resolution_number">
+                    <span style="font-size:23px; margin-left: 15px; padding-bottom: 15px; margin-top: 20px;">
+                        <span t-if="o.move_type == 'out_invoice'">Factura Electronica de Venta <span t-field="o.name"/></span>
+                        <span t-if="o.move_type == 'out_refund'">Factura Electronica Refund <span t-field="o.name"/></span>
+                        <span t-if="o.move_type == 'in_refund'">Vendor Refund <span t-field="o.name"/></span>
+                        <span t-if="o.move_type == 'in_invoice'">Vendor Bill <span t-field="o.name"/></span>
+                    </span>
+                    <br/>
+                </div>-->
+                <div
+                    class="row"
+                    t-if="o.diancode_id"
+                    style="margin-left: -4px; margin-right: 5px; float:left; margin-bottom: 15px;"
+                >
+                    <div name="QR_code" class="col-xs-4">
+                        <img
+                            width="95"
+                            height="95"
+                            class="media-object"
+                            t-att-src="image_data_uri(o.diancode_id.QR_code)"
+                        />
+                    </div>
+                </div>
+            </xpath>
+        </template>
+        <!--
+
+      <xpath expr="//div[@t-if='o.tax_line_ids and o.at_least_one_tax_group_enabled()']/div/table/thead/tr/th[3]" position="replace">
+        <th class="text-right">Monto</th>
+      </xpath>
+      <xpath expr="//div[@t-if='o.tax_line_ids and o.at_least_one_tax_group_enabled()']/div/table/thead/tr/th[1]" position="replace">
+        <th>Impuesto</th>
+      </xpath>
+
+
+-->
+    </data>
+</odoo>

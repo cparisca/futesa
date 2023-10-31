@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="search_template_accounts">
+            <button type="button" class="o-no-caret btn btn-secondary dropdown-toggle account_partner_filter" data-toggle="dropdown">
+                <span class="fa fa-book"/>
+                Cuentas:
+                <t t-set="selected_accounts" t-value="options.get('name_account_group') or ', '.join(account.get('code') for account in options['accounts'] if account.get('selected'))"/>
+                <t t-if="selected_accounts">
+                    <t t-esc="selected_accounts"/>
+                </t>
+                <t t-else="">
+                Todos
+                </t>
+            </button>
+            <ul class="dropdown-menu o_filters_menu" role="menu">
+                <t t-foreach="options['accounts']" t-as="j">
+                    <t t-if="j.get('id') == 'divider'">
+                        <div role="separator" class="dropdown-divider"/>
+                        <b role="menuitem" class="ml4 dropdown-item-text">
+                            <t t-esc="j.get('name')"/>
+                        </b>
+                        <div role="separator" class="dropdown-divider"/>
+                    </t>
+                    <t t-if="j.get('id') != 'divider'">
+                        <a role="menuitem" class="dropdown-item js_account_report_choice_filter" t-att-title="j.get('code')+ '-' +j.get('name')" t-att-data-id="j.get('id')" data-filter="accounts">
+                            <t t-esc="j.get('code')"/> - <t t-esc="j.get('name')"/>
+                        </a>
+                    </t>
+                </t>
+            </ul>
+        </template>
+
+        <template id="search_template_lavish" inherit_id="account_reports.search_template">
+            <xpath expr="//div[hasclass('o_account_reports_filter_journals')]" position="after">
+                <div class="btn-group o_dropdown o_account_reports_filter_accounts" t-if="options.get('accounts') != None">
+                    <t t-call="lavish_account.search_template_accounts"/>
+                </div>
+            </xpath>
+        </template>
+
+
+    </data>
+</odoo>

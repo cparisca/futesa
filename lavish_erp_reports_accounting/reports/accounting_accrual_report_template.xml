@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_payment_receipt_document_lavish" name="report_payment_receipt_document_lavish"
+              inherit_id="account.report_payment_receipt_document" priority="20">
+
+        <xpath expr="//table[hasclass('table', 'table-sm')]" position="after">
+            <br/>
+            <h4>
+                <strong>Causación Contable</strong>
+            </h4>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>
+                            <span>Cuenta Contable</span>
+                        </th>
+                        <th>
+                            <span>Débito</span>
+                        </th>
+                        <th>
+                            <span>Crédito</span>
+                        </th>
+                        <th>
+                            <span>Base</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="o.line_ids" t-as="c">
+                        <tr>
+                            <td>
+                                <span t-field="c.account_id"/>
+                            </td>
+                            <td>
+                                <span t-field="c.debit"/>
+                            </td>
+                            <td>
+                                <span t-field="c.credit"/>
+                            </td>
+                            <td>
+                                <span t-field="c.tax_base_amount"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </xpath>
+
+    </template>
+
+    <template id="report_invoice_document_lavish" name="report_invoice_document_lavish"
+              inherit_id="account.report_invoice_document" priority="20">
+
+        <xpath expr="//div[hasclass('clearfix')]" position="after">
+            <br/>
+            <h4>
+                <strong>Causación Contable</strong>
+            </h4>
+            <table class="table table-sm" style="padding: 0px !important; font-size: x-small;">
+                <thead>
+                    <tr>
+                        <th style="padding: 0px !important">
+                            <span>Cuenta Contable</span>
+                        </th>
+                        <th style="padding: 0px !important">
+                            <span>Débito</span>
+                        </th>
+                        <th style="padding: 0px !important">
+                            <span>Crédito</span>
+                        </th>
+                        <th style="padding: 0px !important">
+                            <span>Base</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="o.line_ids" t-as="c">
+                        <tr>
+                            <td style="padding: 0px !important">
+                                <span t-field="c.account_id"/>
+                            </td>
+                            <td style="padding: 0px !important">
+                                <span t-field="c.debit"/>
+                            </td>
+                            <td style="padding: 0px !important">
+                                <span t-field="c.credit"/>
+                            </td>
+                            <td style="padding: 0px !important">
+                                <span t-field="c.tax_base_amount"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </xpath>
+
+        <xpath expr="//th[@name='th_taxes']" position="replace">
+            <div/>
+        </xpath>
+
+        <xpath expr="//td[5]" position="replace">
+            <div/>
+        </xpath>
+
+        <xpath expr="//table[hasclass('table', 'table-sm', 'o_main_table')]" position="attributes">
+            <attribute name="style" add="font-size: x-small" separator="; "/>
+        </xpath>
+
+        <xpath expr="//th[1]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+        <xpath expr="//th[2]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+        <xpath expr="//th[3]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+        <xpath expr="//th[4]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+        <xpath expr="//td[1]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+        <xpath expr="//td[2]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+        <xpath expr="//td[3]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+        <xpath expr="//td[4]" position="attributes">
+            <attribute name="style" add="padding: 0px !important" separator="; "/>
+        </xpath>
+
+        <xpath expr="//div[hasclass('clearfix')]" position="attributes">
+            <attribute name="style" add="font-size: x-small" separator="; "/>
+        </xpath>
+
+    </template>
+
+</odoo>

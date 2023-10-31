@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        
+        <template
+            id="report_invoice_document_amount_letters_inherit"
+            inherit_id="l10n_co_tax_extension.report_invoice_document_inherit">
+            <xpath expr="//t[@t-if='len(payments_vals) &gt; 0']" position="after">
+              <div style="text-align: left;">
+                <strong style="font-size:15px">Valor en letras:</strong><br/>
+                <span style="font-size:15px" t-field="o.amount_letters"/>
+              </div>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

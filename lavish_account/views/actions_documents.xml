@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+		<record id="view_lavish_account_form_documents_document" model="ir.ui.view">
+			<field name="name">lavish_account.documents_document_inherit</field>
+			<field name="model">documents.document</field>
+			<field name="priority">20</field>
+			<field name="inherit_id" ref="documents.document_view_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='tag_ids']" position="attributes">
+                    <attribute name="domain">['|','|',["folder_id","=",folder_id],["folder_id.parent_folder_id","=",folder_id],["folder_id.parent_folder_id.parent_folder_id","=",folder_id]]</attribute>
+                </xpath>
+			</field>
+		</record>
+    </data>
+</odoo>

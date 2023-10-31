@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_accounting_receipt_document">
+        <t t-call="web.html_container">
+            <t t-foreach="inside_foreach_docs or docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="header">
+                        <div style="display: -webkit-box;-webkit-box-pack: center;justify-content: center;">
+                            <div class="p-2 flex-grow-1 bd-highlight"
+                                 style="-webkit-box-flex: 1;-webkit-flex: 1;flex: 1;">
+                                <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                                     style="height: 80px; width:160px" alt="Logo"/>
+                            </div>
+                            <div class="p-2 bd-highlight" style="-webkit-box-flex: 1;-webkit-flex: 1;flex: 1;">
+                                <br/>
+                                <h4>
+                                    <strong>
+                                        <span t-esc="o.company_id.name"/>
+                                    </strong>
+                                </h4>
+                                <h4>
+                                    <strong>
+                                        <span t-esc="o.company_id.vat"/>
+                                    </strong>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: -webkit-box;-webkit-box-pack: center;justify-content: center;">
+                        <div class="p-2 flex-grow-1 bd-highlight"
+                             style="-webkit-box-flex: 1;-webkit-flex: 1;flex: 1;border: 3px solid black;">
+                            <strong>Nombre Tercero:
+                                <span t-field="o.partner_id.name"/>
+                            </strong>
+                            <br/>
+                            <strong>Nit Tercero:
+                                <span t-field="o.partner_id.vat"/>
+                            </strong>
+                            <br/>
+                            <strong>
+                                Dirección:
+                                <span t-field="o.partner_id.street"/>&#160;&#160;&#160;
+                                Télefono:
+                                <span t-field="o.partner_id.phone"/>
+                            </strong>
+                            <br/>
+                            <strong>Ciudad:
+                                <span t-field="o.partner_id.x_city.name"/>
+                            </strong>
+                            <br/>
+                        </div>
+                        <div class="p-2 bd-highlight" style="-webkit-box-flex: 1;-webkit-flex: 1;flex: 1;">
+                            <strong>Comprobante Contable:
+                                <br/>
+                                <span t-esc="o.journal_id.name"/>/
+                                <span t-esc="o.name"/>
+                            </strong>
+                            <br/>
+                            <strong>Fecha Factura:
+                                <span t-esc="o.invoice_date"/>
+                            </strong>
+                            <br/>
+                            <strong>Fecha Contable:
+                                <span t-esc="o.date"/>
+                            </strong>
+                            <br/>
+                            <strong>Fecha Vencimiento:
+                                <span t-esc="o.invoice_payment_term_id.name"/>
+                            </strong>
+                        </div>
+                    </div>
+                    <div style="display: -webkit-box;-webkit-box-pack: center;justify-content: center;">
+                        <div class="p-2 flex-grow-1 bd-highlight"
+                             style="-webkit-box-flex: 2;-webkit-flex: 2;flex: 2;">
+                            <b>
+                                <h4>Observaciones:
+                                    <br/>
+                                    <span t-field="o.ref"/>
+                                </h4>
+                            </b>
+                            <br/>
+                            <br/>
+                        </div>
+                        <div class="p-2 bd-highlight" style="-webkit-box-flex: 1;-webkit-flex: 1;flex: 1;">
+                            <strong>Valor antes de impuestos:
+                                <span t-esc="abs(o.amount_untaxed_signed)" t-options="{'widget': 'monetary', 'precision': 0, 'display_currency': o.company_id.currency_id}"/>
+                            </strong>
+                            <br/>
+                            <strong>Total a pagar:
+                                <span t-esc="abs(o.amount_total_signed)" t-options="{'widget': 'monetary', 'precision': 0, 'display_currency': o.company_id.currency_id}"/>
+                            </strong>
+                            <br/>
+                           <table class="table table-sm">
+                               <thead>
+                                   <tr>
+                                       <th>Moneda</th>
+                                       <th>Tasa</th>
+                                       <th>No. de Factura</th>
+                                       <th>O.C</th>
+                                   </tr>
+                               </thead>
+                               <tbody>
+                                   <tr>
+                                       <td><span t-esc="o.currency_id.name"/></td>
+                                       <td><span t-esc="'%.2f'% (o.amount_total_in_currency_signed / o.amount_total_signed)"/></td>
+                                       <td><span t-esc="o.supplier_invoice_number"/></td>
+                                       <td> </td>
+                                   </tr>
+                               </tbody>
+                           </table>
+                        </div>
+                        <br/>
+                    </div>
+                    <br/>
+                    <table class="table table-sm" style="padding: 0px !important;font-size: x-small;">
+                        <thead>
+                            <tr>
+                                <b>
+                                    <center>IMPUTACIÓN CONTABLE</center>
+                                </b>
+                            </tr>
+                            <tr>
+                                <th style="width:25%;">Cpte No
+                                    <br/>
+                                    <span t-field="o.name"/>
+                                </th>
+                                <th style="width:25%;">Diario
+                                    <br/>
+                                    <span t-field="o.journal_id.name"/>
+                                </th>
+                                <th style="width:25%;">Fecha
+                                    <br/>
+                                    <span t-field="o.date"/>
+                                </th>
+                                <th style="width:25%;">Estado
+                                    <br/>
+                                    <span t-field="o.state"/>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <table class="table table-sm" style="padding: 0px !important;font-size: x-small;">
+                        <thead>
+                            <tr>
+                                <th style="width:15%;">Cuenta</th>
+                                <th style="width:15%;">Descripción</th>
+                                <th style="width:14%;">CT Analitic</th>
+                                <th style="width:14%;">Tercero</th>
+                                <th style="width:14%;">Base</th>
+                                <th style="width:14%;">Débito</th>
+                                <th style="width:14%;">Crédito</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.line_ids" t-as="line">
+                                <td>
+                                    <span t-field="line.account_id.code"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.account_id.name"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.analytic_account_id.code"/>
+                                </td>
+                                <t t-if="line.partner_id">
+                                    <td><span t-field="line.partner_id.vat"/>/
+                                        <span t-field="line.partner_id.name"/>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td> </td>
+                                </t>
+                                <td>
+                                    <span t-field="line.tax_base_amount"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.debit"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.credit"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-sm" style="padding: 0px !important;">
+                        <thead>
+                            <tr>
+                                <td style="text-align:right; width:72%;">Totales:</td>
+                                <td style="width:14%;">
+                                    <span t-esc="sum([i.debit for i in o.line_ids])"
+                                          t-options="{'widget': 'monetary', 'precision': 0, 'display_currency': o.company_id.currency_id}"/>
+                                </td>
+                                <td style="width:14%;">
+                                    <span t-esc="sum([i.credit for i in o.line_ids])"
+                                          t-options="{'widget': 'monetary', 'precision': 0, 'display_currency': o.company_id.currency_id}"/>
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+
+                    <p>Reviso: ____________________________________________</p>
+                    <p>Elaboro:&#160;&#160;
+                        <span t-field="o.create_uid.name"/>
+                    </p>
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-2 offset-10 text-right">
+                                <ul class="list-inline">
+                                    <li class="list-inline-item"><span class="page"/></li>
+                                    <li class="list-inline-item">/</li>
+                                    <li class="list-inline-item"><span class="topage"/></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_accounting_receipt">
+        <t t-foreach="docs" t-as="o">
+            <t t-set="inside_foreach_docs" t-value="o"/>
+            <t t-call="lavish_erp_reports_accounting.report_accounting_receipt_document"/>
+        </t>
+    </template>
+</odoo>

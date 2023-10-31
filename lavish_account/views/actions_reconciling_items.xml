@@ -1,0 +1,68 @@
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="action_lavish_reconciling_items_encab">
+            <field name="name">Conciliación partidas conciliatorias</field>
+            <field name="res_model">lavish.reconciling.items.encab</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.ui.view" id="lavish_reconciling_items_encab_list">
+            <field name="name">lavish reconciling items encab list</field>
+            <field name="model">lavish.reconciling.items.encab</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="year"/>
+                    <field name="month"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="lavish_reconciling_items_encab_form">
+            <field name="name">lavish reconciling items encab form</field>
+            <field name="model">lavish.reconciling.items.encab</field>
+            <field name="arch" type="xml">
+                <form>
+                  <header>
+                      <button name="process" type="object" string="Procesar" states="draft" class="oe_highlight"/>
+                      <field name="state" widget="statusbar"/>
+                  </header>
+                <sheet>
+                    <div class="oe_right oe_button_box" name="buttons">
+                        <button name="return_action_to_open"
+                            class="oe_inline oe_stat_button" style="width: 200px !important;"
+                            icon="fa-list"
+                            attrs="{'invisible': [('counter_extract', '=', 0)]}"
+                            type="object">
+                            <field name="counter_extract" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="year"/>
+                            <field name="month"/>
+                            <field name="search_all"/>
+                            <button name="search_reconciling_items" type="object" string="Buscar" icon="fa-search"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Partidas conciliatorias pendientes" name="ejecution">
+                            <field name="reconciling_detail" nolabel="1">
+                                <tree>
+                                    <field name="date" readonly="1" optional="show"/>
+                                    <field name="payment_ref" readonly="1" optional="show"/>
+                                    <field name="partner_id" readonly="1" optional="show"/>
+                                    <field name="amount" readonly="1" optional="show"/>
+                                    <field name="statement_id" readonly="1" optional="show"/>
+                                    <field name="journal_id" readonly="1" optional="show"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

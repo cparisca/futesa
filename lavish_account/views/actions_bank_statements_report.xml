@@ -1,0 +1,36 @@
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="action_bank_statements_report">
+            <field name="name">Reporte extracto bancario</field>
+            <field name="res_model">lavish.bank.statements.report</field>
+            <field name="target">new</field>
+            <field name="view_mode">form</field>
+        </record>
+
+        <record id="bank_statements_report_form" model="ir.ui.view">
+            <field name="name">Reporte extracto bancario</field>
+            <field name="model">lavish.bank.statements.report</field>
+            <field name="arch" type="xml">
+                <form string="extracto bancario">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="reference"/>
+                                <field name="date"/>
+                                <field name="journal_id"/>
+                            </group>
+                            <group>
+                                <field name="excel_origin" filename="excel_origin_filename"/>
+                                <field name="excel_origin_filename" invisible="1"/>
+                            </group>
+                            <br></br>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="generate_excel" string="Convertir Excel" type="object" class="oe_highlight"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

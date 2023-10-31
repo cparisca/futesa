@@ -1,0 +1,51 @@
+<odoo>
+    <data>
+		<record id="view_lavish_account_form_account_account" model="ir.ui.view">
+			<field name="name">lavish_account.account_account_inherit</field>
+			<field name="model">account.account</field>
+			<field name="priority">20</field>
+			<field name="inherit_id" ref="account.view_account_form"/>
+			<field name="arch" type="xml">                
+				<xpath expr="//field[@name='currency_id']" position="after">					
+					<field name="accounting_class"/>	
+                    <field name="required_analytic_account"/>
+                    <field name="required_partner"/>
+					<field name="exclude_balance_test"/>
+					<field name="not_disaggregate_partner_balance_test"/>
+					<field name="account_value"/>
+					<field name="code_cgn"/>
+                </xpath>
+			</field>
+		</record>
+
+		<record id="view_lavish_account_form_account_tax" model="ir.ui.view">
+			<field name="name">lavish_account.account_tax_inherit</field>
+			<field name="model">account.tax</field>
+			<field name="priority">20</field>
+			<field name="inherit_id" ref="account.view_tax_form"/>
+			<field name="arch" type="xml">
+                <xpath expr="//field[@name='country_id']" position="after">
+					<field name="has_minimum_base"/>
+					<field name="minimum_base" attrs="{'invisible':[('has_minimum_base','=',False)]}"/>
+                </xpath>
+				<xpath expr="//field[@name='is_base_affected']" position="after">
+					<field name="is_base_affected_only_taxes" attrs="{'invisible': [('is_base_affected','=', False)]}"/>
+					<field name="base_affected_only_taxes_id" attrs="{'invisible': ['|',('is_base_affected','=', False),('is_base_affected_only_taxes','=', True)]}"/>
+                </xpath>
+			</field>
+		</record>
+
+		<record id="view_lavish_account_form_account_account_code" model="ir.ui.view">
+			<field name="name">lavish_account.account_account_inherit</field>
+			<field name="model">account.group</field>
+			<field name="priority">20</field>
+			<field name="inherit_id" ref="account.view_account_group_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='company_id']" position="after">
+					<field name="code_cgn"/>
+                </xpath>
+			</field>
+		</record>
+
+    </data>
+</odoo>

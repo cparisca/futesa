@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_lavish_co_cgn_inform" model="ir.actions.act_window">
+            <field name="name">Informe CGN | Operaciones Recíprocas</field>
+            <field name="res_model">lavish.co.cgn.inform</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record model="ir.ui.view" id="actions_lavish_co_cgn_inform_form">
+            <field name="name">Informe CGN | Operaciones Recíprocas</field>
+            <field name="model">lavish.co.cgn.inform</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="type_report" widget="radio"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="date_start"/>
+                            </group>
+                            <group>
+                                <field name="date_end"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="type_return" widget="radio"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button class="oe_highlight" name="execute_report" string="Ejecutar" type="object"/>
+                        <button special="cancel" class="oe_link" string="Cancelar"/>
+                    </footer>
+                </form>
+            </field>
+         </record>
+
+    </data>
+</odoo>

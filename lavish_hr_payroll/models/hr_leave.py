@@ -1,12 +1,9 @@
 from odoo import api, fields, models, SUPERUSER_ID, tools, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_compare
-from odoo.osv import expression
-from datetime import datetime, timedelta,date
+from datetime import datetime, timedelta, date
 from calendar import monthrange
 from dateutil.relativedelta import relativedelta
-
-
 from collections import defaultdict
 from datetime import datetime, date
 

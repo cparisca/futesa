@@ -15,23 +15,49 @@
                     <sheet>
                         <group>
                             <h1>Generar archivo plano de pago de nómina</h1>
-                            <br></br>
-                            <field name="payment_type" />
-                            <field name="type_flat_file" widget="radio"/>
+                            </group>
+                        <group>
+                            <field name="payment_type"/>
                             <field name="source_information" widget="radio"/>
-                            <field name="journal_id" />
-                            <field name="company_id" />
-                            <field name="vat_payer" />
+                            <field name="flat_rule_not_included"/>
+                            <field name="company_id"/>
+                            <field name="vat_payer"/>
                             <field name="payslip_id" attrs="{'invisible': [('source_information', '!=', 'lote')],'required': [('source_information', '=', 'lote')]}"/>
                             <field name="liquidations_ids" widget="many2many_tags" attrs="{'invisible': [('source_information', '=', 'lote')],'required': [('source_information', '!=', 'lote')]}"/>
-                            <field name="transmission_date" />
-                            <field name="application_date" />
-                            <field name="description" />
-                            <br></br>
+                            <field name="transmission_date"/>
+                            <field name="application_date"/>
+                            <field name="description"/>
+                            </group>
+                        <group>
                             <button name="generate_flat_file" string="Generar" type="object" class="oe_highlight"/>
                         </group>
+<group>
+                            <h1>Archivos planos</h1>
+                        </group>
+                        <group>
+                            <field name="flat_file_detail_ids" nolabel="1" readonly="1">
+                                <tree>
+                                    <field name="journal_id"/>
+                                    <field name="plane_type"/>
+                                    <field name="txt_file_name" invisible="1"/>
+                                    <field name="txt_file" filename="txt_file_name"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="journal_id"/>
+                                        <field name="plane_type"/>
+<!--                                        <field name="txt_file_name" invisible="1"/>-->
+<!--                                        <field name="txt_file" filename="txt_file_name"/>-->
+<!--                                        <field name="excel_file_name" invisible="1"/>-->
+<!--                                        <field name="excel_file" filename="excel_file_name"/>-->
+                                        <button name="download_txt" string="Descargar Archivo Plano" type="object"/>
+                                        <button name="download_excel" string="Descargar Excel" type="object"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
                     </sheet>
-                    <footer></footer>
+                    <footer/>
                 </form>
             </field>
         </record>

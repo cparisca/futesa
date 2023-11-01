@@ -19,9 +19,13 @@
                             <group>
                                 <field name="employee_ids" widget="many2many_tags"/>
                             </group>
-                        <br></br>
+                        <group>
+                        <field name="save_documents"/>
+                    </group>
+                    <p>Al guardar en documentos, no se descargará el archivo PDF.</p>
+                    <footer>
                         <button name="generate_certificate" string="Generar PDF" type="object" class="oe_highlight"/>
-                    <footer></footer>
+                    </footer>
                 </form>
             </field>
         </record>

@@ -48,8 +48,8 @@
                                 <field name="company_id" readonly="1"/>
                                 <field name="address_home_id" invisible="1"/>
                                 <field name="name" required="1"/>
-                                <field name="absence_id"/>
-                                <field name="document_id" />
+                                <field name="absence_id" options="{'no_create': True}" domain="[('employee_id','=',employee_id)]"/>
+                                <field name="document_id" options="{'no_create': True}" domain="[('partner_id','=',address_home_id)]"/>
                             </group>
                             <group>
                                 <field name="type_fault_id" options="{'no_create': True}" required="1"/>

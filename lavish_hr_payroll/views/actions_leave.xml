@@ -118,7 +118,26 @@
                 </search>
             </field>
         </record>
-
+        <record id="view_lavish_hr_employee_form_contract2" model="ir.ui.view">
+            <field name="name">hr.contract.lavish.hr.employee.form.inherit</field>
+            <field name="model">hr.contract</field>
+            <field name="priority">20</field>
+            <field name="inherit_id" ref="lavish_hr_employee.view_lavish_hr_employee_form_contract" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='retention_procedure']" position="before">
+                    <button name="create_payslip_reliquidation" type="object" string="Reliquidacion" class="oe_highlight" />
+                    <button name="compute_rtf2" type="object" string="Metodo 2 RTFT" class="oe_highlight" />
+                    <field name="contract_days" />
+                    <field name="ded_dependents" />
+                    <field name="rtf_log" readonly="1">
+                        <tree string="Calculo tarifa RTFP2">
+                            <field name="name" />
+                            <field name="value" />
+                        </tree>
+                    </field>
+                </xpath>
+            </field>
+        </record>
         <record id="view_lavish_hr_employee_form_contract" model="ir.ui.view">
             <field name="name">hr.contract.lavish.hr.employee.form.inherit</field>
             <field name="model">hr.contract</field>

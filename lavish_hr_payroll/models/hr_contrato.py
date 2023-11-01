@@ -50,7 +50,6 @@ class Hr_payslip(models.Model):
 
     #--------------------------------------------------LIQUIDACIÓN DE CONTRATO---------------------------------------------------------#
 
-
     def _get_payslip_lines_contrato(self):
         def _sum_salary_rule_category(localdict, category, amount):
             if category.parent_id:

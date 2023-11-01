@@ -1,6 +1,27 @@
 <odoo>
     <data>
-
+        <record id="lavish_resource_calendar_form" model="ir.ui.view">
+            <field name="name">lavish_project.resource_calendar.form.inherit</field>
+            <field name="model">resource.calendar</field>
+            <field name="inherit_id" ref="resource.resource_calendar_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='tz']" position="after">
+                    <field name="type_working_schedule" />
+                    <field name="consider_holidays" />
+                </xpath>
+            </field>
+        </record>
+        <record id="lavish_resource_calendar_attendance_tree" model="ir.ui.view">
+            <field name="name">resource_calendar.attendance.tree.inherit</field>
+            <field name="model">resource.calendar.attendance</field>
+            <field name="inherit_id" ref="resource.view_resource_calendar_attendance_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='hour_to']" position="after">
+                    <field name="daytime_hours" />
+                    <field name="night_hours" />
+                </xpath>
+            </field>
+        </record>
         <!-- Crear record rule para filtrar las sucursales - Ausencias -->
         <record id="rule_leave_lavish_res_branch" model="ir.rule">
             <field name="name">Permisos sucursales ausencias</field>
@@ -28,6 +49,7 @@
                 </xpath>
                 <xpath expr="//field[@name='journal_id']" position="before">
                     <field name="analytic_account_id" />
+                    <field name="employee_id" invisible="1" />
                 </xpath>
                 <xpath expr="//field[@name='contract_id']" position="after">
                     <field name="struct_process" invisible="1" />
@@ -71,9 +93,19 @@
                     </group>
                     <group
                         attrs="{'invisible':[('struct_process', 'not in', ['cesantias','intereses_cesantias','contrato'])]}">
+                        <field name="is_advance_severance"
+                            attrs="{'invisible':[('struct_process', 'not in', ['cesantias','intereses_cesantias'])]}" />
+                        <field name="value_advance_severance"
+                            attrs="{'invisible':[('is_advance_severance', '=', False)],'required':[('is_advance_severance', '=', True)]}" />
+                        <field name="employee_severance_pay"
+                            attrs="{'invisible':[('struct_process', 'not in', ['cesantias','intereses_cesantias','contrato'])]}" />
                         <field name="severance_payments_reverse"
                             attrs="{'invisible':[('struct_process', 'not in', ['cesantias','intereses_cesantias','contrato'])]}"
                             widget="many2many_tags" />
+                    </group>
+                    <group attrs="{'invisible':[('struct_process', 'not in', ['prima'])]}">
+                        <field name="prima_payslip_reverse_id"
+                            attrs="{'invisible':[('struct_process', 'not in', ['prima'])]}" />
                     </group>
                     <group attrs="{'invisible':[('struct_process', '!=', 'vacaciones')]}"
                         style="border-style:solid; padding:10px">
@@ -110,12 +142,14 @@
                         attrs="{'invisible':[('rtefte_id', '=', False)]}">
                         <field name="rtefte_id" />
                     </group>
-                    <group class="oe_subtotal_footer oe_right" colspan="2"
-                        attrs="{'invisible':[('struct_process', '=', 'nomina')]}">
+                    <group class="oe_subtotal_footer oe_right" colspan="2">
                         <button string="Excel acumulados valores variables"
                             name="base_values_export_excel" type="object" />
                     </group>
-
+                    <group class="d-flex justify-content-end" colspan="12">
+                        <button string="Excel Líneas de recibo de nómina" name="get_excel_lines"
+                            type="object" />
+                    </group>
                 </xpath>
                 <!-- <xpath
                 expr="//form[1]/sheet[1]/notebook[1]/page[1]/field[@name='worked_days_line_ids']/tree[1]/field[@name='amount'][2]"
@@ -164,6 +198,25 @@
                                     context="{'kanban_view_ref':'hr_payslip_line_kanban'}" />
                             </div>
                         </div>
+                        <field name="extrahours_ids" context="{'default_employee_id':employee_id,}" />
+                        <field name="novedades_ids"
+                            context="{'default_employee_id':employee_id,'default_date':date_to}">
+                            <tree editable="bottom">
+                                <field name="employee_id" domain="[('id', '=', employee_id)]"
+                                    required="1" />
+                                <field name="salary_rule_id" />
+                                <field name="dev_or_ded" />
+                                <field name="date" />
+                                <field name="amount" />
+                                <field name="partner_id" />
+                                <button string="Eliminar Novedad" type="object"
+                                    name="action_delete_novedad" class="btn-danger" />
+                            </tree>
+                        </field>
+                        <field name="payslip_old_ids" widget="many2many_tags"
+                            string="Nominas anterior" />
+                        <field name="resulados_op" widget='html' />
+                        <field name="resulados_rt" widget='html' />
                     </page>
                 </xpath>
                 <xpath expr="//form[1]/sheet[1]/notebook[1]/page[2]" position="before">
@@ -220,24 +273,36 @@
                 <xpath expr="//field[@name='employee_ids']" position="replace">
                     <button string="Limpiar" name="clean_employees" type="object" />
                     <group name="Term" string="Opciones de liquidacion">
-                        <group name="name" string="string">
-                            <field name="pay_primas_in_payroll" />
-                            <field name="pay_cesantias_in_payroll" />
-                        </group>
-                        <group>
-                            <field name="date_prima" />
-                            <field name="date_cesantias" />
-                            <field name="date_liquidacion" />
-                        </group>
+                        <field name="pay_primas_in_payroll" />
+                        <field name="pay_cesantias_in_payroll" />
                     </group>
+                    <group>
+                        <field name="struct_process" invisible="1" />
+                        <field name="date_prima" />
+                        <field name="date_cesantias" />
+                        <field name="date_liquidacion" />
+                        <field name="method_schedule_pay" widget="radio" />
+                        <field name="analytic_account_ids" widget="many2many_tags" />
+                        <field name="branch_ids" widget="many2many_tags" />
+                        <field name="state_contract" widget="radio" />
+                    </group>
+                    <group attrs="{'invisible':[('struct_process', '!=', 'prima')]}">
+                        <field name="prima_run_reverse_id" />
+                    </group>
+                    <group attrs="{'invisible':[('struct_process', '!=', 'contrato')]}">
+                        <field name="settle_payroll_concepts" />
+                        <field name="novelties_payroll_concepts" />
+                    </group>
+                    <button string="Limpiar" name="clean_employees" type="object" />
                     <newline />
-                    <field name="employee_ids" nolabel="1">
+                    <field name="employee_ids" nolabel="1"
+                        domain="[['contract_id.state','=',state_contract]]">
                         <tree>
                             <field name="name" />
                             <field name="company_id" />
                             <field name="department_id" />
                             <field name="job_id" />
-                            <field name="work_email"/>
+                            <field name="work_email" />
                         </tree>
                     </field>
                 </xpath>
@@ -273,6 +338,13 @@
                 <xpath expr="//field[@name='company_id']" position="before">
                     <field name="definitive_plan" readonly="0" />
                 </xpath>
+                <xpath expr="//form[1]/sheet[1]" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" />
+                        <field name="activity_ids" />
+                        <field name="message_ids" />
+                    </div>
+                </xpath>
             </field>
         </record>
         <!-- Formulario tipos de entradas de trabajo -->
@@ -282,7 +354,7 @@
             <field name="priority">20</field>
             <field name="inherit_id" ref="hr_work_entry.hr_work_entry_type_view_form" />
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='sequence']" position="after">
+                <xpath expr="//field[@name='is_leave']" position="after">
                     <field name="short_name" />
                     <field name="deduct_deductions" widget="radio"
                         attrs="{'invisible':[('is_leave', '=', False)]}" />

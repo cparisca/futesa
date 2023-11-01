@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta, date
 from odoo.exceptions import UserError, ValidationError
+from calendar import monthrange
 import time
 
 from datetime import datetime, timedelta
@@ -593,7 +594,7 @@ class hr_contract(models.Model):
                 return (amount+((wage/30)*dias_liquidacion))
             else:
                 return ((amount+((wage/30)*dias_liquidacion))/dias_liquidacion)*30
-        else:           
+        else:
             return 0
 
     def mount_rule_before(self, code, from_date, contract_id):

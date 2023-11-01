@@ -36,7 +36,7 @@
                                             <t t-esc="str(emp.job_id.name).upper()"/>
                                             <br/>
                                             <t t-esc="emp.get_name_type_document()"/>:
-                                            <t t-esc="emp.partner_encab_id.vat"/>
+                                            <t t-esc="emp.address_home_id.vat"/>
                                             <br/>
                                             RH.
                                             <t t-esc="emp.get_name_rh()"/>&#160;&#160;&#160;&#160;&#160;&#160;
@@ -73,7 +73,7 @@
                                             <t t-esc="emp.address_home_id.second_lastname"/>
                                             <br/>
                                             <t t-esc="emp.get_name_type_document()"/>:
-                                            <t t-esc="emp.partner_encab_id.vat"/>
+                                            <t t-esc="emp.address_home_id.vat"/>
                                             <br/>
                                             RH.
                                             <t t-esc="emp.get_name_rh()"/>

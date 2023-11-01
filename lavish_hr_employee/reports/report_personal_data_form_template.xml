@@ -29,7 +29,7 @@
                                 <tr>
                                     <td>Tipo Documento:</td>
                                     <td>
-                                        <span t-field="o.partner_encab_id.document_type"/>
+                                        <span t-field="o.address_home_id.document_type"/>
                                     </td>
                                     <td>Documento:</td>
                                     <td>

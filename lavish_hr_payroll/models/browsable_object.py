@@ -4,6 +4,7 @@
 from dateutil.relativedelta import relativedelta
 from odoo import fields
 from datetime import datetime, timedelta
+import math
 import logging
 _logger= logging.getLogger(__name__)
 lr = [0, 1, 100]
@@ -315,7 +316,7 @@ class Payslips(BrowsableObject):
             res = self.env['hr.overtime']
         else:
             res = self.env['hr.overtime'].search([('employee_id', '=', employee_id),('date','>=',date),('date_end','<=',to_date)])
-        return res and res[0] or 0.0
+        return res #and res[0] or 0.0
     
     #Retorna el objeto del tipo de ausencia
     def get_leave_type(self, code):
@@ -350,13 +351,13 @@ class Payslips(BrowsableObject):
         res = self.env['hr.employee.deduction.retention'].search([('employee_id', '=', employee_id),('year', '=', to_date.year),('month', '=', to_date.month),
                                                             ('concept_deduction_order','=',max_order)])
 
-        return res and res[0] or 0.0
+        return res #and res[0] or 0.0
 
     #Obtener valor retención por codigo
     def get_deduction_retention_value(self, employee_id,to_date,code):
         res = self.env['hr.employee.deduction.retention'].search([('employee_id', '=', employee_id),
                                                                     ('year', '=', to_date.year),('month', '=', to_date.month),('concept_deduction_code','=',code)])
-        return res and res[0] or 0.0
+        return res #and res[0] or 0.0
 
     #Calculo retención en la fuente ordinario
     def get_calcula_rtefte_ordinaria(self, base_rtefte_uvt):
@@ -366,7 +367,7 @@ class Payslips(BrowsableObject):
             if i.range_finally > max_value:
                 max_value = i.range_finally                
         res = self.env['hr.calculation.rtefte.ordinary'].search([('range_initial', '<=', base_rtefte_uvt),('range_finally', '=', max_value)])
-        return res and res[0] or 0.0
+        return res #and res[0] or 0.0
     
 
     #--------VACACIONES
@@ -380,7 +381,7 @@ class Payslips(BrowsableObject):
             for item in obj_assistance:
                 max_antiquity = max_antiquity if max_antiquity > item.antiquity else item.antiquity                
             res = self.env['hr.assistance.vacation.alliancet'].search([('antiquity', '=', max_antiquity)])
-        return res and res[0] or 0.0
+        return res #and res[0] or 0.0
 
     def get_accumulated_vacation(self, departure_date,date_start_process=False):
         if date_start_process:
@@ -416,7 +417,7 @@ class Payslips(BrowsableObject):
                     (self.contract_id.id, date_start, date_end, date_start, date_end, self.employee_id, date_start, date_end))
         res = self.env.cr.fetchone()
 
-        return res and res[0] or 0.0
+        return res #and res[0] or 0.0
     
     def get_accumulated_vacation_money(self, departure_date,date_start_process=False):
         if date_start_process:

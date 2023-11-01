@@ -176,7 +176,7 @@ class HrPayslipEmployees(models.TransientModel):
         if self.method_schedule_pay and self.method_schedule_pay != 'other':
             domain.append(('contract_id.method_schedule_pay','=',self.method_schedule_pay))
         if len(self.analytic_account_ids) > 0:
-            domain.append(('contract_id.analytic_account_id', 'in', self.analytic_account_ids.ids))
+            domain.append(('contract_id.employee_id.analytic_account_id', 'in', self.analytic_account_ids.ids))
         if len(self.branch_ids) > 0:
             domain.append(('branch_id', 'in', self.branch_ids.ids))
         if self.prima_run_reverse_id:
@@ -579,11 +579,21 @@ class Hr_payslip_not_line(models.Model):
     amount = fields.Float(string='Importe',digits='Payroll')
     quantity = fields.Float(string='Cantidad',digits='Payroll', default=1.0)
     total = fields.Float(compute='_compute_total', string='Total', digits='Payroll', store=True) 
-
-    @api.depends('quantity', 'amount', 'rate')
+    subtotal =  fields.Float('Subtotal')
+    @api.depends('quantity', 'amount', 'rate','subtotal')
     def _compute_total(self):
+        #round_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.round_payroll')) or False
         for line in self:
-            line.total = float(line.quantity) * line.amount * line.rate / 100
+            if line.subtotal != 0.0:
+                line.total = line.subtotal
+            else:
+                amount_total_original = float(line.quantity) * line.amount * line.rate / 100
+                part_decimal, part_value = math.modf(amount_total_original)
+                amount_total = float(line.quantity) * line.amount * line.rate / 100 #if round_payroll == False else float(line.quantity) * line.amount * line.rate / 100
+                if part_decimal >= 0.5 and math.modf(amount_total)[1] == part_value:
+                    line.total = part_value+1
+                else:
+                    line.total = round(amount_total,0) 
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -145,7 +145,7 @@ class hr_birthday_list(models.TransientModel):
                     zrb."name" as branch, a.birthday, date_part('year',age(a.birthday)) as edad
                 FROM hr_employee as a
                 {active_employee_join}
-                LEFT JOIN res_partner as b ON b.id = a.partner_encab_id
+                LEFT JOIN res_partner as b ON b.id = a.address_home_id
                 LEFT JOIN res_company c ON c.id = a.company_id 
                 LEFT JOIN lavish_res_branch as zrb ON a.branch_id = zrb.id
                 WHERE {where_clause}
@@ -157,7 +157,7 @@ class hr_birthday_list(models.TransientModel):
                 FROM hr_employee as a
                 {active_employee_join}
                 LEFT JOIN hr_employee_dependents hed ON a.id = hed.employee_id
-                LEFT JOIN res_partner as b ON b.id = a.partner_encab_id
+                LEFT JOIN res_partner as b ON b.id = a.address_home_id
                 LEFT JOIN res_company c ON c.id = a.company_id 
                 LEFT JOIN lavish_res_branch as zrb ON a.branch_id = zrb.id
                 WHERE {where_clause_dependent}

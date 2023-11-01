@@ -31,7 +31,7 @@
                             identificada con Nit:
                             <span t-field="o.contract_id.employee_id.company_id.partner_id.vat"/>
                             , comunica
-                            que el señor&#160;<span t-field="o.contract_id.employee_id.name"/>, identificado con <span t-field="o.contract_id.employee_id.partner_encab_id.document_type"/> N°
+                            que el señor&#160;<span t-field="o.contract_id.employee_id.name"/>, identificado con <span t-field="o.contract_id.employee_id.address_home_id.document_type"/> N°
                             <span t-esc="str('{:20,.0f}'.format(int(o.contract_id.employee_id.identification_id))).replace(',','.')"/>
                             estuvo vinculado como&#160;<span t-field="o.contract_id.job_id.name"/>, hasta el dia de&#160;
                             <span t-field="o.contract_id.retirement_date"/>

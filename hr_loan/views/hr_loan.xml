@@ -64,7 +64,7 @@
                         <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                         <field name="reason"/>
                         <field name="responsible_approve_id" options="{'no_create': True}"/>
-                        <field name="move_id" options="{'no_create': True}"/>
+                        <field name="payment_id" options="{'no_create': True}" readonly="1"/>
                         <field name="prestamo_pending_amount" />
                         <field name="prestamo_pending_count"/>
                     </group>

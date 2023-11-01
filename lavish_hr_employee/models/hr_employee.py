@@ -477,103 +477,103 @@ class report_print_badge_template(models.Model):
         
 
 
-class hr_employeePublic(models.Model):
-    _inherit = 'hr.employee.public'
+# class hr_employeePublic(models.Model):
+#     _inherit = 'hr.employee.public'
 
 
-    #Trazabilidad
-    work_email = fields.Char()
-    company_id = fields.Many2one()
-    department_id = fields.Many2one()
-    job_id = fields.Many2one()
-    parent_id = fields.Many2one()
-    address_id = fields.Many2one()
-    #Asignación
-    branch_id = fields.Many2one('lavish.res.branch', 'Sucursal', )
-    analytic_account_id = fields.Many2one('account.analytic.account', 'Cuenta analítica', )
-    front_back = fields.Selection([('front','Front office'),('back','Back office')],'Area laboral', )
-    confianza_manejo = fields.Boolean('Confianza y manejo', )
-    info_project = fields.Char(string='Proyecto')
-    #Evaluación de desempeño
-    ed_qualification = fields.Float(string='Calificación', )
-    ed_observation = fields.Text(string='Observaciones', )
-    #General
-    partner_encab_id = fields.Many2one('res.partner', 'Tercero', help='Tercero equivalente a el empleado')
-    type_employee = fields.Many2one('hr.types.employee',string='Tipo de Empleado', )
-    sabado = fields.Boolean('Sábado día hábil', help='Indica si el día sábado se incluye como día hábil', )
-    certificate = fields.Selection([('primary','Primaria'),
-                                    ('academic_bachelor','Bachiller'),
-                                    ('apprentice','Aprendiz'),
-                                    ('technical','Técnico'),
-                                    ('technologist','Tecnólogo'),
-                                    ('academic','Universitario'),
-                                    ('specialist','Especialista'),
-                                    ('magister','Maestría')],
-                                    string='Nivel de certificado', )
-    social_security_entities  = fields.One2many('hr.contract.setting', 'employee_id', string = 'Entidades', )
-    dependents_information = fields.One2many('hr.employee.dependents', 'employee_id', string = 'Dependientes', )
-    labor_union_information = fields.One2many('hr.employee.labor.union', 'employee_id', string = 'Sindicato', )
-    personal_email = fields.Char(string='Correo-e personal')
-    personal_mobile = fields.Char(string='Móvil')
-    type_job = fields.Selection([('clave', 'Cargo Clave'),
-                                    ('critico', 'Cargo Crítico'),
-                                    ('cc', 'Cargo CC')], 'Tipo de cargo', )
-    emergency_relationship = fields.Char(string='Parentesco contacto')
-    documents_ids = fields.One2many('hr.employee.documents', 'employee_id', 'Documentos')
-    distribution_cost_information = fields.One2many('hr.cost.distribution.employee', 'employee_id', string='Distribución de costos empleado')
-    #PILA
-    extranjero = fields.Boolean('Extranjero', help='Extranjero no obligado a cotizar a pensión', )
-    residente = fields.Boolean('Residente en el Exterior', help='Colombiano residente en el exterior', )
-    date_of_residence_abroad = fields.Date(string='Fecha radicación en el exterior')
-    tipo_coti_id = fields.Many2one('hr.tipo.cotizante', string='Tipo de cotizante', )
-    subtipo_coti_id = fields.Many2one('hr.subtipo.cotizante', string='Subtipo de cotizante')
-    type_identification = fields.Selection([('CC', 'Cédula de ciudadanía'),
-                                            ('CE', 'Cédula de extranjería'),
-                                            ('TI', 'Tarjeta de identidad'),
-                                            ('RC', 'Registro civil'),
-                                            ('PA', 'Pasaporte')], 'Tipo de identificación', )
-    indicador_especial_id = fields.Many2one('hr.indicador.especial.pila','Indicador tarifa especial pensiones', )
-    cost_assumed_by  = fields.Selection([('partner', 'Cliente'),
-                                        ('company', 'Compañía')], 'Costo asumido por', )
-    #Licencia de conducción
-    licencia_rh = fields.Selection([('op','O+'),('ap','A+'),('bp','B+'),('abp','AB+'),('on','O-'),('an','A-'),('bn','B-'),('abn','AB-')],'Tipo de sangre', )
-    licencia_categoria = fields.Selection([('a1','A1'),('a2','A2'),('b1','B1'),('b2','B2'),('b3','B3'),('c1','C1'),('c2','C2'),('c3','C3')],'Categoria', )
-    licencia_vigencia = fields.Date('Vigencia', )
-    licencia_restricciones = fields.Char('Restricciones', size=255, )
-    operacion_retirar = fields.Boolean('Retirar de la operacion', )
-    operacion_reemplazo = fields.Many2one('hr.employee','Reemplazo', )
-    #Estado civil
-    type_identification_spouse = fields.Selection([('CC', 'Cédula de ciudadanía'),
-                                            ('CE', 'Cédula de extranjería'),
-                                            ('TI', 'Tarjeta de identidad'),
-                                            ('RC', 'Registro civil'),
-                                            ('PA', 'Pasaporte')], 'Tipo de identificación cónyuge', )
-    num_identification_spouse = fields.Char('Número de identificación cónyuge', )
-    spouse_phone= fields.Char('Teléfono del cónyuge')
+#     #Trazabilidad
+#     work_email = fields.Char()
+#     company_id = fields.Many2one()
+#     department_id = fields.Many2one()
+#     job_id = fields.Many2one()
+#     parent_id = fields.Many2one()
+#     address_id = fields.Many2one()
+#     #Asignación
+#     branch_id = fields.Many2one('lavish.res.branch', 'Sucursal', )
+#     analytic_account_id = fields.Many2one('account.analytic.account', 'Cuenta analítica', )
+#     front_back = fields.Selection([('front','Front office'),('back','Back office')],'Area laboral', )
+#     confianza_manejo = fields.Boolean('Confianza y manejo', )
+#     info_project = fields.Char(string='Proyecto')
+#     #Evaluación de desempeño
+#     ed_qualification = fields.Float(string='Calificación', )
+#     ed_observation = fields.Text(string='Observaciones', )
+#     #General
+#     partner_encab_id = fields.Many2one('res.partner', 'Tercero', help='Tercero equivalente a el empleado')
+#     type_employee = fields.Many2one('hr.types.employee',string='Tipo de Empleado', )
+#     sabado = fields.Boolean('Sábado día hábil', help='Indica si el día sábado se incluye como día hábil', )
+#     certificate = fields.Selection([('primary','Primaria'),
+#                                     ('academic_bachelor','Bachiller'),
+#                                     ('apprentice','Aprendiz'),
+#                                     ('technical','Técnico'),
+#                                     ('technologist','Tecnólogo'),
+#                                     ('academic','Universitario'),
+#                                     ('specialist','Especialista'),
+#                                     ('magister','Maestría')],
+#                                     string='Nivel de certificado', )
+#     social_security_entities  = fields.One2many('hr.contract.setting', 'employee_id', string = 'Entidades', )
+#     dependents_information = fields.One2many('hr.employee.dependents', 'employee_id', string = 'Dependientes', )
+#     labor_union_information = fields.One2many('hr.employee.labor.union', 'employee_id', string = 'Sindicato', )
+#     personal_email = fields.Char(string='Correo-e personal')
+#     personal_mobile = fields.Char(string='Móvil')
+#     type_job = fields.Selection([('clave', 'Cargo Clave'),
+#                                     ('critico', 'Cargo Crítico'),
+#                                     ('cc', 'Cargo CC')], 'Tipo de cargo', )
+#     emergency_relationship = fields.Char(string='Parentesco contacto')
+#     documents_ids = fields.One2many('hr.employee.documents', 'employee_id', 'Documentos')
+#     distribution_cost_information = fields.One2many('hr.cost.distribution.employee', 'employee_id', string='Distribución de costos empleado')
+#     #PILA
+#     extranjero = fields.Boolean('Extranjero', help='Extranjero no obligado a cotizar a pensión', )
+#     residente = fields.Boolean('Residente en el Exterior', help='Colombiano residente en el exterior', )
+#     date_of_residence_abroad = fields.Date(string='Fecha radicación en el exterior')
+#     tipo_coti_id = fields.Many2one('hr.tipo.cotizante', string='Tipo de cotizante', )
+#     subtipo_coti_id = fields.Many2one('hr.subtipo.cotizante', string='Subtipo de cotizante')
+#     type_identification = fields.Selection([('CC', 'Cédula de ciudadanía'),
+#                                             ('CE', 'Cédula de extranjería'),
+#                                             ('TI', 'Tarjeta de identidad'),
+#                                             ('RC', 'Registro civil'),
+#                                             ('PA', 'Pasaporte')], 'Tipo de identificación', )
+#     indicador_especial_id = fields.Many2one('hr.indicador.especial.pila','Indicador tarifa especial pensiones', )
+#     cost_assumed_by  = fields.Selection([('partner', 'Cliente'),
+#                                         ('company', 'Compañía')], 'Costo asumido por', )
+#     #Licencia de conducción
+#     licencia_rh = fields.Selection([('op','O+'),('ap','A+'),('bp','B+'),('abp','AB+'),('on','O-'),('an','A-'),('bn','B-'),('abn','AB-')],'Tipo de sangre', )
+#     licencia_categoria = fields.Selection([('a1','A1'),('a2','A2'),('b1','B1'),('b2','B2'),('b3','B3'),('c1','C1'),('c2','C2'),('c3','C3')],'Categoria', )
+#     licencia_vigencia = fields.Date('Vigencia', )
+#     licencia_restricciones = fields.Char('Restricciones', size=255, )
+#     operacion_retirar = fields.Boolean('Retirar de la operacion', )
+#     operacion_reemplazo = fields.Many2one('hr.employee','Reemplazo', )
+#     #Estado civil
+#     type_identification_spouse = fields.Selection([('CC', 'Cédula de ciudadanía'),
+#                                             ('CE', 'Cédula de extranjería'),
+#                                             ('TI', 'Tarjeta de identidad'),
+#                                             ('RC', 'Registro civil'),
+#                                             ('PA', 'Pasaporte')], 'Tipo de identificación cónyuge', )
+#     num_identification_spouse = fields.Char('Número de identificación cónyuge', )
+#     spouse_phone= fields.Char('Teléfono del cónyuge')
 
-    _sql_constraints = [('emp_identification_uniq', 'unique(company_id,identification_id)', 'La cédula debe ser unica. La cédula ingresada ya existe en esta compañía')]
+#     _sql_constraints = [('emp_identification_uniq', 'unique(company_id,identification_id)', 'La cédula debe ser unica. La cédula ingresada ya existe en esta compañía')]
 
-    @api.onchange('partner_encab_id')
-    def _onchange_partner_encab(self):
-        for record in self:
-            for partner in record.partner_encab_id:
-                self.address_home_id = partner.id
+#     @api.onchange('partner_encab_id')
+#     def _onchange_partner_encab(self):
+#         for record in self:
+#             for partner in record.partner_encab_id:
+#                 self.address_home_id = partner.id
 
 
-    @api.constrains('distribution_cost_information')
-    def _check_porcentage_distribution_cost(self):
-        for record in self:
-            if len(record.distribution_cost_information) > 0:
-                porc_total = 0
-                for distribution in record.distribution_cost_information:
-                    porc_total += distribution.porcentage
-                if porc_total != 100:
-                    raise UserError(_('Los porcentajes de la distribución de costos no suman un 100%, por favor verificar.'))
+#     @api.constrains('distribution_cost_information')
+#     def _check_porcentage_distribution_cost(self):
+#         for record in self:
+#             if len(record.distribution_cost_information) > 0:
+#                 porc_total = 0
+#                 for distribution in record.distribution_cost_information:
+#                     porc_total += distribution.porcentage
+#                 if porc_total != 100:
+#                     raise UserError(_('Los porcentajes de la distribución de costos no suman un 100%, por favor verificar.'))
 
-    @api.constrains('identification_id')
-    def _check_identification(self):
-        for record in self:
-            if record.identification_id != record.address_home_id.vat:
-                raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))
-            if record.identification_id != record.partner_encab_id.vat:
-                raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))
+#     @api.constrains('identification_id')
+#     def _check_identification(self):
+#         for record in self:
+#             if record.identification_id != record.address_home_id.vat:
+#                 raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))
+#             if record.identification_id != record.partner_encab_id.vat:
+#                 raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))

@@ -71,14 +71,12 @@
                     <field name="ley_2101" />
                     <field name="remote_work_allowance" />
                     <field name="minimum_wage" />
-                    <field name="limit_deductions" />
                 </xpath>
                 <xpath expr="//field[@name='date_end']" position="after">
                     <field name="retirement_date" readonly="1" force_save="1"/>
                     <field name="not_validate_top_auxtransportation"/>
                     <field name="not_pay_overtime"/>
                     <field name="pay_auxtransportation"/>
-                    <field name="not_pay_auxtransportation"/>
                 </xpath>
                 <xpath expr="//label[@for='wage']" position="before">
                     <field name="change_wage_ids">
@@ -172,35 +170,6 @@
                                 <tree editable="bottom">
                                     <field name="date"/>
                                     <field name="description"/>
-                                    <field name="attached"/>
-                                </tree>
-                            </field>
-                        </group>
-                    </page>
-                    <page string="Fuero o Reubicados" name="fuero_o_reubicados">
-                        <group>
-                            <group>
-                                <field name="type_of_jurisdiction"/>
-                                <field name="relocated"/>
-                                <field name="date_i"/>
-                                <field name="date_f"/>
-                            </group>
-                            <group>
-                                <field name="previous_positions"/>
-                                <field name="new_positions"/>
-                                <field name="time_with_the_state"/>
-                            </group>
-                        </group>
-                    </page>
-                    <page string="Dotación" name="dotacion">
-                        <group>
-                            <field name="employee_endowment_ids" nolabel="1">
-                                <tree editable="bottom">
-                                    <field name="date"/>
-                                    <field name="supplies"/>
-<!--                                    <field name="quantity"/>-->
-<!--                                    <field name="initial_date"/>-->
-<!--                                    <field name="final_date"/>-->
                                     <field name="attached"/>
                                 </tree>
                             </field>

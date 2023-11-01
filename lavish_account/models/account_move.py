@@ -101,19 +101,6 @@ class account_move(models.Model):
                         record._recompute_dynamic_lines(recompute_all_taxes=True)
                 except:
                     pass
-    @api.model
-    def create(self, vals):
-        invoice = super(account_move, self).create(vals)
-        if invoice.partner_id:
-            invoice.partner_id.validate_check_fields_required()
-        return invoice
-
-    def write(self, vals):
-        invoice = super(account_move, self).write(vals)
-        for record in self:
-            if record.partner_id:
-                record.partner_id.validate_check_fields_required()
-        return invoice
 
 class lavish_confirm_wizard(models.TransientModel):
     _name = 'lavish.confirm.wizard'

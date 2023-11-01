@@ -15,7 +15,7 @@ class hr_type_tax_retention(models.Model):
 class hr_concepts_deduction_retention(models.Model):
     _name = 'hr.concepts.deduction.retention'
     _description = 'Conceptos de deducción retención'
-    _order = 'type_tax,order,code,name'
+    _order = 'type_tax,order,code,name' 
     
     code = fields.Char('Código', required=True)
     name = fields.Char('Descripción', required=True)

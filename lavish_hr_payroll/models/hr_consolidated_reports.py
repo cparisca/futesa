@@ -388,7 +388,7 @@ class hr_consolidated_reports(models.TransientModel):
         book.close()
 
         self.write({
-            'excel_file': base64.encodestring(stream.getvalue()),
+            'excel_file': base64.b64encode(stream.getvalue()).decode('utf-8'),
             'excel_file_name': filename,
         })
 
@@ -520,7 +520,7 @@ class hr_consolidated_reports(models.TransientModel):
         book.close()
 
         self.write({
-            'excel_file': base64.encodestring(stream.getvalue()),
+            'excel_file': base64.b64encode(stream.getvalue()).decode('utf-8'),
             'excel_file_name': filename,
         })
 

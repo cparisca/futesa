@@ -25,8 +25,11 @@ class HrPayrollReportlavishFilter(models.TransientModel):
     show_job = fields.Boolean(string="Cargo", default= True)
     show_sena_code = fields.Boolean(string="Código SENA", default= True)
     show_basic_salary = fields.Boolean(string="Salario Base", default= True)
-    not_show_rule_entity = fields.Boolean(string="No mostrar las reglas + entidad", default= False)
-    not_show_quantity= fields.Boolean(string="No mostrar cantidades horas extra y prestaciones", default=False)
+    show_dispersing_account = fields.Boolean(string="Cuenta Dispersora", default=True)
+    show_bank_officer = fields.Boolean(string="Banco del Funcionario", default=True)
+    show_bank_account_officer = fields.Boolean(string="Cuenta Bancaria del Funcionario", default=True)
+    not_show_rule_entity = fields.Boolean(string="No mostrar las reglas + entidad", default=False)
+    not_show_quantity = fields.Boolean(string="No mostrar cantidades horas extra y prestaciones", default=False)
     excel_file = fields.Binary('Excel file')
     excel_file_name = fields.Char('Excel name')
     pdf_report_payroll = fields.Html('Reporte en PDF')
@@ -46,6 +49,9 @@ class HrPayrollReportlavishFilter(models.TransientModel):
         self.show_job = True
         self.show_sena_code = True
         self.show_basic_salary = True
+        self.show_dispersing_account = True
+        self.show_bank_officer = True
+        self.show_bank_account_officer = True
         return {
             'context': self.env.context,
             'view_type': 'form',
@@ -65,6 +71,9 @@ class HrPayrollReportlavishFilter(models.TransientModel):
         self.show_job = False
         self.show_sena_code = False
         self.show_basic_salary = False
+        self.show_dispersing_account = False
+        self.show_bank_officer = False
+        self.show_bank_account_officer = False
         return {
             'context': self.env.context,
             'view_type': 'form',
@@ -160,62 +169,74 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                     Select  c.item as "Item",
                     COALESCE(c.identification_id,'') as "Identificación",COALESCE(c.name,'') as "Empleado",COALESCE(d.date_start,'1900-01-01') as "Fecha Ingreso",
                     COALESCE(e.name,'') as "Seccional",COALESCE(f.name,'') as "Cuenta Analítica",
-                    COALESCE(g.name,'') as "Cargo",COALESCE(d.code_sena,'') as "Código SENA",COALESCE(rp.name,'') as "Ubicación Laboral",COALESCE(dt.name,'') as "Departamento",
+                    COALESCE(g.name,'') as "Cargo",COALESCE(rb.name,'') as "Banco",COALESCE(bank.acc_number,'') as "Cuenta Bancaria",COALESCE(ajb.name,'') as "Cuenta Dispersora",
+                    COALESCE(d.code_sena,'') as "Código SENA",COALESCE(rp.name,'') as "Ubicación Laboral",COALESCE(dt.name,'') as "Departamento",
                     COALESCE(d.wage,0) as "Salario Base",'' as "Novedades",
                     COALESCE(wt.short_name,COALESCE(wt.name,'')) as "Regla Salarial",COALESCE(wt.short_name,COALESCE(wt.name,'')) as "Reglas Salariales + Entidad",
                     'Días' as "Categoría",0 as "Secuencia",COALESCE(Sum(b.number_of_days),0) as "Monto"
             From hr_payslip as a 
             --Info Empleado
             Inner Join (Select distinct row_number() over(order by a.name) as item,
-                        a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,
-                        address_id,a.department_id
+                        a.id,identification_id,a.name,a.branch_id,a.job_id,
+                        address_id,address_home_id,a.department_id
                         From hr_employee as a
                         inner join hr_payslip as p on a.id = p.employee_id and p.id in (%s)
-                        group by a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,address_id,a.department_id) as c on a.employee_id = c.id
+                        group by a.id,identification_id,a.name,a.branch_id,a.job_id,address_id,address_home_id,a.department_id) as c on a.employee_id = c.id
             Inner Join hr_contract as d on a.contract_id = d.id
             Inner Join hr_payslip_worked_days as b on a.id = b.payslip_id
             inner join hr_work_entry_type as wt on b.work_entry_type_id = wt.id
             Left join lavish_res_branch as e on c.branch_id = e.id
-            Left join account_analytic_account as f on c.analytic_account_id = f.id
+            Left join account_analytic_account as f on d.analytic_account_id = f.id
             Left join hr_job g on c.job_id = g.id
             Left Join hr_department dt on c.department_id = dt.id
             Left Join res_partner rp on c.address_id = rp.id
+            --Info Bancaria
+            Left join res_partner_bank bank on c.address_home_id = bank.partner_id and bank.company_id = a.company_id and bank.is_main = True
+            Left join res_bank rb on bank.bank_id = rb.id 
+            Left join account_journal ajb on bank.payroll_dispersion_account = ajb.id 
             Where a.id in (%s)     
             Group By c.item,c.identification_id,c.name,d.date_start,e.name,
-                        f.name,g.name,d.code_sena,rp.name,dt.name,d.wage,wt.name,wt.short_name
+                        f.name,g.name,rb.name,bank.acc_number,ajb.name,
+                        d.code_sena,rp.name,dt.name,d.wage,wt.name,wt.short_name
         ''' % (str_ids,str_ids)
 
         query_amount_rules ='''
             Select  c.item as "Item",
                     COALESCE(c.identification_id,'') as "Identificación",COALESCE(c.name,'') as "Empleado",COALESCE(d.date_start,'1900-01-01') as "Fecha Ingreso",
                     COALESCE(e.name,'') as "Seccional",COALESCE(f.name,'') as "Cuenta Analítica",
-                    COALESCE(g.name,'') as "Cargo",COALESCE(d.code_sena,'') as "Código SENA",COALESCE(rp.name,'') as "Ubicación Laboral",COALESCE(dt.name,'') as "Departamento",
+                    COALESCE(g.name,'') as "Cargo",COALESCE(rb.name,'') as "Banco",COALESCE(bank.acc_number,'') as "Cuenta Bancaria",COALESCE(ajb.name,'') as "Cuenta Dispersora",
+                    COALESCE(d.code_sena,'') as "Código SENA",COALESCE(rp.name,'') as "Ubicación Laboral",COALESCE(dt.name,'') as "Departamento",
                     COALESCE(d.wage,0) as "Salario Base",'' as "Novedades",
                     COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Regla Salarial",COALESCE(hr.short_name,COALESCE(hr.name,'')) ||' '|| case when hc.code = 'SSOCIAL' then '' else COALESCE(COALESCE(rp_et.x_business_name,rp_et.name),'') end as "Reglas Salariales + Entidad",
                     COALESCE(hc.name,'') as "Categoría",COALESCE(b.sequence,0) as "Secuencia",COALESCE(Sum(b.total),0) as "Monto"
             From hr_payslip as a 
             --Info Empleado
             Inner Join (Select distinct row_number() over(order by a.name) as item,
-                        a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,
-                        address_id,a.department_id
+                        a.id,identification_id,a.name,a.branch_id,a.job_id,
+                        address_id,address_home_id,a.department_id
                         From hr_employee as a
                         inner join hr_payslip as p on a.id = p.employee_id and p.id in (%s)
-                        group by a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,address_id,a.department_id) as c on a.employee_id = c.id
+                        group by a.id,identification_id,a.name,a.branch_id,a.job_id,address_id,address_home_id,a.department_id) as c on a.employee_id = c.id
             Inner Join hr_contract as d on a.contract_id = d.id
             Left Join hr_payslip_line as b on a.id = b.slip_id
             Left Join hr_salary_rule as hr on b.salary_rule_id = hr.id
             Left Join hr_salary_rule_category as hc on b.category_id = hc.id
             Left join lavish_res_branch as e on c.branch_id = e.id
-            Left join account_analytic_account as f on c.analytic_account_id = f.id
+            Left join account_analytic_account as f on d.analytic_account_id = f.id
             Left join hr_job g on c.job_id = g.id
             Left Join hr_department dt on c.department_id = dt.id
             Left Join res_partner rp on c.address_id = rp.id
             --Entidad
             Left Join hr_employee_entities et on b.entity_id = et.id
-            Left Join res_partner rp_et on et.partner_id = rp_et.id            
+            Left Join res_partner rp_et on et.partner_id = rp_et.id
+            --Info Bancaria
+            Left join res_partner_bank bank on c.address_home_id = bank.partner_id and bank.company_id = a.company_id and bank.is_main = True
+            Left join res_bank rb on bank.bank_id = rb.id 
+            Left join account_journal ajb on bank.payroll_dispersion_account = ajb.id             
             Where a.id in (%s)     
             Group By c.item,c.identification_id,c.name,d.date_start,e.name,
-                        f.name,g.name,d.code_sena,rp.name,dt.name,d.wage,hr.short_name,hr.name,hc.code,
+                        f.name,g.name,rb.name,bank.acc_number,ajb.name,
+                        d.code_sena,rp.name,dt.name,d.wage,hr.short_name,hr.name,hc.code,
                         rp_et.x_business_name,rp_et.name,hc.name,b.sequence
         ''' % (str_ids,str_ids)
 
@@ -223,7 +244,8 @@ class HrPayrollReportlavishFilter(models.TransientModel):
             Select c.item as "Item",
                 COALESCE(c.identification_id,'') as "Identificación",COALESCE(c.name,'') as "Empleado",COALESCE(d.date_start,'1900-01-01') as "Fecha Ingreso",
                 COALESCE(e.name,'') as "Seccional",COALESCE(f.name,'') as "Cuenta Analítica",
-                COALESCE(g.name,'') as "Cargo",COALESCE(d.code_sena,'') as "Código SENA",COALESCE(rp.name,'') as "Ubicación Laboral",COALESCE(dt.name,'') as "Departamento",
+                COALESCE(g.name,'') as "Cargo",COALESCE(rb.name,'') as "Banco",COALESCE(bank.acc_number,'') as "Cuenta Bancaria",COALESCE(ajb.name,'') as "Cuenta Dispersora",
+                COALESCE(d.code_sena,'') as "Código SENA",COALESCE(rp.name,'') as "Ubicación Laboral",COALESCE(dt.name,'') as "Departamento",
                 COALESCE(d.wage,0) as "Salario Base",'' as "Novedades",
                 COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Regla Salarial",REPLACE_TITULO,
                 hc.name as "Categoría",b.sequence as "Secuencia",REPLACE_VALUE
@@ -233,23 +255,28 @@ class HrPayrollReportlavishFilter(models.TransientModel):
             Inner Join hr_salary_rule_category as hc on b.category_id = hc.id REPLACE_FILTER_RULE_CATEGORY
             --Info Empleado
             Inner Join (Select distinct row_number() over(order by a.name) as item,
-                        a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,
-                        address_id,a.department_id
+                        a.id,identification_id,a.name,a.branch_id,a.job_id,
+                        address_id,address_home_id,a.department_id
                         From hr_employee as a
                         inner join hr_payslip as p on a.id = p.employee_id and p.id in (%s)
-                        group by a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,address_id,a.department_id) as c on a.employee_id = c.id
+                        group by a.id,identification_id,a.name,a.branch_id,a.job_id,address_id,address_home_id,a.department_id) as c on a.employee_id = c.id
             Inner Join hr_contract as d on a.contract_id = d.id
             Left join lavish_res_branch as e on c.branch_id = e.id
-            Left join account_analytic_account as f on c.analytic_account_id = f.id
+            Left join account_analytic_account as f on d.analytic_account_id = f.id
             Left join hr_job g on c.job_id = g.id
             Left Join hr_department dt on c.department_id = dt.id
             Left Join res_partner rp on c.address_id = rp.id
             --Entidad
             Left Join hr_employee_entities et on b.entity_id = et.id
-            Left Join res_partner rp_et on et.partner_id = rp_et.id            
+            Left Join res_partner rp_et on et.partner_id = rp_et.id
+            --Info Bancaria
+            Left join res_partner_bank bank on c.address_home_id = bank.partner_id and bank.company_id = a.company_id and bank.is_main = True
+            Left join res_bank rb on bank.bank_id = rb.id 
+            Left join account_journal ajb on bank.payroll_dispersion_account = ajb.id             
             Where a.id in (%s)
             Group By c.item,c.identification_id,c.name,d.date_start,e.name,
-                        f.name,g.name,d.code_sena,rp.name,dt.name,d.wage,hr.short_name,hr.name,hc.code,
+                        f.name,g.name,rb.name,bank.acc_number,ajb.name,
+                        d.code_sena,rp.name,dt.name,d.wage,hr.short_name,hr.name,hc.code,
                         rp_et.x_business_name,rp_et.name,hc.name,b.sequence
         ''' % (str_ids,str_ids)
 
@@ -275,7 +302,8 @@ class HrPayrollReportlavishFilter(models.TransientModel):
         
         query_totales = '''
             Select 500000 as "Item",'' as "Identificación", '' as "Empleado", '1900-01-01' as "Fecha Ingreso",
-                    '' as "Seccional", '' as "Cuenta Analítica",'' as "Cargo",'' as "Código SENA",'' as "Ubicación Laboral",'' as "Departamento",
+                    '' as "Seccional", '' as "Cuenta Analítica",'' as "Cargo",'' as "Banco",'' as "Cuenta Bancaria",'' as "Cuenta Dispersora",
+                    '' as "Código SENA",'' as "Ubicación Laboral",'' as "Departamento",
                     0 as "Salario Base",'' as "Novedades",
                     "Regla Salarial","Reglas Salariales + Entidad","Categoría","Secuencia",Sum("Monto") as "Monto"
             From(
@@ -370,6 +398,12 @@ class HrPayrollReportlavishFilter(models.TransientModel):
             columns_index.append('Cuenta Analítica')
         if self.show_job == True:
             columns_index.append('Cargo')
+        if self.show_bank_officer == True:
+            columns_index.append('Banco')
+        if self.show_bank_account_officer == True:
+            columns_index.append('Cuenta Bancaria')
+        if self.show_dispersing_account == True:
+            columns_index.append('Cuenta Dispersora')
         if self.show_sena_code == True:
             columns_index.append('Código SENA')
         if self.show_basic_salary == True:
@@ -433,11 +467,11 @@ class HrPayrollReportlavishFilter(models.TransientModel):
         if len(columns_index)-2 != 2:
             worksheet.merge_range(0,2,0,len(columns_index)-2, text_title, cell_format_title)
             worksheet.merge_range(1,2,1,len(columns_index)-2, text_dates, cell_format_title)
-            worksheet.merge_range(2,2,2,len(columns_index)-2, text_liquidation, cell_format_text_generate)
+            worksheet.merge_range(2,2,2,len(columns_index)-2, text_generate, cell_format_text_generate)
         else:
             worksheet.write(0, 2, text_title, cell_format_title)
             worksheet.write(1, 2, text_dates, cell_format_title)
-            worksheet.write(2, 2, text_liquidation, cell_format_text_generate)
+            worksheet.write(2, 2, text_generate, cell_format_text_generate)
         if self.env.company.logo:
             logo_company = io.BytesIO(base64.b64decode(self.env.company.logo))
             worksheet.insert_image('A1', "logo_company.png", {'image_data': logo_company,'x_scale': 0.6, 'y_scale': 0.4})
@@ -487,10 +521,10 @@ class HrPayrollReportlavishFilter(models.TransientModel):
             worksheet.merge_range(cant_filas + 5, 4, cant_filas + 5, 5, 'REVISO', cell_format_firma)
             worksheet.merge_range(cant_filas + 5, 7, cant_filas + 5, 8, 'APROBO', cell_format_firma)
         # Guardar excel
-        writer.save()
+        writer.close()
 
         self.write({
-            'excel_file': base64.encodestring(stream.getvalue()),
+            'excel_file': base64.b64encode(stream.getvalue()).decode('utf-8'),
             'excel_file_name': filename,
         })
         
@@ -558,16 +592,16 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                     From hr_payslip as a 
                     --Info Empleado
                     Inner Join (Select distinct row_number() over(order by a.name) as item,
-                                a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,
+                                a.id,identification_id,a.name,a.branch_id,a.job_id,
                                 address_id,a.department_id
                                 From hr_employee as a
                                 inner join hr_payslip as p on a.id = p.employee_id and p.id in (%s)
-                                group by a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,address_id,a.department_id) as c on a.employee_id = c.id
+                                group by a.id,identification_id,a.name,a.branch_id,a.job_id,address_id,a.department_id) as c on a.employee_id = c.id
                     Inner Join hr_contract as d on a.contract_id = d.id
                     Inner Join hr_payslip_worked_days as b on a.id = b.payslip_id
                     inner join hr_work_entry_type as wt on b.work_entry_type_id = wt.id
                     Left join lavish_res_branch as e on c.branch_id = e.id
-                    Left join account_analytic_account as f on c.analytic_account_id = f.id
+                    Left join account_analytic_account as f on d.analytic_account_id = f.id
                     Left join hr_job g on c.job_id = g.id
                     Left Join hr_department dt on c.department_id = dt.id
                     Left Join res_partner rp on c.address_id = rp.id
@@ -584,17 +618,17 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                     From hr_payslip as a 
                     --Info Empleado
                     Inner Join (Select distinct row_number() over(order by a.name) as item,
-                                a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,
+                                a.id,identification_id,a.name,a.branch_id,a.job_id,
                                 address_id,a.department_id
                                 From hr_employee as a
                                 inner join hr_payslip as p on a.id = p.employee_id and p.id in (%s)
-                                group by a.id,identification_id,a.name,a.branch_id,a.analytic_account_id,a.job_id,address_id,a.department_id) as c on a.employee_id = c.id
+                                group by a.id,identification_id,a.name,a.branch_id,a.job_id,address_id,a.department_id) as c on a.employee_id = c.id
                     Inner Join hr_contract as d on a.contract_id = d.id
                     Left Join hr_payslip_line as b on a.id = b.slip_id
                     Left Join hr_salary_rule as hr on b.salary_rule_id = hr.id and hr.code in ('TOTALDEV','TOTALDED','NET')
                     Left Join hr_salary_rule_category as hc on b.category_id = hc.id
                     Left join lavish_res_branch as e on c.branch_id = e.id
-                    Left join account_analytic_account as f on c.analytic_account_id = f.id
+                    Left join account_analytic_account as f on d.analytic_account_id = f.id
                     Left join hr_job g on c.job_id = g.id
                     Left Join hr_department dt on c.department_id = dt.id
                     Left Join res_partner rp on c.address_id = rp.id

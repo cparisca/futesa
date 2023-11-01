@@ -16,7 +16,8 @@ class hr_type_overtime(models.Model):
                                       ('overtime_endf','E-N-D/F | Extra nocturna dominical/festivo'),
                                       ('overtime_dof','D o F | Dominicales o festivos'),
                                       ('overtime_rndf','RN-D/F | Recargo nocturno dominical/festivo'),
-                                      ('overtime_rdf','R-D/F | Recargo dominical/festivo')],'Tipo',  required=True)
+                                      ('overtime_rdf','R-D/F | Recargo dominical/festivo'),
+                                      ('overtime_rnf','RN-F | Recargo nocturno festivo')],'Tipo',  required=True)
     percentage = fields.Float(string='Porcentaje')
     equivalence_number_ne = fields.Integer(string='Num. Equivalencia NE')
     start_time = fields.Float('Hora inicio', required=True, default=0)

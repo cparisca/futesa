@@ -92,7 +92,7 @@
                     <field name="type_of_entity_association"/>
                 </xpath>
                 <xpath expr="//field[@name='color']" position="before">
-                    <!-- <field name="published_portal"/> -->
+                    <field name="published_portal"/>
                 </xpath>
                 <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
                     <group>

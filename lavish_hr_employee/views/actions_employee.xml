@@ -268,8 +268,8 @@
                                 </tree>
                             </field>
                         </group>
-                    </page> -->
-                    <!-- <page string="Sanciones" name="sanciones">
+                    </page>
+                    <page string="Sanciones" name="sanciones">
                         <group>
                             <field name="employee_sanctions_ids" nolabel="1"
                                    context="{'default_employee_id': active_id,'active_employee_id': active_id,'active_partner_id': address_home_id}">
@@ -279,8 +279,11 @@
                                     <field name="registration_date" required="1" optional="show"/>
                                     <field name="name" required="1" optional="show"/>
                                     <field name="stage" required="1" optional="show"/>
-                                    <field name="document_id"/>
-                                    <field name="absence_id"   domain="[('employee_id','=',context.get('active_employee_id',False))]"
+                                    <field name="document_id"
+                                           domain="[('partner_id','=',context.get('active_partner_id',False))]"
+                                           options="{'no_create': True}" optional="show"/>
+                                    <field name="absence_id"
+                                           domain="[('employee_id','=',context.get('active_employee_id',False))]"
                                            options="{'no_create': True}" optional="show"/>
                                 </tree>
                             </field>

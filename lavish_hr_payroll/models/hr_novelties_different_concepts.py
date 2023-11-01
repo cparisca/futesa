@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 class hr_novelties_different_concepts(models.Model):
     _name = 'hr.novelties.different.concepts'
     _description = 'Novedades por conceptos diferentes'
-    
+
     employee_id = fields.Many2one('hr.employee', string='Empleado', index=True)
     employee_identification = fields.Char('Identificación empleado')
     salary_rule_id = fields.Many2one('hr.salary.rule', string='Regla salarial', required=True, domain=[('novedad_ded', '=', 'Noved')] )
@@ -33,6 +33,5 @@ class hr_novelties_different_concepts(models.Model):
         
         res = super(hr_novelties_different_concepts, self).create(vals)
         return res
-
     def action_delete_novedad(self):
         self.unlink()

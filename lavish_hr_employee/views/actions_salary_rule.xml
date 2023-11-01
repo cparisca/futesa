@@ -26,6 +26,7 @@
                     <field name="is_recargo"/>
                     <field name="proyectar_nom"/>
                     <field name="proyectar_ret"/>
+                    <!-- <field name="category_rule"/> -->
                     <field name="deduct_deductions" widget="radio" attrs="{'invisible':[('is_leave', '=', False)]}"/>                    
                 </xpath>
                 <xpath expr="//field[@name='amount_select']" position="after">

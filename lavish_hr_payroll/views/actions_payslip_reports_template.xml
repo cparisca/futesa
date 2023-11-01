@@ -39,8 +39,8 @@
                             <field name="type_header_footer" widget="radio"/>
                         </group>
                         <group attrs="{'invisible':[('type_header_footer', '!=', 'custom')]}">
-                            <field name="header_custom" widget="html"/>
-                            <field name="footer_custom" widget="html"/>
+                            <field name="header_custom" widget="html" options="{'style-inline': true, 'codeview': true }"/>
+                            <field name="footer_custom" widget="html" options="{'style-inline': true, 'codeview': true }"/>
                         </group>
                         <group>
                             <field name="caption"/>

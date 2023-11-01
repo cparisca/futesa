@@ -91,6 +91,8 @@
                                             <field name="nValorPensionEmpresa" optional="hide"/>
                                             <field name="nValorPensionTotal" optional="hide"/>
                                             <field name="nDiferenciaPension" optional="hide"/>
+                                            <field name="cAVP" optional="hide"/>
+                                            <field name="nAporteVoluntarioPension" optional="hide"/>
                                             <field name="TerceroFondoSolidaridad" optional="hide"/>
                                             <field name="nPorcFondoSolidaridad" optional="hide"/>
                                             <field name="nValorFondoSolidaridad" optional="hide"/>
@@ -126,6 +128,105 @@
                                             <field name="dFechaInicioIRL" optional="hide"/>
                                             <field name="dFechaFinIRL" optional="hide"/>
                                         </tree>
+<form>
+                                            <header>
+                                                <button class="oe_highlight" name="executing_social_security_employee" string="Recalcular" type="object"/>
+                                            </header>
+                                            <sheet>
+                                                <group>
+                                                    <group string="Info Empleado">
+                                                        <field name="executing_social_security_id"/>
+                                                        <field name="employee_id"/>
+                                                        <field name="branch_id"/>
+                                                        <field name="contract_id"/>
+                                                        <field name="analytic_account_id"/>
+                                                        <field name="nSueldo"/>
+                                                        <field name="nNumeroHorasLaboradas"/>
+                                                        <field name="nIngreso"/>
+                                                        <field name="nRetiro"/>
+                                                        <field name="cExonerado1607"/>
+                                                    </group>
+                                                    <group string="Días">
+                                                        <field name="nDiasLiquidados"/>
+                                                        <field name="nDiasIncapacidadEPS"/>
+                                                        <field name="nDiasLicencia"/>
+                                                        <field name="nDiasLicenciaRenumerada"/>
+                                                        <field name="nDiasMaternidad"/>
+                                                        <field name="nDiasVacaciones"/>
+                                                        <field name="nDiasIncapacidadARP"/>
+                                                    </group>
+                                                    <group string="Salud">
+                                                        <field name="TerceroEPS"/>
+                                                        <field name="nValorBaseSalud"/>
+                                                        <field name="nPorcAporteSaludEmpleado"/>
+                                                        <field name="nValorSaludEmpleado"/>
+                                                        <field name="nValorSaludEmpleadoNomina"/>
+                                                        <field name="nPorcAporteSaludEmpresa"/>
+                                                        <field name="nValorSaludEmpresa"/>
+                                                        <field name="nValorSaludTotal"/>
+                                                        <field name="nDiferenciaSalud"/>
+                                                    </group>
+                                                    <group string="Pensión">
+                                                        <field name="TerceroPension"/>
+                                                        <field name="nValorBaseFondoPension"/>
+                                                        <field name="nPorcAportePensionEmpleado"/>
+                                                        <field name="nValorPensionEmpleado"/>
+                                                        <field name="nValorPensionEmpleadoNomina"/>
+                                                        <field name="nPorcAportePensionEmpresa"/>
+                                                        <field name="nValorPensionEmpresa"/>
+                                                        <field name="nValorPensionTotal"/>
+                                                        <field name="nDiferenciaPension"/>
+                                                        <field name="cAVP"/>
+                                                        <field name="nAporteVoluntarioPension"/>
+                                                    </group>
+                                                    <group string="ARP">
+                                                        <field name="TerceroARP"/>
+                                                        <field name="nValorBaseARP"/>
+                                                        <field name="nPorcAporteARP"/>
+                                                        <field name="nValorARP"/>
+                                                    </group>
+                                                    <group string="Fondo de solidaridad y subsistencia">
+                                                        <field name="TerceroFondoSolidaridad"/>
+                                                        <field name="nPorcFondoSolidaridad"/>
+                                                        <field name="nValorFondoSolidaridad"/>
+                                                        <field name="nValorFondoSubsistencia"/>
+                                                    </group>
+                                                    <group string="Caja de compensación">
+                                                        <field name="TerceroCajaCom"/>
+                                                        <field name="nValorBaseCajaCom"/>
+                                                        <field name="nPorcAporteCajaCom"/>
+                                                        <field name="nValorCajaCom"/>
+                                                    </group>
+                                                    <group string="SENA">
+                                                        <field name="TerceroSENA"/>
+                                                        <field name="nValorBaseSENA"/>
+                                                        <field name="nPorcAporteSENA"/>
+                                                        <field name="nValorSENA"/>
+                                                    </group>
+                                                    <group string="ICBF">
+                                                        <field name="TerceroICBF"/>
+                                                        <field name="nValorBaseICBF"/>
+                                                        <field name="nPorcAporteICBF"/>
+                                                        <field name="nValorICBF"/>
+                                                    </group>
+                                                    <group string="Ausencia y fechas">
+                                                        <field name="leave_id"/>
+                                                        <field name="dFechaInicioSLN"/>
+                                                        <field name="dFechaFinSLN"/>
+                                                        <field name="dFechaInicioIGE"/>
+                                                        <field name="dFechaFinIGE"/>
+                                                        <field name="dFechaInicioLMA"/>
+                                                        <field name="dFechaFinLMA"/>
+                                                        <field name="dFechaInicioVACLR"/>
+                                                        <field name="dFechaFinVACLR"/>
+                                                        <field name="dFechaInicioVCT"/>
+                                                        <field name="dFechaFinVCT"/>
+                                                        <field name="dFechaInicioIRL"/>
+                                                        <field name="dFechaFinIRL"/>
+                                                    </group>
+                                                </group>
+                                            </sheet>
+                                        </form>
                                     </field>                                    
                                 </group>
                                 <group>

@@ -57,10 +57,15 @@
                             </group>  
                             <button name="generate_voucher" string="Procesar" type="object" class="oe_highlight"/>                                                    
                             <group>   
+<field name="txt_status_process" attrs="{'invisible':[('txt_status_process', '=', False)]}" readonly="1" force_save="1"/>
+                            </group>
+                            <group>
+                                <field name="mail_mail_ids" readonly="1"/>
                                 <field name="vouchers_failed_ids" readonly="1">
                                     <tree>
                                         <field name="employee_id"/>
                                         <field name="payslip_id"/>
+<field name="description"/>
                                     </tree>
                                 </field>
                             </group>                                                            

@@ -2,7 +2,7 @@
 # from odoo import http
 
 
-# class lavishHrEmployee(http.Controller):
+# class lavish.hrEmployee(http.Controller):
 #     @http.route('/lavish_hr_employee/lavish_hr_employee/', auth='public')
 #     def index(self, **kw):
 #         return "Hello, world"

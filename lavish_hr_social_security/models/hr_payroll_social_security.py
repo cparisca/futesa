@@ -272,6 +272,7 @@ class hr_payroll_social_security(models.Model):
                             else:
                                 dict_social_security['BaseSeguridadSocial'].dict['BASE'] = dict_social_security['BaseSeguridadSocial'].dict.get('BASE', 0) + ibc
                             #Obtener valores
+
                             for line in payslip.line_ids:
                                 #Bases seguridad social
                                 if line.salary_rule_id.base_seguridad_social:

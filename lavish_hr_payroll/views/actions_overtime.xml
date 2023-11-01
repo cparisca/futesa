@@ -36,18 +36,18 @@
         </record>
 
         <!-- Crear record rule para filtrar las sucursales - Horas extra -->
-        <record id="rule_overtime_lavish_res_branch" model="ir.rule">
+        <!-- <record id="rule_overtime_lavish_res_branch" model="ir.rule">
             <field name="name">Permisos sucursales horas extra</field>
             <field name="model_id" ref="model_hr_overtime"/>
             <field name="domain_force">['|',('branch_id','in',user.branch_ids.ids),('branch_id','=',False)]</field>
-        </record>
+        </record> -->
 
         <record model="ir.ui.view" id="hr_overtime_view_tree">
             <field name="name">Horas extra</field>
             <field name="model">hr.overtime</field>
             <field name="arch" type="xml">
                 <tree editable="top">
-                    <field name="branch_id"/>
+                    <!-- <field name="branch_id"/> -->
                     <field name="date"/>
                     <field name="date_end"/>
                     <field name="employee_id" required="1"/>

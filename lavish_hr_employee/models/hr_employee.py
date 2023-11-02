@@ -357,13 +357,13 @@ class hr_employee(models.Model):
                 if porc_total != 100:
                     raise UserError(_('Los porcentajes de la distribución de costos no suman un 100%, por favor verificar.'))
 
-    @api.constrains('identification_id')
-    def _check_identification(self):
-        for record in self:
-            if record.identification_id != record.address_home_id.vat:
-                raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))
-            if record.identification_id != record.partner_encab_id.vat:
-                raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))
+    # @api.constrains('identification_id')
+    # def _check_identification(self):
+    #     for record in self:
+    #         if record.identification_id != record.address_home_id.vat:
+    #             raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))
+    #         if record.identification_id != record.partner_encab_id.vat:
+    #             raise UserError(_('El número de identificación debe ser igual al tercero seleccionado.'))
 
     # @api.constrains('tipo_coti_id','social_security_entities','subtipo_coti_id')
     # def _check_social_security_entities(self):

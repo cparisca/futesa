@@ -290,7 +290,7 @@ class hr_contract(models.Model):
     
     progress = fields.Float('Progreso', compute='_compute_progress')
 
-    @api.depends('date_start', 'date_end')
+    #@api.depends('date_start', 'date_end')
     def _compute_progress(self):
         for record in self:
             if record.date_start and record.date_end:

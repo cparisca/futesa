@@ -288,7 +288,7 @@ class hr_contract(models.Model):
     #Pestaña de dotacion
     employee_endowment_ids = fields.One2many('hr.employee.endowment', 'contract_id', 'Dotación')
     
-    progress = fields.Float('Progreso', compute='_compute_progress')
+    progress = fields.Float('Progreso', )#compute='_compute_progress')
 
     #@api.depends('date_start', 'date_end')
     def _compute_progress(self):

@@ -207,7 +207,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                     COALESCE(g.name,'') as "Cargo",COALESCE(rb.name,'') as "Banco",COALESCE(bank.acc_number,'') as "Cuenta Bancaria",COALESCE(ajb.name,'') as "Cuenta Dispersora",
                     COALESCE(d.code_sena,'') as "Código SENA",COALESCE(rp.name,'') as "Ubicación Laboral",COALESCE(dt.name,'') as "Departamento",
                     COALESCE(d.wage,0) as "Salario Base",'' as "Novedades",
-                    COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Regla Salarial",COALESCE(hr.short_name,COALESCE(hr.name,'')) ||' '|| case when hc.code = 'SSOCIAL' then '' else COALESCE(COALESCE(rp_et.x_business_name,rp_et.name),'') end as "Reglas Salariales + Entidad",
+                    COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Regla Salarial",COALESCE(hr.short_name,COALESCE(hr.name,'')) ||' '|| case when hc.code = 'SSOCIAL' then '' else COALESCE(COALESCE(rp_et.business_name,rp_et.name),'') end as "Reglas Salariales + Entidad",
                     COALESCE(hc.name,'') as "Categoría",COALESCE(b.sequence,0) as "Secuencia",COALESCE(Sum(b.total),0) as "Monto"
             From hr_payslip as a 
             --Info Empleado
@@ -237,7 +237,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
             Group By c.item,c.identification_id,c.name,d.date_start,e.name,
                         f.name,g.name,rb.name,bank.acc_number,ajb.name,
                         d.code_sena,rp.name,dt.name,d.wage,hr.short_name,hr.name,hc.code,
-                        rp_et.x_business_name,rp_et.name,hc.name,b.sequence
+                        rp_et.business_name,rp_et.name,hc.name,b.sequence
         ''' % (str_ids,str_ids)
 
         query_quantity_bases_days = '''
@@ -277,7 +277,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
             Group By c.item,c.identification_id,c.name,d.date_start,e.name,
                         f.name,g.name,rb.name,bank.acc_number,ajb.name,
                         d.code_sena,rp.name,dt.name,d.wage,hr.short_name,hr.name,hc.code,
-                        rp_et.x_business_name,rp_et.name,hc.name,b.sequence
+                        rp_et.business_name,rp_et.name,hc.name,b.sequence
         ''' % (str_ids,str_ids)
 
         query = f"""
@@ -318,7 +318,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                 Where a.id in (%s)
                 Group By c.name,wt.name,wt.short_name
                 Union
-                Select  c.name,COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Regla Salarial",COALESCE(hr.short_name,COALESCE(hr.name,'')) ||' '|| case when hc.code = 'SSOCIAL' then '' else COALESCE(COALESCE(rp_et.x_business_name,rp_et.name),'') end as "Reglas Salariales + Entidad",
+                Select  c.name,COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Regla Salarial",COALESCE(hr.short_name,COALESCE(hr.name,'')) ||' '|| case when hc.code = 'SSOCIAL' then '' else COALESCE(COALESCE(rp_et.business_name,rp_et.name),'') end as "Reglas Salariales + Entidad",
                         hc.name as "Categoría",b.sequence as "Secuencia",COALESCE(Sum(b.total),0) as "Monto"
                 From hr_payslip as a 
                 Inner Join hr_payslip_line as b on a.id = b.slip_id
@@ -331,7 +331,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                 Left Join hr_employee_entities et on b.entity_id = et.id
                 Left Join res_partner rp_et on et.partner_id = rp_et.id
                 Where a.id in (%s)
-                Group By c.name,hr.short_name,hr.name,hc.code,rp_et.x_business_name,rp_et.name,hc.name,b.sequence
+                Group By c.name,hr.short_name,hr.name,hc.code,rp_et.business_name,rp_et.name,hc.name,b.sequence
                 Union
                 Select c.name,COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Regla Salarial",'Cantidad de ' || COALESCE(hr.short_name,COALESCE(hr.name,'')) as "Reglas Salariales + Entidad",
                        hc.name as "Categoría",b.sequence as "Secuencia",COALESCE(Sum(b.quantity),0) as "Cantidad"
@@ -346,7 +346,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                 Left Join hr_employee_entities et on b.entity_id = et.id
                 Left Join res_partner rp_et on et.partner_id = rp_et.id 
                 Where a.id in (%s)
-                Group By c.name,hr.short_name,hr.name,hc.code,rp_et.x_business_name,rp_et.name,hc.name,b.sequence
+                Group By c.name,hr.short_name,hr.name,hc.code,rp_et.business_name,rp_et.name,hc.name,b.sequence
             ) as a 
             Group By "Regla Salarial","Reglas Salariales + Entidad","Categoría","Secuencia"
             order by "Item","Empleado","Secuencia"
@@ -638,7 +638,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                     Where a.id in (%s) and hr.code in ('TOTALDEV','TOTALDED','NET')      
                     Group By c.item,c.identification_id,c.name,d.date_start,e.name,
                                 f.name,g.name,d.code_sena,rp.name,dt.name,d.wage,hr.short_name,hr.name,hc.code,
-                                rp_et.x_business_name,rp_et.name,hc.name,b.sequence
+                                rp_et.business_name,rp_et.name,hc.name,b.sequence
                 ''' % (str_ids, str_ids)
 
         query = f"""
@@ -680,7 +680,7 @@ class HrPayrollReportlavishFilter(models.TransientModel):
                         Left Join hr_employee_entities et on b.entity_id = et.id
                         Left Join res_partner rp_et on et.partner_id = rp_et.id
                         Where a.id in (%s) and hr.code in ('TOTALDEV','TOTALDED','NET')
-                        Group By c.name,hr.short_name,hr.name,hc.code,rp_et.x_business_name,rp_et.name,hc.name,b.sequence                        
+                        Group By c.name,hr.short_name,hr.name,hc.code,rp_et.business_name,rp_et.name,hc.name,b.sequence                        
                     ) as a 
                     Group By "Regla Salarial","Secuencia"
                     order by "Item","Secuencia"

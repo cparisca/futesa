@@ -6,6 +6,37 @@ from dateutil.relativedelta import relativedelta
 from pytz import timezone
 import time
 import base64
+CONTRACT_GROUP_ID_HELP = """
+Este campo permite agrupar los contratos, según se va a calcular la nómina.
+Sirve para grupos que no sea por banco, centro de costo y/o ciudad de desempeño.
+"""
+ARL_ID_HELP = "ARL en el caso que el empleado sea independiente"
+ANALYTIC_DISTRIBUTION_TOTAL_WARN = """: La suma de las distribuciones analíticas debe ser 100.0%%,
+Valor actual: %s%%"""
+CONTRACT_EXTENSION_NO_RECORD_WARN = """
+Para prorrogar el contrato por favor registre una prorroga
+"""
+CONTRACT_EXTENSION_MAX_WARN = """
+No es posible realizar una prórroga por un periodo inferior
+a un año despues de tener 3 o más prórrogas
+"""
+NO_PARTNER_REF_WARN = """
+No se encontró el numero de documento en el contacto
+"""
+IN_FORCE_CONTRACT_WARN = """
+El empleado yá tiene un contrato activo: %s.
+"""
+
+NO_WAGE_HISTORY = """
+El contrato %s no tiene un historial de salarios.
+"""
+
+MANY_WAGE_HISTORY = """
+El contrato %s tiene %s cambios salariales en este rango %s a %s.
+Solo se permite 1 por periodo.
+"""
+
+LAST_ONE = -1
 
 class hr_contract_change_wage(models.Model):
     _name = 'hr.contract.change.wage'
@@ -73,6 +104,9 @@ class hr_contractual_modifications(models.Model):
     date = fields.Date('Fecha', required=True)
     description = fields.Char('Descripción de modificacion contractual', required=True)
     attached = fields.Many2one('documents.document', string='Adjunto')
+    sequence = fields.Integer('Numero de Prórroga')
+    date_from = fields.Date('Fecha de Inicio Prórroga')
+    date_to = fields.Date('Fecha de Fin Prórroga')
 
 #Deducciones para retención en la fuente
 class hr_contract_deductions_rtf(models.Model):
@@ -246,19 +280,25 @@ class hr_contract(models.Model):
     time_with_the_state = fields.Char('Tiempo que lleva con el estado')
     date_last_wage = fields.Date('Fecha Ultimo sueldo')
     wage_old = fields.Float('Salario basico', help='Seguimento de los cambios en el salario basico')
-    skip_commute_allowance = fields.Boolean(
-        string='Omitir Auxilio de Transporte')
-    remote_work_allowance = fields.Boolean(
-        string='Aplica Auxilio de Conectividad')
-    minimum_wage = fields.Boolean(
-        string='Devenga Salario Mínimo')
+    skip_commute_allowance = fields.Boolean(string='Omitir Auxilio de Transporte')
+    remote_work_allowance = fields.Boolean(string='Aplica Auxilio de Conectividad')
+    minimum_wage = fields.Boolean(string='Devenga Salario Mínimo')
     ley_2101 = fields.Boolean(string='disminucion jornada laboral')
-    limit_deductions = fields.Boolean(
-        string='Limitar Deducciones al 50% de Devengos')
+    limit_deductions = fields.Boolean(string='Limitar Deducciones al 50% de Devengos')
     #Pestaña de dotacion
     employee_endowment_ids = fields.One2many('hr.employee.endowment', 'contract_id', 'Dotación')
     
+    progress = fields.Float('Progreso', compute='_compute_progress')
 
+    @api.depends('date_start', 'date_end')
+    def _compute_progress(self):
+        for record in self:
+            if record.date_start and record.date_end:
+                total_days = (record.date_end - record.date_start).days
+                elapsed_days = (datetime.now().date() - record.date_start).days
+                record.progress = (elapsed_days / total_days) * 100 if total_days > 0 else 0
+            else:
+                record.progress = 0
 
     # @api.constrains('state')
     # def _check_states_contract(self):  
@@ -275,6 +315,22 @@ class hr_contract(models.Model):
         for record in self:
             result.append((record.id, "{} | {}".format(record.sequence,record.name)))
         return result
+
+    def extend_contract(self):
+        """Extend contract end date"""
+        max_extensions, min_days = 3, 360
+        for contract in self:
+            if not contract.contract_modification_history:
+                raise ValidationError(CONTRACT_EXTENSION_NO_RECORD_WARN)
+            last_extension = contract.contract_modification_history.sorted(
+                key=lambda r: r.sequence)[LAST_ONE]
+            contract.date_end = last_extension.date_to
+            if len(contract.contract_modification_history) <= max_extensions:
+                continue
+            extension_span_days = self.dias360(
+                last_extension.date_from, last_extension.date_to)
+            if extension_span_days < min_days:
+                raise ValidationError(CONTRACT_EXTENSION_MAX_WARN)
 
     @api.model
     def update_state(self):

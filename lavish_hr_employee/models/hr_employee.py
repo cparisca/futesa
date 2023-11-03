@@ -322,6 +322,17 @@ class hr_employee(models.Model):
 
     _sql_constraints = [('emp_identification_uniq', 'unique(company_id,identification_id)', 'La cédula debe ser unica. La cédula ingresada ya existe en esta compañía')]
 
+
+    @api.onchange('dependents_information')
+    def _onchange_partner_dependents(self):
+        for record in self:
+            if record.contract_id:
+                if  record.dependents_information.filtered(lambda line: line.report_income_and_withholdings):
+                    record.contract_id.ded_dependents = True
+                else:
+                    record.contract_id.ded_dependents = False
+
+
     @api.onchange('partner_encab_id')
     def _onchange_partner_encab(self):
         for record in self:

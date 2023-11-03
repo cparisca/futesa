@@ -165,10 +165,14 @@
                         </group>
                     </page>
                     <page string="Modificaciones contractuales" name="modificaciones_contractuales">
+                        <button name="extend_contract" type="object" string="Prorrogar" class="oe_stat_button" icon="fa-expand" />
                         <group>
                             <field name="contract_modification_history" nolabel="1">
                                 <tree editable="bottom">
+                                    <field name="sequence" />
                                     <field name="date"/>
+                                    <field name="date_from" />
+                                    <field name="date_to" />
                                     <field name="description"/>
                                     <field name="attached"/>
                                 </tree>

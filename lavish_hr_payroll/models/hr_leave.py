@@ -84,6 +84,13 @@ class HolidaysRequest(models.Model):
     def _days_used(self):
         for rec in self:
             rec.days_used += sum(value for value in rec.leave_ids.mapped('days_used') if isinstance(value, (int, float)))
+    @api.onchange('ibc','force_ibc', 'number_of_days', 'date_from', 'date_to',)
+    def force_ibc_amt(self):
+        for record in self:
+            if record.force_ibc and record.ibc != 0:
+                record.payroll_value = (record.ibc / 30) * record.number_of_days
+            else:
+                record.get_amount_license()
 
     @api.onchange('date_from', 'date_to', 'employee_id', 'holiday_status_id', 'number_of_days')
     def get_amount_license(self):
@@ -100,10 +107,11 @@ class HolidaysRequest(models.Model):
                     ibc = self.get_average_last_year(contracts) or 0.0
                 else:
                     ibc = contracts.wage
-
                 record.payroll_value = (ibc/30) * record.number_of_days
                 record.ibc = ibc
                 self._prepare_leave_line()
+                if record.line_ids:
+                    record.payroll_value = sum(x.amount for x in record.line_ids)
 
     def get_wage_in_date(self,process_date,contracts):
         wage_in_date = contracts.wage

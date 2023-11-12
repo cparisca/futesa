@@ -100,7 +100,6 @@ class account_move(models.Model):
                         #record._recompute_tax_lines()
                         record._recompute_dynamic_lines(recompute_all_taxes=True)
                 except:
-                    pass
 
 class lavish_confirm_wizard(models.TransientModel):
     _name = 'lavish.confirm.wizard'

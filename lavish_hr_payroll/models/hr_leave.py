@@ -88,6 +88,7 @@ class HolidaysRequest(models.Model):
     def force_ibc_amt(self):
         for record in self:
             if record.force_ibc and record.ibc != 0:
+
                 record.payroll_value = (record.ibc / 30) * record.number_of_days
                 record._prepare_leave_line()
             else:
@@ -570,6 +571,7 @@ class HolidaysRequest(models.Model):
             date_tmp += timedelta(days=1)  # Move to the next day
 
         self.line_ids = new_leave_line
+        self.payroll_value = sum(x.amount for x in self.line_ids)
 
     def _apply_leave_line(self, date_tmp):
         eval_days_off = self.holiday_status_id.evaluates_day_off

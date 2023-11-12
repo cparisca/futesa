@@ -28,6 +28,9 @@
                         <field name="days_used" />
                         <field name="eps_value" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
                         <field name="payment_date" />
+                        <field name="evaluates_day_off"/>
+                        <field name="apply_day_31"/>
+                        <field name="discount_rest_day"/>
                         <field name="is_extension" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
                         <field name="extension_id" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
                     </group>
@@ -42,16 +45,17 @@
                         <field name="is_vacation" invisible="1" />
                     </group>
                 </xpath>
-                <xpath expr="//group[@name='col_right']" position='after'>
+                <xpath expr="//group" position="after">
                     <notebook>
-                        <page name='page_leave_line' string="Lineas de Ausencia">
+                        <page name="page_leave_line" string="Lineas de Ausencia">
                             <field name="line_ids">
                                 <tree>
                                     <field name="sequence" widget="handle"/>
-                                    <field name="date" />
-                                    <field name="amount" />
-                                    <field name="state" />
-                                    <field name="rule_id" />
+                                    <field name="date"/>
+                                    <field name="amount"/>
+                                    <field name="state"/>
+                                    <field name="rule_id"/>
+                                    <field name="payslip_id"/>
                                 </tree>
                             </field>
                         </page>

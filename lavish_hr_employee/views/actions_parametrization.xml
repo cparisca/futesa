@@ -82,6 +82,9 @@
                 </xpath>
                 <xpath expr="//field[@name='request_unit']" position="after">
                     <field name="unpaid_absences"/>
+                    <field name="evaluates_day_off"/>
+                    <field name="apply_day_31"/>
+                    <field name="discount_rest_day"/>
                     <field name="is_vacation"/>
                     <field name="novelty"/>
                     <field name="liquidacion_value"/>

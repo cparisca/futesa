@@ -522,6 +522,10 @@ class HolidaysRequest(models.Model):
         else:
             return 1, self.date_from
 
+    def compute_line(self):
+        self._prepare_leave_line()
+
+
     def _prepare_leave_line(self):
         new_leave_line = []
         date_tmp = self.date_from

@@ -10,6 +10,13 @@ from odoo.osv.expression import AND
 from odoo.tools import format_date
 
 
+STATE = [
+    ('validated', 'Validada'),
+    ('paid', 'Pagada')
+]
+
+
+
 
 class HrWorkEntryType(models.Model):    
     _inherit = "hr.work.entry.type"
@@ -26,6 +33,7 @@ class HolidaysRequest(models.Model):
     employee_identification = fields.Char('Identificación empleado')
     branch_id = fields.Many2one(related='employee_id.branch_id', string='Sucursal', store=True)
     unpaid_absences = fields.Boolean(related='holiday_status_id.unpaid_absences', string='Ausencia no remunerada',store=True)
+    contract_id = fields.Many2one(comodel_name='hr.contract', string='Contrato', compute='_inverse_get_contract',store=True)
     #Campos para vacaciones
     is_vacation = fields.Boolean(related='holiday_status_id.is_vacation', string='Es vacaciones',store=True)
     business_days = fields.Integer(string='Días habiles')
@@ -42,7 +50,9 @@ class HolidaysRequest(models.Model):
     is_recovery = fields.Boolean('Es recobro',tracking=True)
     payroll_value = fields.Float('Valor a pagado',tracking=True)
     ibc = fields.Float('IBC',tracking=True)
+    force_ibc = fields.Boolean('Forzar IBC ausencia',tracking=True)
     leave_ids = fields.One2many('hr.absence.days', 'leave_id', string='Novedades', readonly=True)
+    line_ids = fields.One2many(comodel_name='hr.leave.line', inverse_name='leave_id', readonly=True, string='Lineas de Ausencia')
     eps_value = fields.Float('Valor pagado por la EPS',tracking=True)
     payment_date = fields.Date ('Fecha de pago',tracking=True)
     is_extension = fields.Boolean(string='Es prórroga', default=False)
@@ -53,6 +63,15 @@ class HolidaysRequest(models.Model):
     payroll_id = fields.Many2one('hr.payslip')
     days_used = fields.Float(string='Dias a usar',compute="_days_used")
 
+    def _inverse_get_contract(self):
+        for record in self:
+            contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('state', '=', 'open')])
+            #if not contract_id:
+            #   raise ValidationError('El emplado %s no tiene contrato en proceso' % (record.employee_id.name))
+            if len(contract_id) > 1:
+                raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
+            record.contract_id = contract_id
+    
     @api.depends('leave_ids', 'leave_ids.days_used')
     def _days_used(self):
         for rec in self:
@@ -491,3 +510,64 @@ class hr_leave_diagnostic(models.Model):
             result.append((record.id, "{} | {}".format(record.code,record.name)))
         return result
 
+
+class HrLeaveLine(models.Model):
+    _name = 'hr.leave.line'
+    _description = 'Lineas de Ausencia'
+
+    leave_id = fields.Many2one(comodel_name='hr.leave', string='Ausencia', required=True)
+    payslip_id = fields.Many2one(comodel_name='hr.payslip', string='Nónima')
+    contract_id = fields.Many2one(string="Contrato", related='leave_id.contract_id')
+    rule_id = fields.Many2one('hr.salary.rule', 'Reglas Salarial')
+    date = fields.Date(string='Fecha')
+    state = fields.Selection(string='Estado', selection=STATE)
+    amount = fields.Float(string='Valor')
+    sequence = fields.Integer(string='Secuencia')
+
+    def create_payslip_line(self, payslip_id):
+        leave_type_id = self.leave_id.leave_type_id
+        rate, concept_id = leave_type_id.get_rate_concept_id(self.sequence)
+        payslip_line = {
+            'name': leave_type_id.name,
+            'payslip_id': payslip_id,
+            'category': leave_type_id.category,
+            'value': self.amount,
+            'qty': 1 if leave_type_id.category_type != 'VAC_MONEY' else self.leave_id.days_vac_money,
+            'rate': rate,
+            'total': self.amount,
+            'origin': 'local',
+            'concept_id': concept_id,
+            'leave_id': self.leave_id.id,
+            'novelty_id': None,
+            'overtime_id': None,
+        }
+        for unique_key in ['rate', 'concept_id', 'leave_id', 'novelty_id', 'overtime_id']:
+            if 'unique_key' in payslip_line:
+                payslip_line['unique_key'] += str(payslip_line[unique_key])
+            else:
+                payslip_line['unique_key'] = str(payslip_line[unique_key])
+        return payslip_line
+
+    def belongs_category(self, categories):
+        return self.leave_id.leave_type_id.id in categories
+
+    def get_info_from_leave_type(self, cr, data):
+        """
+        Obtiene el numero de dias de un tipo de ausencia y de un contrato
+        @params:
+        cr: cursor con el que se va a ejecutar la consulta
+        data: diccionario con la siguiente estructura.
+            {'contract':int, 'start':datetime, 'end':datetime,'type':tuple(string)}
+        """
+        query = """
+        SELECT COUNT(*), SUM(HLL.amount)
+        FROM hr_leave_line AS  HLL
+        INNER JOIN hr_leave AS HL ON HL.id = HLL.leave_id
+        INNER JOIN hr_leave_type AS HLT ON HLT.id = HL.leave_type_id
+        WHERE
+            HL.contract_id = %(contract)s AND
+            HLL.date BETWEEN %(start)s AND %(end)s AND
+            HLT.category_type in %(type)s
+        """
+        res = orm._fetchall(cr, query, data)
+        return sum([x[0] for x in res if x[0]]), sum([x[1] for x in res if x[1]])

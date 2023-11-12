@@ -9,30 +9,27 @@
             <field name="arch" type="xml">
                 <div name="title" position="inside">
                     <h1 class="d-flex flex-row justify-content-between">
-                        <field name="sequence"/>
+                        <field name="sequence" readonly="1"/>
                     </h1>
                 </div>
+                <field name="employee_id" position="before">
+                    <field name="contract_id" readonly="1"/>
+                </field>
                 <xpath expr="//group[@name='col_right']" position="before">
                     <group name="entities" string="Novedad">
-                        <field name="is_recovery"
-                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
-                        <field name="type_of_entity"
-                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="is_recovery" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="type_of_entity" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
                         <field name="entity" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
-                        <field name="diagnostic"
-                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
-                        <field name="radicado"
-                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
-                        <field name="ibc" />
+                        <field name="diagnostic" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="radicado" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="force_ibc" />
+                        <field name="ibc" attrs="{'readonly': [('force_ibc', '=', False)]}" />
                         <field name="payroll_value" />
                         <field name="days_used" />
-                        <field name="eps_value"
-                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="eps_value" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
                         <field name="payment_date" />
-                        <field name="is_extension"
-                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
-                        <field name="extension_id"
-                            attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="is_extension" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
+                        <field name="extension_id" attrs="{'invisible': [('type_of_entity', '=', False)]}" />
                     </group>
                 </xpath>
                 <xpath expr="//group[@name='col_right']" position="before">
@@ -44,6 +41,21 @@
                         <field name="days_31_holidays" readonly="1" force_save="1" />
                         <field name="is_vacation" invisible="1" />
                     </group>
+                </xpath>
+                <xpath expr="//group[@name='col_right']" position='after'>
+                    <notebook>
+                        <page name='page_leave_line' string="Lineas de Ausencia">
+                            <field name="leave_line_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="date" />
+                                    <field name="amount" />
+                                    <field name="state" />
+                                    <field name="rule_id" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </xpath>
             </field>
         </record>

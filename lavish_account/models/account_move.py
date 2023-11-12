@@ -100,8 +100,8 @@ class account_move(models.Model):
                         #record._recompute_tax_lines()
                         record._recompute_dynamic_lines(recompute_all_taxes=True)
                 except:
-
-class lavish_confirm_wizard(models.TransientModel):
+                    pass
+class lavishconfirmwizard(models.TransientModel):
     _name = 'lavish.confirm.wizard'
 
     accounting_closing_id = fields.Many2one('annual.accounting.closing', string='Cierre contable anual', ondelete='cascade')
@@ -111,7 +111,7 @@ class lavish_confirm_wizard(models.TransientModel):
             obj_move = self.env['account.move'].search([('accounting_closing_id', '=', self.accounting_closing_id.id)])
             obj_move.unlink()
             self.accounting_closing_id.generate_accounting_closing()
-        obj_confirm = super(lavish_confirm_wizard, self).yes()
+        obj_confirm = super(lavishconfirmwizard, self).yes()
         return obj_confirm
 
 class annual_accounting_closing(models.Model):

@@ -4,16 +4,21 @@
     <data noupdate="1">
         <record model="hr.type.tax.retention" id="lavish_hr_payroll.type_tax_100">
             <field name="code">100</field>
-            <field name="name">RETEFUENTE METODO ORDINARIO NÓMINA</field>            
+            <field name="name">RETEFUENTE METODO ORDINARIO NÓMINA</field>
         </record>
         <record model="hr.type.tax.retention" id="lavish_hr_payroll.type_tax_102">
             <field name="code">102</field>
-            <field name="name">RETEFUENTE METODO PROC. 2 NÓMINA</field>            
+            <field name="name">RETEFUENTE METODO PROC. 2 NÓMINA</field>
         </record>
         <record model="hr.type.tax.retention" id="lavish_hr_payroll.type_tax_104">
             <field name="code">104</field>
-            <field name="name">PRIMA</field>            
+            <field name="name">PRIMA</field>
         </record>
-        
+        <record id="seq_hr_leave" model="ir.sequence">
+            <field name="name">Número Ausencia</field>
+            <field name="code">seq.hr.leave</field>
+            <field name="prefix">AUS-</field>
+            <field name="padding">10</field>
+        </record>
     </data>
 </odoo>

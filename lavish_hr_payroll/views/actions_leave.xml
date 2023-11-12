@@ -45,7 +45,7 @@
                 <xpath expr="//group[@name='col_right']" position='after'>
                     <notebook>
                         <page name='page_leave_line' string="Lineas de Ausencia">
-                            <field name="leave_line_ids">
+                            <field name="line_ids">
                                 <tree>
                                     <field name="sequence" widget="handle"/>
                                     <field name="date" />

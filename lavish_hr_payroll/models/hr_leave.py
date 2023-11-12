@@ -544,8 +544,6 @@ class HolidaysRequest(models.Model):
                     amount_real = amount / 30
                 else:
                     amount_real = amount * type_id.get_rate_concept_id(sequence)[0] / 100
-                if amount_real < type_id.novelty != 'lnr':
-                    amount_real = amount
                 rule = type_id.get_rate_concept_id(sequence)[1] or type_id.eps_arl_input_id.id
                 if self._apply_leave_line(date_tmp):
                     new_leave_line.append((0, 0, {

@@ -527,6 +527,7 @@ class HolidaysRequest(models.Model):
 
 
     def _prepare_leave_line(self):
+        self._clean_leave()
         new_leave_line = []
         date_tmp = self.date_from
         sequence, date_origin = self.get_sequence_and_date()

@@ -558,6 +558,13 @@ class HolidaysRequest(models.Model):
 
         self.line_ids = new_leave_line
 
+    def _apply_leave_line(self, date_tmp):
+        days_off = self.env['hr.days.off.year']
+        eval_days_off = self.leave_type_id.evaluates_day_off
+        is_day_off = eval_days_off and self.env['lavish.holidays'].search([('date', '=', date_tmp)]) #days_off.is_day_off(date_tmp)
+        return not is_day_off and self.contract_id.is_working_day(date_tmp)
+
+
     def _clean_leave(self):
         if self.state == 'validated':
             self.line_ids.unlink()

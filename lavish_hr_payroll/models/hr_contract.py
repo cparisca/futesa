@@ -638,3 +638,8 @@ class hr_contract(models.Model):
             return contract_id.u_ibc
         # If no IBC is found, return the contract's wage
         return contract_id.wage
+
+    def is_working_day(self, date):
+        work_days = [int(x.dayofweek)
+                     for x in self.resource_calendar_id.attendance_ids]
+        return date.weekday() in work_days

@@ -197,8 +197,7 @@ class HrSalaryRule(models.Model):
         payslip = ld['payslip']
         if payslip.leave_ids:
             for detalle in payslip.leave_days_ids:
-                if detalle.holiday_status_id.code in (
-                'INCAPACIDAD_ENF_GENERAL') and detalle.holiday_id.state == 'validate':
+                if detalle.holiday_status_id.code in ('INCAPACIDAD_ENF_GENERAL') and detalle.holiday_id.state == 'validate':
                     if detalle.sequence > 0 and detalle.sequence <= 2:
                         dias += detalle.days_payslip
         if dias > 0:

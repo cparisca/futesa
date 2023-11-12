@@ -7,6 +7,11 @@
             <field name="priority">20</field>
             <field name="inherit_id" ref="hr_holidays.hr_leave_view_form" />
             <field name="arch" type="xml">
+                <div name="title" position="inside">
+                    <h1 class="d-flex flex-row justify-content-between">
+                        <field name="sequence"/>
+                    </h1>
+                </div>
                 <xpath expr="//group[@name='col_right']" position="before">
                     <group name="entities" string="Novedad">
                         <field name="is_recovery"

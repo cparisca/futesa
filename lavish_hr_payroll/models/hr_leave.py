@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, date
 from calendar import monthrange
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
-from datetime import datetime, date
 
 from odoo.osv.expression import AND
 from odoo.tools import format_date
@@ -23,6 +22,7 @@ class HrWorkEntryType(models.Model):
 class HolidaysRequest(models.Model):    
     _inherit = "hr.leave"
 
+    sequence = fields.Char('Numero')
     employee_identification = fields.Char('Identificación empleado')
     branch_id = fields.Many2one(related='employee_id.branch_id', string='Sucursal', store=True)
     unpaid_absences = fields.Boolean(related='holiday_status_id.unpaid_absences', string='Ausencia no remunerada',store=True)
@@ -66,9 +66,9 @@ class HolidaysRequest(models.Model):
             amount = 0.0
             if contracts and self.date_to:
                 if record.holiday_status_id.liquidacion_value == 'IBC':
-                    ibc = self.GetIBCSLastMonth(self.date_to, contracts) or 0.0
+                    ibc = self.GetIBCSLastMonth(self.date_to.date(), contracts) or 0.0
                 elif record.holiday_status_id.liquidacion_value == 'WAGE':
-                    ibc = self.get_wage_in_date(self.date_to, contracts) or 0.0
+                    ibc = self.get_wage_in_date(self.date_to.date(), contracts) or 0.0
                 elif record.holiday_status_id.liquidacion_value == 'YEAR':
                     ibc = self.get_average_last_year(contracts) or 0.0
                 else:
@@ -399,6 +399,7 @@ class HolidaysRequest(models.Model):
 
     @api.model
     def create(self, vals):
+        vals['sequence'] = self.env['ir.sequence'].next_by_code('seq.hr.leave') or ''
         if vals.get('employee_identification'):
             obj_employee = self.env['hr.employee'].search([('identification_id', '=', vals.get('employee_identification'))])            
             vals['employee_id'] = obj_employee.id
@@ -408,6 +409,7 @@ class HolidaysRequest(models.Model):
         
         res = super(HolidaysRequest, self).create(vals)
         return res
+
 
     def _cancel_work_entry_conflict(self):
         """
@@ -489,11 +491,3 @@ class hr_leave_diagnostic(models.Model):
             result.append((record.id, "{} | {}".format(record.code,record.name)))
         return result
 
-    # @api.model
-    # def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
-    #     args = args or []
-    #     domain = []
-    #     if name:
-    #         domain = ['|', ('name', operator, name), ('code', operator, name)]
-    #     diagnostic_interface = self._search(expression.AND([domain, args]), limit=limit, access_rights_uid=name_get_uid)
-    #     return diagnostic_interface#self.browse(contract_interface_id).name_get()

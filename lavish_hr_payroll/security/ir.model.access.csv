@@ -38,4 +38,5 @@ access_hr_hr_work_entry_refresh,hr_work_entry_refresh,model_hr_work_entry_refres
 access_hr_payroll_report_lavish_filter,hr_payrol_report_lavish_filter,model_hr_payroll_report_lavish_filter,,1,1,1,1
 access_hr_auditing_reports,hr.auditing.reports,model_hr_auditing_reports,,1,1,1,1
 access_hr_absence_days,hr.absence.days,model_hr_absence_days,,1,1,1,1
+access_hr_leave_line_manager_payslip,access_hr_leave_line_manager_payslip,model_hr_leave_line,,1,1,1,1
 access_hr_contract_rtf_log,hr_contract_rtf_log,model_hr_contract_rtf_log,,1,1,1,1

@@ -545,16 +545,16 @@ class HolidaysRequest(models.Model):
                 else:
                     amount_real = amount * type_id.get_rate_concept_id(sequence)[0] / 100
                 rule = type_id.get_rate_concept_id(sequence)[1] or type_id.eps_arl_input_id.id
-                if self._apply_leave_line(date_tmp):
-                    new_leave_line.append((0, 0, {
-                        'sequence': sequence,
-                        'date': date_tmp,
-                        'state': 'validated',
-                        'leave_id': self.id,
-                        'rule_id': rule,
-                        'amount': amount_real,
-                    }))
-                    sequence += 1
+                #if self._apply_leave_line(date_tmp):
+                new_leave_line.append((0, 0, {
+                    'sequence': sequence,
+                    'date': date_tmp,
+                    'state': 'validated',
+                    'leave_id': self.id,
+                    'rule_id': rule,
+                    'amount': amount_real,
+                }))
+                sequence += 1
             date_tmp += timedelta(days=1)  # Move to the next day
 
         self.line_ids = new_leave_line

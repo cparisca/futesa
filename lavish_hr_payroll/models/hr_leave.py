@@ -550,6 +550,7 @@ class HolidaysRequest(models.Model):
                         'sequence': sequence,
                         'date': date_tmp,
                         'state': 'validated',
+                        'leave_id': self.id,
                         'rule_id': rule,
                         'amount': amount_real,
                     }))

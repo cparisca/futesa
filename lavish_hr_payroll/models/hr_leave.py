@@ -535,7 +535,7 @@ class HolidaysRequest(models.Model):
         #if not type_id.holiday_status_id:
         #    raise ValidationError('La categoría de la ausencia no tiene tipo')
         amount = self.ibc
-        day_count = (self.date_to - self.date_from).days
+        day_count = (self.date_to - self.date_from).days + 1
         #self.date_to and self.date_from:
         for day in range(day_count):
             if not (date_tmp.day == 31 and type_id.novelty != 'vco' and not type_id.apply_day_31):

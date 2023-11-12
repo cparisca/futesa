@@ -48,6 +48,9 @@ class HolidaysRequest(models.Model):
     diagnostic = fields.Many2one('hr.leave.diagnostic', 'Diagnóstico',tracking=True)
     radicado = fields.Char('Radicado #',tracking=True)
     is_recovery = fields.Boolean('Es recobro',tracking=True)
+    evaluates_day_off = fields.Boolean('Evalúa festivos')
+    apply_day_31 = fields.Boolean(string='Aplica día 31')
+    discount_rest_day = fields.Boolean(string='Descontar día de descanso')
     payroll_value = fields.Float('Valor a pagado',tracking=True)
     ibc = fields.Float('IBC',tracking=True)
     force_ibc = fields.Boolean('Forzar IBC ausencia',tracking=True)
@@ -62,6 +65,11 @@ class HolidaysRequest(models.Model):
         string='Prórroga')
     payroll_id = fields.Many2one('hr.payslip')
     days_used = fields.Float(string='Dias a usar',compute="_days_used")
+
+    def action_draft(self):
+        [record._clean_leave() for record in self]
+        return super(HolidaysRequest, self).action_draft()
+
 
     def _inverse_get_contract(self):
         for record in self:
@@ -95,6 +103,7 @@ class HolidaysRequest(models.Model):
 
                 record.payroll_value = (ibc/30) * record.number_of_days
                 record.ibc = ibc
+                self._prepare_leave_line()
 
     def get_wage_in_date(self,process_date,contracts):
         wage_in_date = contracts.wage
@@ -493,6 +502,63 @@ class HolidaysRequest(models.Model):
                 included |= previous_employee_work_entries - overlappping
             overlappping.write({'leave_id': False})
             included.write({'active': False})
+
+#############################################################################################
+#GET HR_LEAVE_LINE
+#############################################################################################
+    def get_sequence_and_date(self):
+        category_type = self.holiday_status_id.novelty
+        if category_type in ['ige', 'irl']:
+            start = self.date_from
+            blacklist = [self.id]
+            extension_id = self.extension_id
+            while extension_id:
+                if extension_id.id in blacklist:
+                    raise ValidationError(f'Error de prórroga de si misma, validar extension ausencia {self.name}')
+                blacklist.append(extension_id.id)
+                start = extension_id.date_from
+                extension_id = extension_id.extension_id
+            return max([x.sequence for x in self.extension_id.line_ids] + [0]) + 1, start
+        else:
+            return 1, self.date_from
+
+    def _prepare_leave_line(self):
+        new_leave_line = []
+        date_tmp = self.date_from
+        sequence, date_origin = self.get_sequence_and_date()
+        type_id = self.holiday_status_id
+        #if not type_id.holiday_status_id:
+        #    raise ValidationError('La categoría de la ausencia no tiene tipo')
+        amount = self.ibc
+        day_count = (self.date_to - self.date_from).days
+        #self.date_to and self.date_from:
+        for day in range(day_count):
+            if not (date_tmp.day == 31 and type_id.novelty != 'vco' and not type_id.apply_day_31):
+                if type_id.novelty == 'ige' and sequence <= type_id.num_days_no_assume:
+                    amount_real = amount / 30
+                elif type_id.novelty == 'irl' and sequence == 1:
+                    amount_real = amount / 30
+                else:
+                    amount_real = amount * type_id.get_rate_concept_id(sequence)[0] / 100
+                if amount_real < type_id.novelty != 'lnr':
+                    amount_real = amount
+                rule = type_id.get_rate_concept_id(sequence)[1] or type_id.eps_arl_input_id.id
+                if self._apply_leave_line(date_tmp):
+                    new_leave_line.append((0, 0, {
+                        'sequence': sequence,
+                        'date': date_tmp,
+                        'state': 'validated',
+                        'rule_id': rule,
+                        'amount': amount_real,
+                    }))
+                    sequence += 1
+            date_tmp += timedelta(days=1)  # Move to the next day
+
+        self.line_ids = new_leave_line
+
+    def _clean_leave(self):
+        if self.state == 'validated':
+            self.line_ids.unlink()
 
 class hr_leave_diagnostic(models.Model):
     _name = "hr.leave.diagnostic"

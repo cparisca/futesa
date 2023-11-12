@@ -89,6 +89,7 @@ class HolidaysRequest(models.Model):
         for record in self:
             if record.force_ibc and record.ibc != 0:
                 record.payroll_value = (record.ibc / 30) * record.number_of_days
+                record._prepare_leave_line()
             else:
                 record.get_amount_license()
 

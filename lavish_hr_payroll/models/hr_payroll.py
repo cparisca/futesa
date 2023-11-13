@@ -514,7 +514,7 @@ class Hr_payslip(models.Model):
             wage_day = rec.contract_id.wage / 30
             date_tmp = rec.date_from
             while date_tmp <= rec.date_to:
-                is_absence_day = any(leave.date_from <= date_tmp <= leave.date_to for leave in rec.leave_ids)
+                is_absence_day = any(leave.date_from <= date_tmp <= leave.date_to for leave in rec.leave_ids.leave_id)
                 is_within_contract = rec.contract_id.date_start <= date_tmp <= (self.contract_id.date_end or date_tmp)
                 wage_change = next((change for change in self.contract_id.change_wage_ids if change.date_start <= date_tmp), None)
                 current_wage_day = wage_change.wage / 30 if wage_change else wage_day

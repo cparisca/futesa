@@ -604,6 +604,7 @@ class hr_leave_diagnostic(models.Model):
 class HrLeaveLine(models.Model):
     _name = 'hr.leave.line'
     _description = 'Lineas de Ausencia'
+    _order = 'date desc'
 
     leave_id = fields.Many2one(comodel_name='hr.leave', string='Ausencia', required=True)
     payslip_id = fields.Many2one(comodel_name='hr.payslip', string='Nónima')

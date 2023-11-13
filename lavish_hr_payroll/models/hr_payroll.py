@@ -827,6 +827,7 @@ class Hr_payslip(models.Model):
                     line.loan_line_id.payslip_id = False
                     line.loan_line_id.loan_id._compute_loan_amount()
             #Eliminar contabilización y el calculo
+            payslip.leave_ids.leave_id.line_ids.write({'payslip_id': False})
             payslip.mapped('move_id').unlink()
             # Modificar cuotas de prestamos pagadas
             obj_payslip_line = self.env['hr.payslip.line'].search([('slip_id', '=', payslip.id), ('loan_id', '!=', False)])

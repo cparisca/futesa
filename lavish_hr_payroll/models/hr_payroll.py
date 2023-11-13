@@ -483,8 +483,8 @@ class Hr_payslip(models.Model):
             # Search for relevant work entries
             work_entries = self.env['hr.leave'].search([
                 ('state', 'not in', ['cancel', 'refuse']),
-                ('date_from', '>=', date_from),
-                ('date_to', '<=', date_to),
+                ('date_to', '>=', date_from),
+                ('date_from', '<=', date_to),
                 ('employee_id', '=', employee_id),
             ])
 
@@ -503,7 +503,7 @@ class Hr_payslip(models.Model):
                 leave_records._days_used()
 
                 # Update payslip_id in a bulk operation
-                relevant_lines = leave_records.mapped('leave_id.line_ids').filtered(lambda l: l.date <= rec.date_to)
+                relevant_lines = leave_records.mapped('leave_id.line_ids').filtered(lambda l: l.date <= rec.date_to and not l.payslip_id)
                 relevant_lines.write({'payslip_id': rec.id})
 
             # Compute worked days

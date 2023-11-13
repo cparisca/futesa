@@ -43,21 +43,22 @@ class HrPayslipRun(models.Model):
 
     @api.depends('total_days', 'days_used')
     def _days_used(self):
-        leave_obj = self.env['hr.absence.days'] 
+        self.days = 0.0
+        # leave_obj = self.env['hr.absence.days'] 
 
-        for rec in self:
-            if not rec.payroll_id.date_to:
-                continue  # Si no hay fecha 'date_to', pasamos al siguiente registro
+        # for rec in self:
+        #     if not rec.payroll_id.date_to:
+        #         continue  # Si no hay fecha 'date_to', pasamos al siguiente registro
             
-            # Obtiene todos los leaves que cumplen con la condición sin iterar sobre ellos
-            leaves = leave_obj.search([
-                ('id', 'in', rec.leave_id.leave_ids.ids),
-                ('payroll_id.date_to', '<', rec.payroll_id.date_to)
-            ])
-            # Calcula la suma de days_used
-            total_days = sum(leave.days_used + (1 if leave.payroll_id.date_to and leave.payroll_id.date_to.day == 31 else 0) for leave in leaves)
+        #     # Obtiene todos los leaves que cumplen con la condición sin iterar sobre ellos
+        #     leaves = leave_obj.search([
+        #         ('id', 'in', rec.leave_id.leave_ids.ids),
+        #         ('payroll_id.date_to', '<', rec.payroll_id.date_to)
+        #     ])
+        #     # Calcula la suma de days_used
+        #     total_days = sum(leave.days_used + (1 if leave.payroll_id.date_to and leave.payroll_id.date_to.day == 31 else 0) for leave in leaves)
             
-            rec.days = total_days
+        #     rec.days = total_days
 
 
 class HrPayslipRun(models.Model):
@@ -216,205 +217,6 @@ class HrPayslipEmployees(models.TransientModel):
         # Could be overriden to avoid having 2 'end of the year bonus' payslips, etc.
         return contracts
 
-    # def compute_sheet_thread(self,item,obj_structure_id,obj_payslip_run,obj_contracts):
-    #     time.sleep(3)
-    #     with api.Environment.manage():
-    #         new_cr = self.pool.cursor()
-    #         self = self.with_env(self.env(cr=new_cr))
-    #         aditional_info = ''
-
-    #         _logger.info(f'(START) HILO/REGISTRO {str(item)} - Ejecución liquidación de nómina con {len(obj_contracts.ids)} contratos.')
-
-    #         payslips = self.env['hr.payslip'].with_env(self.env(cr=new_cr))
-    #         Payslip = self.env['hr.payslip'].with_env(self.env(cr=new_cr))
-    #         default_values = Payslip.default_get(Payslip.fields_get())
-
-    #         contracts = self.env['hr.contract'].search([('id', 'in', obj_contracts.ids)]).with_env(self.env(cr=new_cr))
-    #         structure_id = self.env['hr.payroll.structure'].search([('id', 'in', obj_structure_id.ids)]).with_env(self.env(cr=new_cr))
-    #         payslip_run = self.env['hr.payslip.run'].search([('id', 'in', obj_payslip_run.ids)]).with_env(self.env(cr=new_cr))
-
-    #         try:
-    #             for contract in contracts:
-    #                 if structure_id.name:
-    #                     aditional_info = 'Contrato: ' + contract.name + '. Estructura: ' + structure_id.name
-    #                 else:
-    #                     aditional_info = 'Contrato: ' + contract.name + '. Estructura: ' + contract.structure_type_id.default_struct_id.name
-
-    #                 log_msg = 'Empleado actual: ' + str(contract.employee_id.id) + ': ' + \
-    #                           contract.employee_id.name + '. ' + aditional_info
-
-    #                 values = dict(default_values, **{
-    #                     'employee_id': contract.employee_id.id,
-    #                     'credit_note': payslip_run.credit_note,
-    #                     'payslip_run_id': payslip_run.id,
-    #                     'date_from': payslip_run.date_start,
-    #                     'date_to': payslip_run.date_end,
-    #                     'contract_id': contract.id,
-    #                     'date_liquidacion': self.date_liquidacion,
-    #                     'date_prima': self.date_prima,
-    #                     'date_cesantias': self.date_cesantias,
-    #                     'pay_cesantias_in_payroll': self.pay_cesantias_in_payroll,
-    #                     'pay_primas_in_payroll': self.pay_primas_in_payroll,
-    #                     'struct_id': structure_id.id or contract.structure_type_id.default_struct_id.id,
-    #                     'prima_run_reverse_id': self.prima_run_reverse_id,
-    #                 })
-    #                 if structure_id.process == 'prima' and self.prima_run_reverse_id:
-    #                     prima_payslip_reverse_obj = self.env['hr.payslip'].search([('payslip_run_id','=',self.prima_run_reverse_id.id),
-    #                                                    ('employee_id','=',contract.employee_id.id)],limit=1).with_env(self.env(cr=new_cr))
-    #                     if len(prima_payslip_reverse_obj) == 1:
-    #                         values = dict(values, **{
-    #                             'prima_payslip_reverse_id': prima_payslip_reverse_obj.id,
-    #                         })
-    #                 if structure_id.process == 'contrato':
-    #                     values = dict(values, **{
-    #                         'settle_payroll_concepts': self.settle_payroll_concepts,
-    #                         'novelties_payroll_concepts': self.novelties_payroll_concepts,
-    #                     })
-
-    #                 payslip = self.env['hr.payslip'].new(values).with_env(self.env(cr=new_cr))
-    #                 payslip._onchange_employee()
-    #                 if structure_id.process == 'contrato':
-    #                     payslip.load_dates_liq_contrato()
-    #                 values = payslip._convert_to_write(payslip._cache)
-    #                 payslips += Payslip.create(values)
-    #             payslips.compute_sheet()
-    #             _logger.info(f'(END) HILO/REGISTRO {str(item)} - Ejecución liquidación de nómina con {len(obj_contracts.ids)} contratos.')
-    #         except Exception as e:
-    #             msg = 'ERROR: ' + str(e.args[0])
-    #             if payslip_run.observations:
-    #                 if log_msg not in payslip_run.observations:
-    #                     payslip_run.write({'observations': log_msg + '\n' + msg + '\n' + payslip_run.observations})
-    #             else:
-    #                 payslip_run.write({'observations':log_msg + '\n' + msg})
-    #             _logger.info(f'(END/ERROR) HILO/REGISTRO {str(item)} - Ejecución liquidación de nómina con {len(obj_contracts.ids)} contratos.')
-    #         new_cr.commit()
-
-    # def compute_sheet(self):
-    #     self.ensure_one()
-    #     if not self.env.context.get('active_id'):
-    #         #from_date = fields.Date.to_date(self.env.context.get('default_date_start'))
-    #         #end_date = fields.Date.to_date(self.env.context.get('default_date_end'))
-    #         #payslip_run = self.env['hr.payslip.run'].create({
-    #         #    'name': from_date.strftime('%B %Y'),
-    #         #    'date_start': from_date,
-    #         #    'date_end': end_date,
-    #         #})
-    #         _logger.info(f'PROCESAMIENTOS DE NÓMINAS / LOTES - ERROR - SE INTENTO CREAR UN LOTE DE FORMA AUTOMATICA.')
-    #         return {'type': 'ir.actions.act_window_close'}
-    #     else:
-    #         payslip_run = self.env['hr.payslip.run'].browse(self.env.context.get('active_id'))
-
-    #     obj_payslip_exists = self.env['hr.payslip'].search([('payslip_run_id','in',payslip_run.ids)])
-    #     if len(obj_payslip_exists) > 0:
-    #         _logger.info(f'PROCESAMIENTOS DE NÓMINAS / LOTES - ERROR - SE INTENTO DUPLICAR LOS REGISTROS.')
-    #         return {
-    #             'type': 'ir.actions.act_window',
-    #             'res_model': 'hr.payslip.run',
-    #             'views': [[False, 'form']],
-    #             'res_id': payslip_run.id,
-    #         }
-
-    #     employees = self.with_context(active_test=False).employee_ids
-    #     if not employees:
-    #         raise UserError(_("You must select employee(s) to generate payslip(s)."))
-
-    #     if self.structure_id.use_worked_day_lines:
-    #         work_entries_conflict = self.env['hr.work.entry'].search([
-    #             ('date_start', '<=', payslip_run.date_end),
-    #             ('date_stop', '>=', payslip_run.date_start),
-    #             ('employee_id', 'in', employees.ids),
-    #             ('state', '=', 'conflict'),
-    #         ])
-
-    #         if len(work_entries_conflict) > 0:
-    #             raise ValidationError(_("Existen entradas de trabajo con conflicto, por favor verificar."))
-
-    #         work_entries = self.env['hr.work.entry'].search([
-    #             ('date_start', '<=', payslip_run.date_end),
-    #             ('date_stop', '>=', payslip_run.date_start),
-    #             ('employee_id', 'in', employees.ids),
-    #         ])
-    #         calendar_is_not_covered = self._check_undefined_slots(work_entries, payslip_run)
-
-    #         if calendar_is_not_covered:
-    #             date_start = fields.Datetime.to_datetime(payslip_run.date_start)
-    #             date_stop = datetime.combine(fields.Datetime.to_datetime(payslip_run.date_end),datetime.max.time())
-    #             self.env['hr.work.entry'].search([('date_start', '>=', date_start),
-    #                                          ('date_stop', '<=', date_stop),
-    #                                          ('contract_id', 'in', calendar_is_not_covered.ids)]).unlink()
-
-    #             vals_list = calendar_is_not_covered._get_work_entries_values(date_start, date_stop)
-    #             self.env['hr.work.entry'].create(vals_list)
-
-    #             work_entries = self.env['hr.work.entry'].search([
-    #                 ('date_start', '<=', payslip_run.date_end),
-    #                 ('date_stop', '>=', payslip_run.date_start),
-    #                 ('employee_id', 'in', employees.ids),
-    #             ])
-
-    #         validated = work_entries.action_validate()
-    #         if not validated:
-    #             observations = 'Algunas entradas de trabajo no se pudieron validar.'
-    #             payslip_run.observations = observations
-    #             # raise UserError(_("Some work entries could not be validated."))
-
-    #     if self.structure_id.process == 'contrato':
-    #         contracts = employees._get_contracts(payslip_run.date_start, payslip_run.date_end,
-    #                                              states=['open', 'finished'])
-    #     else:
-    #         contracts = employees._get_contracts(payslip_run.date_start, payslip_run.date_end,
-    #                                              states=['open'])  # , 'close'
-    #     contracts._generate_work_entries(payslip_run.date_start, payslip_run.date_end)
-
-    #     if len(contracts) == 0:
-    #         raise UserError(_("No se encontraron contratos activos para procesar, por favor verificar."))
-        
-    #     #--------------------------MANEJO POR HILOS PARA LA LIQUIDACIÓN EN LOTE--------------------------------
-
-    #     # Se dividen los contratos en 3 lotes para ser ejecutados en 2 hilos
-    #     div = math.ceil(len(contracts) / 3)
-    #     contracts_array_def, i, j = [], 0, div
-    #     while i <= len(contracts):
-    #         contracts_array_def.append(contracts[i:j])
-    #         i = j
-    #         j += div
-
-    #     # ----------------------------Recorrer empleados por multihilos
-    #     threads = []
-    #     date_start_process = datetime.now()
-    #     item = 1
-    #     for i_contracts in contracts_array_def:
-    #         if len(i_contracts) > 0:
-    #             t = threading.Thread(target=self.compute_sheet_thread, args=(item,self.structure_id,payslip_run,i_contracts,))
-    #             threads.append(t)
-    #             t.start()
-    #         item += 1
-
-    #     for thread in threads:
-    #         try:
-    #             thread.join()
-    #         except Exception as e:
-    #             msg = 'ERROR: ' + str(e.args[0])
-    #             if payslip_run.observations:
-    #                 payslip_run.write({'observations': payslip_run.observations + '\n' + msg})
-    #             else:
-    #                 payslip_run.write({'observations': msg})
-
-    #     date_finally_process = datetime.now()
-    #     time_process = date_finally_process - date_start_process
-    #     time_process = time_process.seconds / 60
-    #     str_time_process = "El proceso se demoro {:.2f} minutos.".format(time_process)
-
-    #     #Finalización del proceso
-    #     payslip_run.time_process = str_time_process
-    #     payslip_run.state = 'verify'
-
-    #     return {
-    #         'type': 'ir.actions.act_window',
-    #         'res_model': 'hr.payslip.run',
-    #         'views': [[False, 'form']],
-    #         'res_id': payslip_run.id,
-    #     }
 
     def compute_sheet(self):
         self.ensure_one()

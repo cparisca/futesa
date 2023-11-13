@@ -816,6 +816,7 @@ class Hr_payslip(models.Model):
                     line.loan_line_id.paid = False
                     line.loan_line_id.payslip_id = False
                     line.loan_line_id.loan_id._compute_loan_amount()
+            payslip.leave_ids.leave_id.line_ids.write({'payslip_id': False})
         return self.write({'state': 'draft'})
 
     def restart_payroll(self):

@@ -502,7 +502,7 @@ class Hr_payslip(models.Model):
                 leave_records._days_used()
 
                 # Update payslip_id in a bulk operation
-                relevant_lines = leave_records.mapped('leave_id.line_ids').filtered(lambda l: l.date <= date_to)
+                relevant_lines = leave_records.mapped('leave_id.line_ids').filtered(lambda l: l.date <= rec.date_to)
                 relevant_lines.write({'payslip_id': rec.id})
 
             # Compute worked days

@@ -512,15 +512,24 @@ class Hr_payslip(models.Model):
     def compute_worked_days(self):
         for rec in self:
             payslip_day_ids = []
-            base_wage_day = rec.contract_id.wage / 30
-            date_tmp = rec.date_from
+
+            # Sort the wage changes by date for efficient processing
             wage_changes_sorted = sorted(rec.contract_id.change_wage_ids, key=lambda x: x.date_start)
+
+            # Function to find the applicable daily wage
+            def get_applicable_wage(date):
+                applicable_wage_change = next((change for change in wage_changes_sorted if change.date_start <= date), None)
+                return applicable_wage_change.wage / 30 if applicable_wage_change else None
+
+            date_tmp = rec.date_from
+
             while date_tmp <= rec.date_to:
                 is_absence_day = any(leave.date_from.date() <= date_tmp <= leave.date_to.date() for leave in rec.leave_ids.leave_id)
                 is_within_contract = rec.contract_id.date_start <= date_tmp <= (rec.contract_id.date_end or date_tmp)
-                applicable_wage_change = next((change for change in wage_changes_sorted if change.date_start <= date_tmp), None)
-                current_wage_day = applicable_wage_change.wage / 30 if applicable_wage_change else base_wage_day
                 if is_within_contract:
+                    current_wage_day = get_applicable_wage(date_tmp)
+                    if current_wage_day is None:
+                        continue  # Skip the day if no wage is applicable
                     day_type = 'A' if is_absence_day else 'W'
                     payslip_day_data = {'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': day_type}
                     if not is_absence_day:
@@ -529,8 +538,11 @@ class Hr_payslip(models.Model):
                 else:
                     payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'X'})
                 date_tmp += timedelta(days=1)
+            # Create payslip day records in bulk
             rec.payslip_day_ids.create(payslip_day_ids)
+
         return True
+
 
     def name_get(self):
         result = []

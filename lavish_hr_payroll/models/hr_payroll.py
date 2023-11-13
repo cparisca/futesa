@@ -5,6 +5,7 @@ from .browsable_object import BrowsableObject, InputLine, WorkedDays, Payslips, 
 from collections import defaultdict
 import calendar
 from datetime import datetime, timedelta, date, time
+from calendar import monthrange
 from odoo import registry as registry_get
 import math
 import pytz
@@ -17,6 +18,11 @@ from odoo.tools.misc import format_date
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 _logger = logging.getLogger(__name__)
+DAY_TYPE = [
+    ('W', 'Trabajado'),
+    ('A', 'Ausencia'),
+    ('X', 'Sin contrato'),
+]
 
 #---------------------------LIQUIDACIÓN DE NÓMINA-------------------------------#
 class HrPayslipRun(models.Model):
@@ -413,6 +419,7 @@ class Hr_payslip(models.Model):
 
     leave_ids = fields.One2many('hr.absence.days', 'payroll_id', string='Novedades', readonly=True)
     leave_days_ids =fields.One2many('hr.leave.line', 'payslip_id', string='Detalle de Ausencia', readonly=True)
+    payslip_day_ids = fields.One2many(comodel_name='hr.payslip.day', inverse_name='payslip_id', string='Días de Nómina', readonly=True)
     rtefte_id = fields.Many2one('hr.employee.rtefte', 'RteFte', readonly=True)
     not_line_ids = fields.One2many('hr.payslip.not.line', 'slip_id', string='Reglas no aplicadas', readonly=True)
     observation = fields.Text(string='Observación')
@@ -466,57 +473,52 @@ class Hr_payslip(models.Model):
         for rec in self:
             rec.leave_ids.unlink()
             employee = rec.employee_id
-            contract = rec.contract_id
             date_from = datetime.combine(rec.date_from, datetime.min.time())
             date_to = datetime.combine(rec.date_to, datetime.max.time())
-            hours_per_day = rec._get_worked_day_lines_hours_per_day()
-            work_entries = self.env['hr.work.entry'].search(
-                [('state', 'in', ['validated', 'draft']),
-                    ('date_start', '>=', date_from),
-                    ('date_stop', '<=', date_to),
-                    ('contract_id', '=', contract.id),])
+            work_entries = self.env['hr.leave'].search(
+                [('state', '=', 'validated'),
+                    ('date_from', '>=', date_from),
+                    ('date_from', '<=', date_to),
+                    ('employee_id', '=', employee.id),])
             # En segundo lugar, encontró entradas de trabajo que exceden el intervalo y calculan la duración correcta.
-            work_entries += self.env['hr.work.entry'].search(
-                [
-                    '&', '&',
-                    ('state', 'in', ['validated', 'draft']),
-                    ('contract_id', '=', contract.id),
-                    '|', '|', '&', '&',
-                    ('date_start', '>=', date_from),
-                    ('date_start', '<', date_to),
-                    ('date_stop', '>', date_to),
-                    '&', '&',
-                    ('date_start', '<', date_from),
-                    ('date_stop', '<=', date_to),
-                    ('date_stop', '>', date_from),
-                    '&',
-                    ('date_start', '<', date_from),
-                    ('date_stop', '>', date_to),
-                ]
-            )
             # Validar incapacidades de más de 180 días
             leave_dict = defaultdict(lambda: {'days_used': 0})
+            vals = []
             for leave in work_entries:
-                if leave.leave_id:
-                    leave_id = leave.leave_id.id
-                    work_entry_type = leave.leave_id.holiday_status_id.work_entry_type_id
-                    vals = {
-                        'leave_id': leave_id,
-                        'leave_type': leave.leave_id.holiday_status_id.name,
-                        'employee_id': employee.id,
-                        'total_days': leave.leave_id.number_of_days,
-                        'payroll_id': rec.id,
-                        'days_used': rec._round_days(work_entry_type, (round(leave.duration / hours_per_day, 5) if hours_per_day else 0)),#leave.duration,
-                    }
-                    if leave_id in leave_dict:
-                        leave_dict[leave_id]['days_used'] += vals['days_used'] 
-                    else:
-                        leave_dict[leave_id] = vals
-            leave_ids = [(0, 0, vals) for vals in leave_dict.values()]
-            if leave_ids:
-                rec.write({'leave_ids': leave_ids})
+                leave_id = leave.id
+                vals.append({
+                    'leave_id': leave_id,
+                    'leave_type': leave.holiday_status_id.name,
+                    'employee_id': employee.id,
+                    'total_days': leave.number_of_days,
+                    'payroll_id': rec.id,
+                })
+            if vals:
+                rec.leave_ids =vals
                 rec.leave_ids._days_used()
                 rec.leave_ids.leave_id.line_ids.filtered(lambda l: l.date <= rec.date_to).write({'payslip_id': rec.id})
+            self.compute_worked_days()
+    def compute_worked_days(self):
+        for rec in self:
+            payslip_day_ids = []
+            wage_day = rec.contract_id.wage / 30
+            date_tmp = rec.date_from
+            while date_tmp <= rec.date_to:
+                is_absence_day = any(leave.date_from <= date_tmp <= leave.date_to for leave in rec.leave_ids)
+                is_within_contract = rec.contract_id.date_start <= date_tmp <= (self.contract_id.date_end or date_tmp)
+                wage_change = next((change for change in self.change_wage_ids if change.date_start <= date_tmp), None)
+                current_wage_day = wage_change.wage / 30 if wage_change else wage_day
+
+                if date_tmp.day  and is_within_contract:
+                    if is_absence_day:
+                        payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'A'})
+                    elif date_tmp.day not in is_within_contract:
+                        payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'W','subtotal':current_wage_day})
+                else:
+                    payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'X'})
+                date_tmp += timedelta(days=1)
+            rec.payslip_day_ids = payslip_day_ids
+        return True
 
     def name_get(self):
         result = []
@@ -1759,3 +1761,21 @@ class Hr_payslip(models.Model):
                         payments.payslip.write({'observation':payments.payslip.observation+ '\n El valor se trasladó a la liquidación '+self.number+' de '+self.struct_id.name })
                     else:
                         payments.payslip.write({'observation': 'El valor se trasladó a la liquidación ' + self.number + ' de ' + self.struct_id.name})
+
+
+
+
+class HrPayslipDay(models.Model):
+    _name = 'hr.payslip.day'
+    _description = 'Días de Nómina'
+    _order = 'day'
+
+    payslip_id = fields.Many2one(comodel_name='hr.payslip', string='Nómina', required=True)
+    day_type = fields.Selection(string='Tipo', selection=DAY_TYPE)
+    day = fields.Integer(string='Día')
+    name = fields.Char(string='Nombre', compute="_compute_name")
+    subtotal =  fields.Float('Subtotal')
+    @api.depends('day', 'day_type')
+    def _compute_name(self):
+        for record in self:
+            record.name = str(record.day) + record.day_type

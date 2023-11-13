@@ -714,7 +714,7 @@ class Hr_payslip(models.Model):
             if leave_ids:
                 rec.write({'leave_ids': leave_ids})
                 rec.leave_ids._days_used()
-                rec.leave_ids.line_ids.write({'payslip_id': rec.id})
+                rec.leave_ids.leave_id.line_ids.write({'payslip_id': rec.id})
 
     def name_get(self):
         result = []

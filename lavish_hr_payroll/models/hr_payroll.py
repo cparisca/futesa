@@ -473,6 +473,7 @@ class Hr_payslip(models.Model):
         for rec in self:
             # Unlink existing leave_ids
             rec.leave_ids.unlink()
+            rec.payslip_day_ids.unlink()
 
             # Setup date range and employee
             date_from = datetime.combine(rec.date_from, datetime.min.time())

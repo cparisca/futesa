@@ -249,6 +249,15 @@
                                 <field name="total" />
                             </tree>
                         </field>
+                        <field name="leave_days_ids" colspan="2" force_save="1">
+                            <tree>
+                                <field name="sequence" string="#"/>
+                                <field name="date"/>
+                                <field name="amount" sum="Total Pago"/>
+                                <field name="state"/>
+                                <field name="rule_id"/>
+                            </tree>
+                        </field>
                     </page>
                 </xpath>
                 <xpath expr="//form[1]/sheet[1]/notebook[1]/page[3]" position="after">

@@ -544,6 +544,7 @@ class HolidaysRequest(models.Model):
         type_id = self.holiday_status_id
         #if not type_id.holiday_status_id:
         #    raise ValidationError('La categoría de la ausencia no tiene tipo')
+        smmlv_days = self.env['hr.annual.parameters'].search([('year', '=', date_tmp.year)]).smmlv_daily
         amount = self.ibc
         day_count = (self.date_to - self.date_from).days + 1
         #self.date_to and self.date_from:
@@ -606,7 +607,7 @@ class HrLeaveLine(models.Model):
 
     leave_id = fields.Many2one(comodel_name='hr.leave', string='Ausencia', required=True)
     payslip_id = fields.Many2one(comodel_name='hr.payslip', string='Nónima')
-    contract_id = fields.Many2one(string="Contrato", related='leave_id.contract_id')
+    contract_id = fields.Many2one(string='Contrato', related='leave_id.contract_id')
     rule_id = fields.Many2one('hr.salary.rule', 'Reglas Salarial')
     date = fields.Date(string='Fecha')
     state = fields.Selection(string='Estado', selection=STATE)

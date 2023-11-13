@@ -534,9 +534,9 @@ class hr_annual_parameters(models.Model):
                                                      store=True)
     # Básicos Horas Laborales
     hours_daily = fields.Integer('Horas diarias', required=True)
-    hours_weekly = fields.Integer('Horas semanales', compute='_values_hours', store=True)
-    hours_fortnightly = fields.Integer('Horas quincenales', compute='_values_hours', store=True)
-    hours_monthly = fields.Integer('Horas mensuales', compute='_values_hours', store=True)
+    hours_weekly = fields.Integer('Horas semanales', compute='_values_hours', store=True, readonly=False)
+    hours_fortnightly = fields.Integer('Horas quincenales', compute='_values_hours', store=True, readonly=False)
+    hours_monthly = fields.Integer('Horas mensuales', compute='_values_hours', store=True, readonly=False)
     # Seguridad Social
     weight_contribution_calculations = fields.Boolean('Cálculos de aportes al peso')
     # Salud

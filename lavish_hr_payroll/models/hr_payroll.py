@@ -476,13 +476,10 @@ class Hr_payslip(models.Model):
             date_from = datetime.combine(rec.date_from, datetime.min.time())
             date_to = datetime.combine(rec.date_to, datetime.max.time())
             work_entries = self.env['hr.leave'].search(
-                [('state', '=', 'validated'),
+                [('state', 'not in', ['cancel', 'refuse']),
                     ('date_from', '>=', date_from),
-                    ('date_from', '<=', date_to),
+                    ('date_to', '<=', date_to),
                     ('employee_id', '=', employee.id),])
-            # En segundo lugar, encontró entradas de trabajo que exceden el intervalo y calculan la duración correcta.
-            # Validar incapacidades de más de 180 días
-            leave_dict = defaultdict(lambda: {'days_used': 0})
             vals = []
             for leave in work_entries:
                 leave_id = leave.id

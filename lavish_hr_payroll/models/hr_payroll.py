@@ -610,6 +610,7 @@ class Hr_payslip(models.Model):
     _inherit = 'hr.payslip'
 
     leave_ids = fields.One2many('hr.absence.days', 'payroll_id', string='Novedades', readonly=True)
+    leave_days_ids =fields.One2many('hr.leave.line', 'payslip_id', string='Detalle de Ausencia', readonly=True)
     rtefte_id = fields.Many2one('hr.employee.rtefte', 'RteFte', readonly=True)
     not_line_ids = fields.One2many('hr.payslip.not.line', 'slip_id', string='Reglas no aplicadas', readonly=True)
     observation = fields.Text(string='Observación')
@@ -622,22 +623,17 @@ class Hr_payslip(models.Model):
     date_prima = fields.Date('Fecha liquidación de prima')
     date_cesantias = fields.Date('Fecha liquidación de cesantías')
     date_vacaciones = fields.Date('Fecha liquidación de vacaciones')
-    worked_days_line_ids = fields.One2many('hr.payslip.worked_days', 'payslip_id',compute=False, )
+    worked_days_line_ids = fields.One2many('hr.payslip.worked_days', 'payslip_id', compute=False, )
     pay_cesantias_in_payroll = fields.Boolean('¿Liquidar Interese de cesantia en nómina?')
     pay_primas_in_payroll = fields.Boolean('¿Liquidar Primas en nómina?')
     pay_vacations_in_payroll = fields.Boolean('¿Liquidar vacaciones en nómina?')
     provisiones = fields.Boolean('Provisiones')
     journal_struct_id = fields.Many2one('account.journal', string='Salary Journal', domain="[('company_id', '=', company_id)]")
-    earnings_ids = fields.One2many(
-        comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Devengos')
-    deductions_ids = fields.One2many(
-        comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Deducciones')
-    bases_ids = fields.One2many(
-        comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Bases')
-    provisions_ids = fields.One2many(
-        comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Provisiones')
-    outcome_ids = fields.One2many(
-        comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Totales')
+    earnings_ids = fields.One2many(comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Devengos')
+    deductions_ids = fields.One2many(comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Deducciones')
+    bases_ids = fields.One2many(comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Bases')
+    provisions_ids = fields.One2many(comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Provisiones')
+    outcome_ids = fields.One2many(comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Totales')
     
     @api.depends('line_ids')
     def _compute_concepts_category(self):
@@ -673,13 +669,10 @@ class Hr_payslip(models.Model):
             date_to = datetime.combine(rec.date_to, datetime.max.time())
             hours_per_day = rec._get_worked_day_lines_hours_per_day()
             work_entries = self.env['hr.work.entry'].search(
-                [
-                    ('state', 'in', ['validated', 'draft']),
+                [('state', 'in', ['validated', 'draft']),
                     ('date_start', '>=', date_from),
                     ('date_stop', '<=', date_to),
-                    ('contract_id', '=', contract.id),
-                ]
-            )
+                    ('contract_id', '=', contract.id),])
             # En segundo lugar, encontró entradas de trabajo que exceden el intervalo y calculan la duración correcta.
             work_entries += self.env['hr.work.entry'].search(
                 [
@@ -721,6 +714,7 @@ class Hr_payslip(models.Model):
             if leave_ids:
                 rec.write({'leave_ids': leave_ids})
                 rec.leave_ids._days_used()
+                rec.leave_ids.line_ids.write({'payslip_id': rec.id})
 
     def name_get(self):
         result = []
@@ -786,20 +780,14 @@ class Hr_payslip(models.Model):
 
     def compute_sheet(self):
         for payslip in self.filtered(lambda slip: slip.state not in ['cancel', 'done','paid']):
-            #number = payslip.number or self.env['ir.sequence'].next_by_code('salary.slip')
-            # delete old payslip lines
             payslip.line_ids.unlink()
             payslip.not_line_ids.unlink()
             payslip.leave_ids.unlink()
-            #payslip.input_line_ids.unlink()
-            #payslip._compute_worked_days_line_ids()
             payslip.compute_sheet_leave()
             payslip._compute_extra_hours()
             payslip._compute_novedades()
             payslip._assign_old_payslips()
             payslip.get_increase()
-            #payslip.env['hr.employee.deduction.retention'].search([('employee_id', '=', payslip.employee_id.id),('year', '=', payslip.date_from.year),('month', '=', payslip.date_from.month)]).unlink()
-            #payslip.env['hr.employee.rtefte'].search([('employee_id', '=', payslip.employee_id.id),('year', '=', payslip.date_from.year),('month', '=', payslip.date_from.month)]).unlink()
             payslip.input_line_ids = payslip.get_inputs(payslip.date_from, payslip.date_to, payslip.struct_id.process)
             #Seleccionar proceso a ejecutar
             lines = []
@@ -840,8 +828,7 @@ class Hr_payslip(models.Model):
             #Eliminar contabilización y el calculo
             payslip.mapped('move_id').unlink()
             # Modificar cuotas de prestamos pagadas
-            obj_payslip_line = self.env['hr.payslip.line'].search(
-                [('slip_id', '=', payslip.id), ('loan_id', '!=', False)])
+            obj_payslip_line = self.env['hr.payslip.line'].search([('slip_id', '=', payslip.id), ('loan_id', '!=', False)])
             for payslip_line in obj_payslip_line:
                 obj_loan_line = self.env['hr.loans.line'].search(
                     [('employee_id', '=', payslip_line.employee_id.id), ('prestamo_id', '=', payslip_line.loan_id.id),
@@ -922,73 +909,6 @@ class Hr_payslip(models.Model):
                     item['number_of_days'] -= days_to_deduct
                     item['number_of_hours'] -= hours_to_deduct
         return res
-
-    # def _get_new_worked_days_lines(self):
-    #     if self.struct_id.use_worked_day_lines:
-    #         # computation of the salary worked days
-    #         worked_days_line_values = self._get_worked_day_lines()
-    #         worked_days_lines = self.worked_days_line_ids.browse([])
-    #         for r in worked_days_line_values:
-    #             r['payslip_id'] = self.id
-    #             worked_days_lines |= worked_days_lines.new(r)
-    #         # Validar que al ser el mes de febrero modifique los días trabajados para que sean igual a un mes de 30 días
-    #         if self.date_to.month == 2 and self.date_to.day in (28,29):
-    #             february_worked_days = worked_days_lines.filtered(lambda l: l.work_entry_type_id.code == 'WORK100')
-    #             days_summary = 2 if self.date_to.day == 28 else 1
-    #             hours_summary = 16 if self.date_to.day == 28 else 8
-    #             if len(february_worked_days) > 0:
-    #                 for february_days in worked_days_lines:
-    #                     if february_days.work_entry_type_id.code == 'WORK100':
-    #                         february_days.number_of_days = february_days.number_of_days + days_summary # Se agregan 2 días
-    #                         february_days.number_of_hours = february_days.number_of_hours + hours_summary # Se agregan 16 horas
-    #             else:
-    #                 #Ultimo día de febrero
-    #                 work_hours = self.contract_id._get_work_hours(self.date_to, self.date_to)
-    #                 work_hours_ordered = sorted(work_hours.items(), key=lambda x: x[1])
-    #                 biggest_work = work_hours_ordered[-1][0] if work_hours_ordered else 0
-    #                 #Primer día de marzo
-    #                 march_date_from = self.date_to + timedelta(days=1)
-    #                 march_date_to = self.date_to + timedelta(days=1)
-    #                 march_work_hours = self.contract_id._get_work_hours(march_date_from, march_date_to)
-    #                 march_work_hours_ordered = sorted(march_work_hours.items(), key=lambda x: x[1])
-    #                 march_biggest_work = march_work_hours_ordered[-1][0] if march_work_hours_ordered else 0
-    #                 #Proceso a realizar
-    #                 #if march_biggest_work == 0 or biggest_work != march_biggest_work: #Si la ausencia no continua hasta marzo se agregan 2 días trabajados para completar los 30 días en febrero
-    #                 # 25/02/2023 | Se realiza que siempre cree 2 días laborados para completar  los 30 dias ignorando si la ausencia continua en marzo
-    #                 # Por ende se comenta la funcionalidad anterior.
-    #                 work_entry_type = self.env['hr.work.entry.type'].search([('code','=','WORK100')])
-    #                 attendance_line = {
-    #                     'sequence': work_entry_type.sequence,
-    #                     'work_entry_type_id': work_entry_type.id,
-    #                     'number_of_days': days_summary,
-    #                     'number_of_hours': hours_summary,
-    #                     'amount': 0,
-    #                 }
-    #                 worked_days_lines |= worked_days_lines.new(attendance_line)
-    #         elif calendar.monthrange(self.date_to.year, self.date_to.month)[1] == 31 and self.date_to.day == 31:
-    #             days_to_deduct = 1
-    #             hours_to_deduct = 8
-    #             day_with_31_days = worked_days_lines.filtered(lambda l: l.work_entry_type_id.code == 'WORK100')
-    #             if len(day_with_31_days) > 0:
-    #                 for day_line in day_with_31_days:
-    #                     day_line.number_of_days -= days_to_deduct
-    #                     day_line.number_of_hours -= hours_to_deduct
-    #         res = []
-    #         for w in worked_days_lines:
-    #             res.append({
-    #                 'sequence': w.sequence,
-    #                 'work_entry_type_id': w.work_entry_type_id.id,
-    #                 'number_of_days': w.number_of_days,
-    #                 'number_of_hours': w.number_of_hours,
-    #             })
-
-    #         if self.struct_id.process == 'contrato' and self.date_from == self.date_to:
-    #             return [(5, False, False)]
-    #         else:
-    #             return [(5, 0, 0)] + [(0, 0, vals) for vals in res]
-    #     else:
-    #         return [(5, False, False)]
-
 
     def _get_payslip_lines(self,inherit_vacation=0,inherit_prima=0,inherit_contrato_dev=0, inherit_contrato_ded_bases=0,inherit_contrato_ded=0,localdict=None):
         def _sum_salary_rule_category(localdict, category, amount):
@@ -1345,10 +1265,7 @@ class Hr_payslip(models.Model):
         if not self.struct_id.process == 'vacaciones':
             all_rules = self.struct_id.rule_ids
         specific_rules = self.env['hr.salary.rule'].browse([])
-        obj_struct_payroll = self.env['hr.payroll.structure'].search([
-            ('regular_pay', '=', True),
-            ('process', '=', 'nomina')
-        ])
+        obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'nomina')])
         if obj_struct_payroll:
             if (self.settle_payroll_concepts and self.struct_id.process == 'contrato'):
                 all_rules |= obj_struct_payroll.mapped('rule_ids')
@@ -1356,8 +1273,7 @@ class Hr_payslip(models.Model):
             # Fetching rules with specific codes
                 specific_rule_codes = ['IBC_R', 'TOTALDEV', 'TOTALDED', 'NET']
                 specific_rules = self.env['hr.salary.rule'].search([
-                    '|',  # Esto indica que la siguiente condición es un OR
-                    ('code', 'in', specific_rule_codes),
+                    '|',('code', 'in', specific_rule_codes),
                     ('type_concepts', '=', 'ley'),  
                     ('id', 'in', obj_struct_payroll.mapped('rule_ids').ids)  # Asegura que solo consideramos reglas en la estructura que encontramos
                 ])

@@ -25,7 +25,11 @@ class lavishHolidays(models.Model):
     date = fields.Date('Fecha', required=True)
 
     _sql_constraints = [('date_holiday_uniq', 'unique(date)', 'Ya existe un día festivo en esta fecha, por favor verificar.')]
-
+    def name_get(self):
+        result = []
+        for record in self:
+            result.append((record.id, "{} | {}".format(record.date, record.name)))
+        return result
 #Codigo postal
 class lavishZipCode(models.Model):
     _name = 'lavish.zip.code'

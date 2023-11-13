@@ -521,7 +521,7 @@ class Hr_payslip(models.Model):
                 if date_tmp.day  and is_within_contract:
                     if is_absence_day:
                         payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'A'})
-                    elif date_tmp.day  and not is_within_contract:
+                    elif date_tmp.day:
                         payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'W','subtotal':current_wage_day})
                 else:
                     payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'X'})

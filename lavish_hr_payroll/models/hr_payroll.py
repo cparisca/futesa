@@ -526,7 +526,7 @@ class Hr_payslip(models.Model):
                 else:
                     payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'X'})
                 date_tmp += timedelta(days=1)
-            rec.payslip_day_ids = payslip_day_ids
+            rec.payslip_day_ids.create(payslip_day_ids)
         return True
 
     def name_get(self):

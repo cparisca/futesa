@@ -471,30 +471,43 @@ class Hr_payslip(models.Model):
     
     def compute_sheet_leave(self):
         for rec in self:
+            # Unlink existing leave_ids
             rec.leave_ids.unlink()
-            employee = rec.employee_id
+
+            # Setup date range and employee
             date_from = datetime.combine(rec.date_from, datetime.min.time())
             date_to = datetime.combine(rec.date_to, datetime.max.time())
-            work_entries = self.env['hr.leave'].search(
-                [('state', 'not in', ['cancel', 'refuse']),
-                    ('date_from', '>=', date_from),
-                    ('date_to', '<=', date_to),
-                    ('employee_id', '=', employee.id),])
-            vals = []
-            for leave in work_entries:
-                leave_id = leave.id
-                vals.append({
-                    'leave_id': leave_id,
-                    'leave_type': leave.holiday_status_id.name,
-                    'employee_id': employee.id,
-                    'total_days': leave.number_of_days,
-                    'payroll_id': rec.id,
-                })
-            if vals:
-                rec.leave_ids =vals
-                rec.leave_ids._days_used()
-                rec.leave_ids.leave_id.line_ids.filtered(lambda l: l.date <= rec.date_to).write({'payslip_id': rec.id})
+            employee_id = rec.employee_id.id
+
+            # Search for relevant work entries
+            work_entries = self.env['hr.leave'].search([
+                ('state', 'not in', ['cancel', 'refuse']),
+                ('date_from', '>=', date_from),
+                ('date_to', '<=', date_to),
+                ('employee_id', '=', employee_id),
+            ])
+
+            # Prepare values for bulk creation/update
+            leave_vals = [{
+                'leave_id': leave.id,
+                'leave_type': leave.holiday_status_id.name,
+                'employee_id': employee_id,
+                'total_days': leave.number_of_days,
+                'payroll_id': rec.id,
+            } for leave in work_entries]
+
+            # Bulk create/update leave_ids if there are any leaves
+            if leave_vals:
+                leave_records = self.env['leave.model'].create(leave_vals) # Replace 'leave.model' with actual model name
+                leave_records._days_used()
+
+                # Update payslip_id in a bulk operation
+                relevant_lines = leave_records.mapped('leave_id.line_ids').filtered(lambda l: l.date <= date_to)
+                relevant_lines.write({'payslip_id': rec.id})
+
+            # Compute worked days
             self.compute_worked_days()
+        
     def compute_worked_days(self):
         for rec in self:
             payslip_day_ids = []

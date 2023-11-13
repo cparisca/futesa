@@ -258,6 +258,13 @@
                                 <field name="rule_id"/>
                             </tree>
                         </field>
+                        <field name="payslip_day_ids" colspan="2">
+                            <tree>
+                                <field name="day" />
+                                <field name="subtotal" />
+                                <field name="day_type" />
+                            </tree>
+                        </field>
                     </page>
                 </xpath>
                 <xpath expr="//form[1]/sheet[1]/notebook[1]/page[3]" position="after">

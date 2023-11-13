@@ -526,10 +526,12 @@ class Hr_payslip(models.Model):
             while date_tmp <= rec.date_to:
                 is_absence_day = any(leave.date_from.date() <= date_tmp <= leave.date_to.date() for leave in rec.leave_ids.leave_id)
                 is_within_contract = rec.contract_id.date_start <= date_tmp <= (rec.contract_id.date_end or date_tmp)
+
                 if is_within_contract:
                     current_wage_day = get_applicable_wage(date_tmp)
                     if current_wage_day is None:
                         continue  # Skip the day if no wage is applicable
+
                     day_type = 'A' if is_absence_day else 'W'
                     payslip_day_data = {'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': day_type}
                     if not is_absence_day:
@@ -537,7 +539,9 @@ class Hr_payslip(models.Model):
                     payslip_day_ids.append(payslip_day_data)
                 else:
                     payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'X'})
+
                 date_tmp += timedelta(days=1)
+
             # Create payslip day records in bulk
             rec.payslip_day_ids.create(payslip_day_ids)
 

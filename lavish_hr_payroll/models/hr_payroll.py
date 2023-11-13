@@ -498,7 +498,7 @@ class Hr_payslip(models.Model):
 
             # Bulk create/update leave_ids if there are any leaves
             if leave_vals:
-                leave_records = self.env['leave.model'].create(leave_vals) # Replace 'leave.model' with actual model name
+                leave_records = self.env['hr.absence.days'].create(leave_vals) # Replace 'leave.model' with actual model name
                 leave_records._days_used()
 
                 # Update payslip_id in a bulk operation

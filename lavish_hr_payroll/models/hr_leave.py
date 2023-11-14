@@ -111,7 +111,8 @@ class HolidaysRequest(models.Model):
                     ibc = contracts.wage
                 record.payroll_value = (ibc/30) * record.number_of_days
                 record.ibc = ibc
-                self._prepare_leave_line()
+                if record.date_from and record.date_to:
+                    self._prepare_leave_line()
                 if record.line_ids:
                     record.payroll_value = sum(x.amount for x in record.line_ids)
 

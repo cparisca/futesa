@@ -517,20 +517,9 @@ class Hr_payslip(models.Model):
             # Sort the wage changes by date for efficient processing
             wage_changes_sorted = sorted(rec.contract_id.change_wage_ids, key=lambda x: x.date_start)
 
-            # Find the first wage change within the payslip period, if any
-            wage_change_within_period = next((change for change in wage_changes_sorted if rec.date_from <= change.date_start <= rec.date_to), None)
-
-            # Set the initial daily wage
+            # Initialize the wage rate before the first wage change
             initial_wage_day = rec.contract_id.wage / 30
-
-            # Determine the periods for wage calculation
-            if wage_change_within_period:
-                first_period_end = wage_change_within_period.date_start - timedelta(days=1)
-                second_period_start = wage_change_within_period.date_start
-                second_wage_day = wage_change_within_period.wage / 30
-            else:
-                first_period_end = rec.date_to
-                second_period_start = None
+            current_wage_day = initial_wage_day
 
             date_tmp = rec.date_from
 
@@ -538,15 +527,12 @@ class Hr_payslip(models.Model):
                 is_absence_day = any(leave.date_from.date() <= date_tmp <= leave.date_to.date() for leave in rec.leave_ids.leave_id)
                 is_within_contract = rec.contract_id.date_start <= date_tmp <= (rec.contract_id.date_end or date_tmp)
 
-                if is_within_contract:
-                    # Determine the current wage day
-                    if date_tmp <= first_period_end:
-                        current_wage_day = initial_wage_day
-                    elif second_period_start and date_tmp >= second_period_start:
-                        current_wage_day = second_wage_day
-                    else:
-                        continue  # Skip the day if no wage is applicable
+                # Check and update the wage if there is a change on this date
+                wage_change_today = next((change for change in wage_changes_sorted if change.date_start == date_tmp), None)
+                if wage_change_today:
+                    current_wage_day = wage_change_today.wage / 30
 
+                if is_within_contract:
                     day_type = 'A' if is_absence_day else 'W'
                     payslip_day_data = {'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': day_type}
                     if not is_absence_day:

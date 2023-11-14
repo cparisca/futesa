@@ -132,7 +132,7 @@ class HolidaysRequest(models.Model):
         day = 30 if month != 2 else 28
         from_date = datetime(year, month, 1).date()
         to_date = datetime(year, month, day).date()
-        annual_parameters = self.env['hr.annual.parameters'].search([('year', '=', date_actual.year)])
+        annual_parameters = self.env['hr.annual.parameters'].search([('year', '=', self.date_to.year)])
         # Find payslip lines for the given code and date range
         PayslipLine = self.env['hr.payslip.line']
         payslip_lines = PayslipLine.search([
@@ -544,7 +544,6 @@ class HolidaysRequest(models.Model):
         type_id = self.holiday_status_id
         #if not type_id.holiday_status_id:
         #    raise ValidationError('La categoría de la ausencia no tiene tipo')
-        smmlv_days = self.env['hr.annual.parameters'].search([('year', '=', date_tmp.year)]).smmlv_daily
         amount = self.ibc
         day_count = (self.date_to - self.date_from).days + 1
         #self.date_to and self.date_from:

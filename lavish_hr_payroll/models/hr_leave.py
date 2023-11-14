@@ -538,41 +538,42 @@ class HolidaysRequest(models.Model):
 
 
     def _prepare_leave_line(self):
-        self.line_ids.unlink()
-        new_leave_line = []
-        date_tmp = self.date_from
-        sequence, date_origin = self.get_sequence_and_date()
-        type_id = self.holiday_status_id
-        #if not type_id.holiday_status_id:
-        #    raise ValidationError('La categoría de la ausencia no tiene tipo')
-        amount = self.ibc
-        day_count = (self.date_to - self.date_from).days + 1
-        #self.date_to and self.date_from:
-        for day in range(day_count):
-            if not (date_tmp.day == 31 and type_id.novelty != 'vco' and not type_id.apply_day_31):
-                if type_id.novelty == 'ige' and sequence <= type_id.num_days_no_assume:
-                    amount_real = amount / 30
-                elif type_id.novelty == 'irl' and sequence == 1:
-                    amount_real = amount / 30
-                else:
-                    amount_real = amount * type_id.get_rate_concept_id(sequence)[0] / 30
-                rule = type_id.get_rate_concept_id(sequence)[1] or type_id.eps_arl_input_id.id
-                if 1 <= sequence <= type_id.num_days_no_assume:
-                    rule = type_id.company_input_id.id
-                #if self._apply_leave_line(date_tmp):
-                new_leave_line.append((0, 0, {
-                    'sequence': sequence,
-                    'date': date_tmp,
-                    'state': 'validated',
-                    'leave_id': self.id,
-                    'rule_id': rule,
-                    'amount': amount_real,
-                }))
-                sequence += 1
-            date_tmp += timedelta(days=1)  # Move to the next day
+        if self.date_to and self.date_from:
+            self.line_ids.unlink()
+            new_leave_line = []
+            date_tmp = self.date_from
+            sequence, date_origin = self.get_sequence_and_date()
+            type_id = self.holiday_status_id
+            #if not type_id.holiday_status_id:
+            #    raise ValidationError('La categoría de la ausencia no tiene tipo')
+            amount = self.ibc
+            day_count = (self.date_to.date() - self.date_from.date()).days + 1
+            #self.date_to and self.date_from:
+            for day in range(day_count):
+                if not (date_tmp.day == 31 and type_id.novelty != 'vco' and not type_id.apply_day_31):
+                    if type_id.novelty == 'ige' and sequence <= type_id.num_days_no_assume:
+                        amount_real = amount / 30
+                    elif type_id.novelty == 'irl' and sequence == 1:
+                        amount_real = amount / 30
+                    else:
+                        amount_real = amount * type_id.get_rate_concept_id(sequence)[0] / 30
+                    rule = type_id.get_rate_concept_id(sequence)[1] or type_id.eps_arl_input_id.id
+                    if 1 <= sequence <= type_id.num_days_no_assume:
+                        rule = type_id.company_input_id.id
+                    #if self._apply_leave_line(date_tmp):
+                    new_leave_line.append((0, 0, {
+                        'sequence': sequence,
+                        'date': date_tmp,
+                        'state': 'validated',
+                        'leave_id': self.id,
+                        'rule_id': rule,
+                        'amount': amount_real,
+                    }))
+                    sequence += 1
+                date_tmp += timedelta(days=1)  # Move to the next day
 
-        self.line_ids = new_leave_line
-        self.payroll_value = sum(x.amount for x in self.line_ids)
+            self.line_ids = new_leave_line
+            self.payroll_value = sum(x.amount for x in self.line_ids)
 
     def _apply_leave_line(self, date_tmp):
         eval_days_off = self.holiday_status_id.evaluates_day_off

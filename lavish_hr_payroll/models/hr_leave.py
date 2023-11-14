@@ -54,6 +54,7 @@ class HolidaysRequest(models.Model):
     payroll_value = fields.Float('Valor a pagado',tracking=True)
     ibc = fields.Float('IBC',tracking=True)
     force_ibc = fields.Boolean('Forzar IBC ausencia',tracking=True)
+    force_porc = fields.Float('Forzar Porcentaje',tracking=True)
     leave_ids = fields.One2many('hr.absence.days', 'leave_id', string='Novedades', readonly=True)
     line_ids = fields.One2many(comodel_name='hr.leave.line', inverse_name='leave_id', readonly=True, string='Lineas de Ausencia')
     eps_value = fields.Float('Valor pagado por la EPS',tracking=True)
@@ -563,7 +564,8 @@ class HolidaysRequest(models.Model):
                     rule = type_id.get_rate_concept_id(sequence)[1] or type_id.eps_arl_input_id.id
                     if 1 <= sequence <= type_id.num_days_no_assume:
                         rule = type_id.company_input_id.id
-                    #if self._apply_leave_line(date_tmp):
+                    if self.force_porc != 0:
+                        amount_real = (amount / 30) * self.force_porc / 100
                     new_leave_line.append((0, 0, {
                         'sequence': sequence,
                         'date': date_tmp,

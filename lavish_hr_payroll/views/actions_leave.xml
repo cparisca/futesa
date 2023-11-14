@@ -24,6 +24,7 @@
                         <field name="diagnostic" attrs="{'invisible': [('type_of_entity', '=', False)]}"/>
                         <field name="radicado" attrs="{'invisible': [('type_of_entity', '=', False)]}"/>
                         <field name="force_ibc"/>
+                        <field name="force_porc"/>
                         <field name="ibc" force_save="1" attrs="{'readonly': [('force_ibc', '=', False)]}"/>
                         <field name="payroll_value"/>
                         <field name="days_used"/>

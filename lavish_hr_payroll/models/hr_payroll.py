@@ -517,9 +517,9 @@ class Hr_payslip(models.Model):
             # Sort the wage changes by date for efficient processing
             wage_changes_sorted = sorted(rec.contract_id.change_wage_ids, key=lambda x: x.date_start)
 
-            # Initialize the wage rate before the first wage change
-            initial_wage_day = rec.contract_id.wage / 30
-            current_wage_day = initial_wage_day
+            # Find the last wage rate before the payslip period
+            last_wage_change_before_payslip = max((change for change in wage_changes_sorted if change.date_start < rec.date_from), default=None)
+            current_wage_day = last_wage_change_before_payslip.wage / 30 if last_wage_change_before_payslip else rec.contract_id.wage / 30
 
             date_tmp = rec.date_from
 
@@ -527,7 +527,7 @@ class Hr_payslip(models.Model):
                 is_absence_day = any(leave.date_from.date() <= date_tmp <= leave.date_to.date() for leave in rec.leave_ids.leave_id)
                 is_within_contract = rec.contract_id.date_start <= date_tmp <= (rec.contract_id.date_end or date_tmp)
 
-                # Check and update the wage if there is a change on this date
+                # Update the wage if there is a change on this date
                 wage_change_today = next((change for change in wage_changes_sorted if change.date_start == date_tmp), None)
                 if wage_change_today:
                     current_wage_day = wage_change_today.wage / 30

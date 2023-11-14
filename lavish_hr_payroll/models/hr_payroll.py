@@ -474,12 +474,9 @@ class Hr_payslip(models.Model):
             # Unlink existing leave_ids
             rec.leave_ids.unlink()
             rec.payslip_day_ids.unlink()
-
-            # Setup date range and employee
             date_from = datetime.combine(rec.date_from, datetime.min.time())
             date_to = datetime.combine(rec.date_to, datetime.max.time())
             employee_id = rec.employee_id.id
-
             # Search for relevant work entries
             work_entries = self.env['hr.leave'].search([
                 ('state', 'not in', ['cancel', 'refuse']),
@@ -487,7 +484,6 @@ class Hr_payslip(models.Model):
                 ('date_from', '<=', date_to),
                 ('employee_id', '=', employee_id),
             ])
-
             # Prepare values for bulk creation/update
             leave_vals = [{
                 'leave_id': leave.id,
@@ -496,7 +492,6 @@ class Hr_payslip(models.Model):
                 'total_days': leave.number_of_days,
                 'payroll_id': rec.id,
             } for leave in work_entries]
-
             # Bulk create/update leave_ids if there are any leaves
             if leave_vals:
                 leave_records = self.env['hr.absence.days'].create(leave_vals) # Replace 'leave.model' with actual model name
@@ -507,31 +502,24 @@ class Hr_payslip(models.Model):
                 relevant_lines.write({'payslip_id': rec.id})
 
             # Compute worked days
-            self.compute_worked_days()
-        
+            self.compute_worked_days()      
 
     def compute_worked_days(self):
         for rec in self:
             payslip_day_ids = []
-
             # Sort the wage changes by date for efficient processing
             wage_changes_sorted = sorted(rec.contract_id.change_wage_ids, key=lambda x: x.date_start)
-
             # Find the last wage rate before the payslip period
             last_wage_change_before_payslip = max((change for change in wage_changes_sorted if change.date_start < rec.date_from), default=None)
             current_wage_day = last_wage_change_before_payslip.wage / 30 if last_wage_change_before_payslip else rec.contract_id.wage / 30
-
             date_tmp = rec.date_from
-
             while date_tmp <= rec.date_to:
                 is_absence_day = any(leave.date_from.date() <= date_tmp <= leave.date_to.date() for leave in rec.leave_ids.leave_id)
                 is_within_contract = rec.contract_id.date_start <= date_tmp <= (rec.contract_id.date_end or date_tmp)
-
                 # Update the wage if there is a change on this date
                 wage_change_today = next((change for change in wage_changes_sorted if change.date_start == date_tmp), None)
                 if wage_change_today:
                     current_wage_day = wage_change_today.wage / 30
-
                 if is_within_contract:
                     day_type = 'A' if is_absence_day else 'W'
                     payslip_day_data = {'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': day_type}
@@ -540,12 +528,9 @@ class Hr_payslip(models.Model):
                     payslip_day_ids.append(payslip_day_data)
                 else:
                     payslip_day_ids.append({'payslip_id': rec.id, 'day': date_tmp.day, 'day_type': 'X'})
-
                 date_tmp += timedelta(days=1)
-
             # Create payslip day records in bulk
             rec.payslip_day_ids.create(payslip_day_ids)
-
         return True
 
 

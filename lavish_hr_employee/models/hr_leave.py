@@ -56,7 +56,7 @@ class hr_leave_type(models.Model):
       selection=VALORES,)
     def get_rate_concept_id(self, sequence):
       if self.novelty != 'ige':
-          rate = 100
+          rate = 1
           if 1 <= sequence <= self.num_days_no_assume:
               rate = self.recognizing_factor_company
               concept_id = self.company_input_id.id
@@ -73,7 +73,7 @@ class hr_leave_type(models.Model):
           rate = self.recognizing_factor_eps_arl
           concept_id = self.eps_arl_input_id.id
       else:
-          rate = 100
+          rate = 1
           concept_id = None
       return rate, concept_id or None
 

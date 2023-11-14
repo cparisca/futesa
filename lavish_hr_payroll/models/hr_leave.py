@@ -89,8 +89,8 @@ class HolidaysRequest(models.Model):
         for record in self:
             if record.force_ibc and record.ibc != 0:
                 record.payroll_value = (record.ibc / 30) * record.number_of_days
-                if record.date_from and record.date_to:
-                    record._prepare_leave_line()
+                #if record.date_from and record.date_to:
+                #    record._prepare_leave_line()
             else:
                 record.get_amount_license()
 
@@ -385,9 +385,12 @@ class HolidaysRequest(models.Model):
                 if not attachment:    
                     raise ValidationError(_('Es obligatorio agregar un adjunto para la ausencia '+holiday.display_name+'.'))
         #Ejecución metodo estandar
+        
         obj = super(HolidaysRequest, self).action_approve()
         #Creación registro en el historico de vacaciones cuando es una ausencia no remunerada
         for record in self:
+            if not record.line_ids:
+                record._prepare_leave_line()
             if record.unpaid_absences:
                 days_unpaid_absences = record.number_of_days
                 days_vacation_represent = round((days_unpaid_absences * 15) / 365,0)

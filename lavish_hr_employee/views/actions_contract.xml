@@ -69,6 +69,7 @@
                     <field name="economic_activity_level_risk_id" domain="[('risk_class_id','=',risk_id)]"/>
                     <field name="skip_commute_allowance" />
                     <field name="ley_2101" />
+                    <field name="sabado" />
                     <field name="remote_work_allowance" />
                     <field name="minimum_wage" />
                 </xpath>

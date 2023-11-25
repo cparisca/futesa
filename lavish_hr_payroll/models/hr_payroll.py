@@ -168,9 +168,11 @@ class HrPayslipEmployees(models.TransientModel):
 
     structure_id = fields.Many2one('hr.payroll.structure', string='Salary Structure', default=_get_default_structure)
     struct_process = fields.Selection(related='structure_id.process', string='Proceso', store=True)
-    method_schedule_pay  = fields.Selection([('bi-weekly', 'Quincenal'),
-                                          ('monthly', 'Mensual'),
-                                          ('other', 'Ambos')], 'Frecuencia de Pago', default='other')
+    method_schedule_pay  = fields.Selection([('days', 'Por Dias/horas'),
+                                            ('weekly', 'Semanalmente'),
+                                            ('bi-weekly', 'Quincenal'),
+                                            ('monthly', 'Mensual'),
+                                            ('other', 'Ambos')], 'Frecuencia de Pago', default='other')
     analytic_account_ids = fields.Many2many('account.analytic.account', string='Cuentas analíticas')
     branch_ids = fields.Many2many('lavish.res.branch', string='Sucursales')
     state_contract = fields.Selection([('open','En Proceso'),('finished','Finalizado Por Liquidar')], string='Estado Contrato', default='open')

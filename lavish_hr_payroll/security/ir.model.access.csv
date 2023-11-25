@@ -31,6 +31,7 @@ access_hr_payslip_reports_template,hr.payslip.reports.template,model_hr_payslip_
 access_hr_accumulated_reports,hr.accumulated.reports,model_hr_accumulated_reports,,1,1,1,1
 access_hr_consolidated_reports,hr.consolidated.reports,model_hr_consolidated_reports,,1,1,1,1
 access_hr_payroll_flat_file,hr.payroll.flat.file,model_hr_payroll_flat_file,,1,1,1,1
+access_hr_payroll_flat_file_detail,hr.payroll.flat.file.detail,model_hr_payroll_flat_file_detail,,1,1,1,1
 access_hr_report_absenteeism_history,hr_report_absenteeism_history,model_hr_report_absenteeism_history,,1,1,1,1
 access_hr_transfers_of_entities,hr_transfers_of_entities,model_hr_transfers_of_entities,,1,1,1,1
 access_hr_vacation_book,hr_vacation_book,model_hr_vacation_book,,1,1,1,1

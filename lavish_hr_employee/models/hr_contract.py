@@ -268,8 +268,11 @@ class hr_contract(models.Model):
                                             ('102', 'Procedimiento 2'),
                                             ('fixed', 'Valor fijo')], 'Procedimiento retención', default='100', tracking=True)
     fixed_value_retention_procedure = fields.Float('Valor fijo retención', tracking=True)
-    method_schedule_pay = fields.Selection([('bi-weekly', 'Quincenal'),
+    method_schedule_pay = fields.Selection([('days', 'Por Dias/horas'),
+                                            ('weekly', 'Semanalmente'),
+                                            ('bi-weekly', 'Quincenal'),
                                             ('monthly', 'Mensual')], 'Frecuencia de Pago', tracking=True)
+    sabado = fields.Boolean('Sábado día hábil', help='Indica si el día sábado se incluye como día hábil', tracking=True)
     #Pestaña Fuero
     type_of_jurisdiction = fields.Many2one('hr.type.of.jurisdiction', string ='Tipo de Fuero')                             
     date_i = fields.Date('Fecha Inicial')
@@ -406,7 +409,11 @@ class hr_contract(models.Model):
                 record.job_id = change.job_id
                 record.wage_old = change.wage
                 record.date_last_wage = change.date_start
-
+    @api.depends('sabado')
+    @api.onchange('sabado')
+    def change_sabado(self):
+        for record in self:
+            record.employee_id.sabado = record.sabado
     @api.model
     def create(self, vals):
         vals['sequence'] = self.env['ir.sequence'].next_by_code('hr.contract.seq') or ' '

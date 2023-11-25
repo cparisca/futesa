@@ -10,7 +10,7 @@
             <field name="name">Archivo plano de pago de nómina</field>
             <field name="model">hr.payroll.flat.file</field>
             <field name="arch" type="xml">
-                <tree editable="top">
+                <tree>
                     <field name="payment_type"/>
                     <field name="description" />
                     <field name="source_information"/>

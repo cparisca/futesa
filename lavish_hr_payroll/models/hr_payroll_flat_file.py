@@ -9,7 +9,7 @@ import io
 import xlsxwriter
 #---------------------------Modelo para generar Archivo plano de pago de nómina-------------------------------#
 
-class hr_payroll_flat_file_detail(models.TransientModel):
+class hr_payroll_flat_file_detail(models.Model):
     _name = 'hr.payroll.flat.file.detail'
     _description = 'Archivo plano de pago de nómina detalle - Archivos planos'
 
@@ -56,7 +56,7 @@ class hr_payroll_flat_file_detail(models.TransientModel):
         else:
             raise ValidationError('No se genero archivo excel.')
 
-class hr_payroll_flat_file(models.TransientModel):
+class hr_payroll_flat_file(models.Model):
     _name = 'hr.payroll.flat.file'
     _description = 'Archivo plano de pago de nómina'
 

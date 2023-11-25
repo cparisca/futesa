@@ -40,8 +40,6 @@ class hr_payroll_posting(models.Model):
     payroll_posting_distribution_ids = fields.One2many('hr.payroll.posting.distribution', 'payroll_posting',string='Distribución')
     payroll_posting_account_move_ids = fields.One2many('hr.payroll.posting.account.move', 'payroll_posting',string='Movimientos Contables')
     disaggregate_counterparty = fields.Boolean(string='¿Desea desagregar la contrapartida?')
-    #_sql_constraints = [('change_payslip_id_uniq', 'unique(payslip_id,liquidations_ids)', 'Ya existe un pago de contabilización para este lote/liquidación, por favor verificar')]
-    #Realizar validacion
 
     def payroll_posting(self):
         type_flat_file = ['bancolombiasap', 'bancolombiapab', 'davivienda1', 'occired', 'avvillas1', 'bancobogota','popular','bbva']

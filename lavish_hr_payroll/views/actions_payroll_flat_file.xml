@@ -6,7 +6,21 @@
             <field name="res_model">hr.payroll.flat.file</field>
             <field name="view_mode">tree,form</field>
         </record>
-
+        <record model="ir.ui.view" id="hr_payroll_flat_file_view_tree">
+            <field name="name">Archivo plano de pago de nómina</field>
+            <field name="model">hr.payroll.flat.file</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="payment_type"/>
+                    <field name="description" />
+                    <field name="source_information"/>
+                    <field name="payslip_id"  attrs="{'invisible': [('source_information', '!=', 'lote')],'required': [('source_information', '=', 'lote')]}" />
+                    <field name="liquidations_ids" widget="many2many_tags" attrs="{'invisible': [('source_information', '=', 'lote')],'required': [('source_information', '!=', 'lote')]}" />
+                    <field name="transmission_date" />
+                    <field name="application_date"/>
+                </tree>
+            </field>
+        </record>
         <record id="hr_payroll_flat_file_form" model="ir.ui.view">
             <field name="name">Archivo plano de pago de nómina</field>
             <field name="model">hr.payroll.flat.file</field>

@@ -1276,7 +1276,8 @@ class Hr_payslip(models.Model):
                 localdict[rule.code] = tot_rule
                 rules_dict[rule.code] = rule
                 # sum the amount for its salary category
-                localdict = rule.category_id._sum_salary_rule_category(localdict, tot_rule - previous_amount)
+                localdict = _sum_salary_rule_category(localdict, rule.category_id, tot_rule - previous_amount)
+                localdict = _sum_salary_rule(localdict, rule, tot_rule)
                 # create/overwrite the rule in the temporary results
                 result[rule.code] = {
                     'sequence': rule.sequence,

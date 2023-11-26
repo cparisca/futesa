@@ -1253,7 +1253,7 @@ class Hr_payslip(models.Model):
             ])
             all_rules |= specific_rules
             specific_rules = self.env['hr.salary.rule'].search([
-                ('category_id.parent_id.code', 'in', specific_rule_codes),
+                ('category_id.parent_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)
             ])
             all_rules |= specific_rules
         for rule in sorted(all_rules, key=lambda x: x.sequence):

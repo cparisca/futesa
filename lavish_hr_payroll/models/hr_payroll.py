@@ -1375,8 +1375,10 @@ class Hr_payslip(models.Model):
     def _compute_ibd(self, localdict):
         salary = 0
         categories_dict = localdict.get('categories', {})  # Asegúrate de que 'categoris' esté en el diccionario
-        for category in ['DEV_SALARIAL','COMISIONES', 'AUS']:
-            salary += categories_dict.get(category, 0.0)
+        #for category in ['DEV_SALARIAL','COMISIONES', 'AUS']:
+        salary += localdict['categories'].DEV_SALARIAL
+        salary += localdict['categories'].COMISIONES
+        salary += localdict['categories'].AUS
         o_earnings = localdict['categories'].DEV_NO_SALARIAL
         top40 = (salary + o_earnings) * 0.4
         if o_earnings > top40:

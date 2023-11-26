@@ -1373,13 +1373,31 @@ class Hr_payslip(models.Model):
             return result_finally.values()
 
     def _compute_ibd(self, localdict):
+        def sum_mount_before(code):
+            date_start = self.date_from
+            mes = date_start.month
+            ano = date_start.year
+            from_date = str(ano) + '-' + str(mes) + '-01'
+            to_date = self.date_from
+            self.env.cr.execute("""Select COALESCE(sum(pl.total),0) as suma FROM hr_payslip as hp 
+                                Inner Join hr_payslip_line as pl on  hp.id = pl.slip_id 
+                                Inner Join hr_salary_rule_category hc on pl.category_id = hc.id 
+                                LEFT Join hr_salary_rule_category hc_parent on hc.parent_id = hc_parent.id 
+                                WHERE hp.state in ('done','paid') and hp.contract_id = %s AND hp.date_from >= %s AND hp.date_to <= %s
+                                AND (hc.code = %s OR hc_parent.code = %s)""",
+                        (self.contract_id.id, from_date, to_date, code, code))
+            res = self.env.cr.fetchone()
+            return res[0] or 0.0
         salary = 0
-        categories_dict = localdict.get('categories', {})  # Asegúrate de que 'categoris' esté en el diccionario
-        #for category in ['DEV_SALARIAL','COMISIONES', 'AUS']:
         salary += localdict['categories'].DEV_SALARIAL
         salary += localdict['categories'].COMISIONES
         salary += localdict['categories'].AUS
         o_earnings = localdict['categories'].DEV_NO_SALARIAL
+        if self.date_from.days != 1:
+            salary += sum_mount_before('DEV_SALARIAL')
+            salary += sum_mount_before('COMISIONES')
+            salary += sum_mount_before('AUS')
+            o_earnings += sum_mount_before('DEV_NO_SALARIAL')
         top40 = (salary + o_earnings) * 0.4
         if o_earnings > top40:
             amount = salary + o_earnings - top40

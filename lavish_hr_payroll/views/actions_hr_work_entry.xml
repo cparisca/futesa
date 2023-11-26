@@ -54,6 +54,31 @@
                     </form>
                 </field>
         </record>
+        <record id="hr_contract_view_kanban_ext" model="ir.ui.view">
+            <field name="name">hr.contract.kanban</field>
+            <field name="model">hr.contract</field>
+            <field name="inherit_id" ref="hr_contract.hr_contract_view_kanban"/>
+            <field name="arch" type="xml">
+                <field name="activity_state" position="after">
+                    <field name="activity_ids"/>
+                    <field name="contract_type"/>
+                    <field name="retirement_date"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="risk_id"/>
+                </field>
+                <div name="div_job_id" position="after">
+                    <div class="text-muted o_kanban_record_subtitle o_hr_contract_job_id" name="div_job_id">
+                        <t t-if="record.wage_type.raw_value == 'monthly'">
+                            <field name="contract_wage"/> / Month
+                        </t>
+                        <t t-if="record.wage_type.raw_value == 'hourly'">
+                            <field name="hourly_wage"/> / Hour
+                        </t>
+                    </div>
+                </div>
+            </field>
+        </record>
     </data>
 </odoo>
       

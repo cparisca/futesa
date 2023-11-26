@@ -1291,7 +1291,7 @@ class Hr_payslip(models.Model):
                     'rate': rate,
                     'slip_id': self.id,
                 }
-        _logger.error(localdict['categories'].DEV_SALARIAL, localdict['contract'].id)
+        localdict = self._compute_ibd(localdict)
         #_logger.info(localdict.items())
         #Cargar detalle retención en la fuente si tuvo
         ranges = {
@@ -1372,7 +1372,23 @@ class Hr_payslip(models.Model):
             result_finally = {**result, **result_vac, **result_vac_l, **result_intcesantias, **result_prima}
             return result_finally.values()
 
-
+    def _compute_ibd(self, localdict):
+        salary = 0
+        categories_dict = localdict.get('categories', {})  # Asegúrate de que 'categoris' esté en el diccionario
+        for category in ['DEV_SALARIAL','COMISIONES', 'AUS']:
+            salary += categories_dict.get(category, 0.0)
+        o_earnings = localdict['categories'].DEV_NO_SALARIAL
+        top40 = (salary + o_earnings) * 0.4
+        if o_earnings > top40:
+            amount = salary + o_earnings - top40
+        else:
+            amount = salary 
+        if localdict['contract'].modality_salary == 'integral':
+            amount *= 0.7
+        smmlv = localdict['annual_parameters'].smmlv_monthly
+        if amount > 25 * smmlv:
+            amount = 25 * smmlv
+        _logger.info(amount)
 
     def _get_payslip_lines_cesantias(self,inherit_contrato=0,localdict=None):
         def _sum_salary_rule_category(localdict, category, amount):

@@ -781,7 +781,7 @@ class Hr_payslip(models.Model):
             obj_novelties =  self.novedades_ids #self.env['hr.novelties.different.concepts'].search([('employee_id', '=', employee.id), ('date', '>=', self.date_from),('date', '<=', self.date_to)])
             for concepts in obj_novelties:
                 if concepts.amount != 0 and inherit_prima == 0:
-                    previous_amount = concepts.salary_rule_id.code in localdict and localdict[concepts.salary_rule_id.code] or 0.0
+                    previous_amount = localdict.get(concepts.salary_rule_id.code, 0.0)
                     tot_rule = concepts.amount * 1.0 * 100 / 100.0
                     if (inherit_contrato_dev != 0 or inherit_contrato_ded != 0) and self.novelties_payroll_concepts == False and not concepts.salary_rule_id.code in ['TOTALDEV','TOTALDED','NET','IBC_R','IBC_A','IBC_P']:
                         tot_rule = 0
@@ -844,13 +844,13 @@ class Hr_payslip(models.Model):
                                 tot_rule = (tot_rule/30) * qty
                         return (tot_rule / 30) * qty
 
-            obj_concept = payslip.contract_id.concepts_ids
+            obj_concept = localdict.get['contract'].concepts_ids
             for concept in obj_concept.filtered(lambda l: l.state == 'done'):
                 entity_id = concept.partner_id.id
                 loan_id = concept.loan_id.id 
                 date_start_concept = concept.date_start if concept.date_start else datetime.strptime('01/01/1900', '%d/%m/%Y').date()
                 date_end_concept = concept.date_end if concept.date_end else datetime.strptime('31/12/2080', '%d/%m/%Y').date()
-                previous_amount = concept.input_id.code in localdict and localdict[concept.input_id.code] or 0.0
+                previous_amount = localdict.get(concept.input_id.code, 0.0)
                 if (concept.state == 'done' and 
                     date_start_concept <= date_to.date() and 
                     date_end_concept >= date_from.date() and 
@@ -858,7 +858,7 @@ class Hr_payslip(models.Model):
                     inherit_prima == 0 and 
                     concept.input_id.amount_select != "code" and self.settle_payroll_concepts ):
                     #localdict.update({'id_contract_concepts': concept.id})
-                    tot_rule = calculate_total_rule(concept, self.date_from, self.worked_days_line_ids, localdict['employee'])
+                    tot_rule = calculate_total_rule(concept, self.date_from, self.worked_days_line_ids, localdict.get['employee'])
                     #LIQUIDACION DE CONTRATO SOLO DEV OR DED DEPENDIENTO SU ORIGEN
                     if (inherit_contrato_dev != 0 or inherit_contrato_ded != 0) and self.novelties_payroll_concepts == False and not concept.input_id.code in ['TOTALDEV','TOTALDED','NET','IBC_R','IBC_A','IBC_P']:
                         tot_rule = 0
@@ -880,7 +880,7 @@ class Hr_payslip(models.Model):
                         'note': concept.input_id.note,
                         'salary_rule_id': concept.input_id.id,
                         'contract_id': payslip.contract_id.id,
-                        'employee_id': payslip.employee_id.id,
+                        'employee_id': localdict.get['employee'].id,
                         'entity_id': entity_id or False,
                         'loan_id': loan_id,
                         'amount': tot_rule,

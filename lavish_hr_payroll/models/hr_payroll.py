@@ -1249,7 +1249,7 @@ class Hr_payslip(models.Model):
         if obj_struct_payroll:
             specific_rule_codes = ['DEV_SALARIAL', 'DEV_NO_SALARIAL', 'AUX', 'COMISIONES','AUS']
             specific_rules = self.env['hr.salary.rule'].search([
-                ('category_id.code', 'in', specific_rule_codes),
+                ('category_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)
             ])
             all_rules |= specific_rules
             specific_rules = self.env['hr.salary.rule'].search([

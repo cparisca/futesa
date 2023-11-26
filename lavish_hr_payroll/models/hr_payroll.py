@@ -761,6 +761,7 @@ class Hr_payslip(models.Model):
             localdict = self.env.context.get('force_payslip_localdict', None)
             if localdict is None:
                 localdict = payslip._get_localdict()
+            
             def _sum_salary_rule(localdict, rule, amount):
                 localdict['rules_computed'].dict[rule.code] = localdict['rules_computed'].dict.get(rule.code, 0) + amount
             rules_dict = localdict['rules']
@@ -770,6 +771,7 @@ class Hr_payslip(models.Model):
             self.env['hr.employee.deduction.retention'].search([('employee_id', '=', localdict['employee'].id),('year', '=', payslip.date_from.year),('month', '=', payslip.date_from.month)]).unlink()
             self.env['hr.employee.rtefte'].search([('employee_id', '=', localdict['employee'].id),('year', '=', payslip.date_from.year),('month', '=', payslip.date_from.month)]).unlink()
             blacklisted_rule_ids = self.env.context.get('prevent_payslip_computation_line_ids', [])
+            _logger.info(localdict.items())
             result = {}
             result_not = {}
             pay_vacations_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_vacations_in_payroll')) or False

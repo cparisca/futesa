@@ -1291,7 +1291,7 @@ class Hr_payslip(models.Model):
                     'rate': rate,
                     'slip_id': self.id,
                 }
-                _logger.info(localdict['categories'].categories)
+                _logger.info(localdict['categories'].code)
         #_logger.info(localdict.items())
         #Cargar detalle retención en la fuente si tuvo
         ranges = {

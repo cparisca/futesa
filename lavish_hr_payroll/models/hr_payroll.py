@@ -844,7 +844,7 @@ class Hr_payslip(models.Model):
                                 tot_rule = (tot_rule/30) * qty
                         return (tot_rule / 30) * qty
 
-            obj_concept = localdict['contract'].concepts_ids
+            obj_concept = payslip.contract_id.concepts_ids
             for concept in obj_concept.filtered(lambda l: l.state == 'done'):
                 entity_id = concept.partner_id.id
                 loan_id = concept.loan_id.id 

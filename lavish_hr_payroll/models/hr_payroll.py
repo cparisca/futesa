@@ -1291,6 +1291,53 @@ class Hr_payslip(models.Model):
                     'rate': rate,
                     'slip_id': self.id,
                 }
+        #Ejecutar las reglas salariales y su respectiva lógica
+        all_base_rules = self.env['hr.salary.rule'].browse([])
+        obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'nomina')])
+        if obj_struct_payroll:
+            specific_rule_codes = ['IBC_R', 'IBC_P', 'IBC_A', 'BASE_PROV','BASE_PROV_VAC']
+            specific_rules = self.env['hr.salary.rule'].search([
+                ('code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)
+            ])
+            all_base_rules |= specific_rules
+        for rule in sorted(all_base_rules, key=lambda x: x.sequence):
+            if rule.id in blacklisted_rule_ids:
+                continue
+            localdict.update({
+                'result': None,
+                'result_qty': 1.0,
+                'result_rate': 100,
+                'result_name': False
+            })
+            if rule._satisfy_condition(localdict):
+
+                # Retrieve the line name in the employee's lang
+                employee_lang = self.employee_id.lang
+                amount, qty, rate = rule._compute_rule(localdict)
+                if rule.code == 'IBC_R':
+                    amount = self._compute_ibd(localdict)
+                #check if there is already a rule computed with that code
+                previous_amount = rule.code in localdict and localdict[rule.code] or 0.0
+                #set/overwrite the amount computed for this rule in the localdict
+                tot_rule = amount * qty * rate / 100.0
+                localdict[rule.code] = tot_rule
+                rules_dict[rule.code] = rule
+                # sum the amount for its salary category
+                localdict = _sum_salary_rule_category(localdict, rule.category_id, tot_rule - previous_amount)
+                localdict = _sum_salary_rule(localdict, rule, tot_rule)
+                # create/overwrite the rule in the temporary results
+                result[rule.code] = {
+                    'sequence': rule.sequence,
+                    'code': rule.code,
+                    'name': rule.name,
+                    'salary_rule_id': rule.id,
+                    'contract_id': self.contract_id.id,
+                    'employee_id': self.employee_id.id,
+                    'amount': amount,
+                    'quantity': qty,
+                    'rate': rate,
+                    'slip_id': self.id,
+                }
         localdict = self._compute_ibd(localdict)
         #_logger.info(localdict.items())
         #Cargar detalle retención en la fuente si tuvo
@@ -1408,9 +1455,8 @@ class Hr_payslip(models.Model):
         smmlv = localdict['annual_parameters'].smmlv_monthly
         if amount > 25 * smmlv:
             amount = 25 * smmlv
-        _logger.info(salary)
-        _logger.info(o_earnings)
-        _logger.info(amount)
+        return amount
+
 
     def _get_payslip_lines_cesantias(self,inherit_contrato=0,localdict=None):
         def _sum_salary_rule_category(localdict, category, amount):

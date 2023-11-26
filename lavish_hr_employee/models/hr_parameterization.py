@@ -98,6 +98,14 @@ class hr_categories_salary_rules(models.Model):
     
     group_payroll_voucher = fields.Boolean('Agrupar comprobante de nómina')
     sequence = fields.Integer(tracking=True)
+
+    def _sum_salary_rule_category(self, localdict, amount):
+        self.ensure_one()
+        if self.parent_id:
+            localdict = self.parent_id._sum_salary_rule_category(localdict, amount)
+        localdict['categories'][self.code] = localdict['categories'][self.code] + amount
+        return localdict
+
 #Contabilización reglas salariales
 class hr_salary_rule_accounting(models.Model):
     _name ='hr.salary.rule.accounting'

@@ -1393,7 +1393,7 @@ class Hr_payslip(models.Model):
         salary += localdict['categories'].COMISIONES
         salary += localdict['categories'].AUS
         o_earnings = localdict['categories'].DEV_NO_SALARIAL
-        if self.date_from.days != 1:
+        if self.date_from.day != 1:
             salary += sum_mount_before('DEV_SALARIAL')
             salary += sum_mount_before('COMISIONES')
             salary += sum_mount_before('AUS')

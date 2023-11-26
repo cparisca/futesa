@@ -748,6 +748,7 @@ class Hr_payslip(models.Model):
                 'result_rules': defaultdict(lambda: dict(total=0, amount=0, quantity=0, rate=0)),
                 'same_type_input_lines': same_type_input_lines,
                 'annual_parameters' : self.env['hr.annual.parameters'].search([('year', '=', self.date_from.year)]),
+                'rules_computed': BrowsableObject(self.employee_id.id, {}, self.env),
             }
         }
         return localdict

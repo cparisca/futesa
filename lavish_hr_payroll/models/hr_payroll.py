@@ -1390,6 +1390,8 @@ class Hr_payslip(models.Model):
         smmlv = localdict['annual_parameters'].smmlv_monthly
         if amount > 25 * smmlv:
             amount = 25 * smmlv
+        _logger.info(salary)
+        _logger.info(o_earnings)
         _logger.info(amount)
 
     def _get_payslip_lines_cesantias(self,inherit_contrato=0,localdict=None):

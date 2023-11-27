@@ -442,8 +442,7 @@ class hr_payroll_flat_file(models.Model):
                     tipo_producto_destino = '01' if bank.type_account == 'A' else '06'  # 01: Abono a cuenta ahorros /  06: Abono a cuenta corriente
                     no_cuenta_beneficiario = right(16 * '0' + str(bank.acc_number).replace("-", ""), 16)
             if no_cuenta_beneficiario == '':
-                raise ValidationError(
-                    _('El empleado ' + payslip.contract_id.employee_id.name + ' no tiene configurada la información bancaria, por favor verificar.'))
+                raise ValidationError( _('El empleado ' + payslip.contract_id.employee_id.name + ' no tiene configurada la información bancaria, por favor verificar.'))
 
             # Obtener valor de transacción
             valor_transaccion = 16 * '0'
@@ -1108,6 +1107,7 @@ class hr_payroll_flat_file(models.Model):
     def generate_flat_file(self):
         self.env['hr.payroll.flat.file.detail'].search([('flat_file_id','=',self.id)]).unlink()
         self.transmission_date = fields.Datetime.now()
+        self.application_date = fields.Date.today()
         if self.flat_rule_not_included:
             file_base64 = False
             obj_payslip = self.env['hr.payslip']

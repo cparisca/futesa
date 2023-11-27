@@ -1107,6 +1107,7 @@ class hr_payroll_flat_file(models.Model):
     #Ejecutar proceso
     def generate_flat_file(self):
         self.env['hr.payroll.flat.file.detail'].search([('flat_file_id','=',self.id)]).unlink()
+        self.transmission_date = fields.Datetime.now()
         if self.flat_rule_not_included:
             file_base64 = False
             obj_payslip = self.env['hr.payslip']

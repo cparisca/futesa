@@ -29,7 +29,7 @@ class hr_payroll_flat_file_detail(models.Model):
     txt_file_name = fields.Char('Archivo plano filename')
     excel_file = fields.Binary('Excel')
     excel_file_name = fields.Char('Excel filename')
-
+    liquidations_ids= fields.Many2many('hr.payslip', string='Liquidaciones', domain=[('definitive_plan', '=', False),('payslip_run_id', '=', False)])
     def download_txt(self):
         if self.txt_file:
             action = {

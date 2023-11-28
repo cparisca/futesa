@@ -982,59 +982,18 @@ class Hr_payslip(models.Model):
     #                 }
     #                 _logger.info(localdict.items())
     #             return localdict,result 
-    def _get_payslip_lines(self,inherit_vacation=0,inherit_prima=0,inherit_contrato_dev=0, inherit_contrato_ded_bases=0,inherit_contrato_ded=0,localdict=None):
-        def _sum_salary_rule_category(localdict, category, amount):
-            if category.parent_id:
-                localdict = _sum_salary_rule_category(localdict, category.parent_id, amount)
-            localdict['categories'].dict[category.code] = localdict['categories'].dict.get(category.code, 0) + amount
-            return localdict
-        def _sum_salary_rule(localdict, rule, amount):
-            localdict['rules_computed'].dict[rule.code] = localdict['rules_computed'].dict.get(rule.code, 0) + amount
-            #Sumatoria de valores que son base para los procesos
-            if rule.category_id.code != 'BASIC':
-                localdict['values_base_prima'] += amount if rule.base_prima else 0.0
-                localdict['values_base_cesantias'] += amount if rule.base_cesantias else 0.0
-                localdict['values_base_int_cesantias'] += amount if rule.base_intereses_cesantias else 0.0
-                localdict['values_base_vacremuneradas'] += amount if rule.base_vacaciones_dinero else 0.0
-                localdict['values_base_vacdisfrutadas'] += amount if rule.base_vacaciones else 0.0
-            return localdict
-        self.ensure_one()
-        result = {}
-        result_not = {}
-        rules_dict = {}
-        if inherit_contrato_ded_bases + inherit_contrato_ded + inherit_contrato_dev == 1 and self.date_from == self.date_to:
-            worked_days_dict = {}
-        else:
-            worked_days_dict = {line.code: line for line in self.worked_days_line_ids if line.code}
-        blacklisted_rule_ids = self.env.context.get('prevent_payslip_computation_line_ids', [])
-        localdict = self.env.context.get('force_payslip_localdict', None)
-        leaved_days_dict = {line.leave_id.holiday_status_id.code: line for line in self.leave_ids if line.leave_id.holiday_status_id.code}
-        worked_days_dict = {line.code: line for line in self.worked_days_line_ids if line.code}
-        inputs_dict = {line.code: line for line in self.input_line_ids if line.code}
-        pay_vacations_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_vacations_in_payroll')) or False
-        pay_cesantias_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_cesantias_in_payroll')) or False
-        pay_primas_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_primas_in_payroll')) or False        
-        vacation_days_calculate_absences = int(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.vacation_days_calculate_absences')) or 5
-        worked_days_entry = 0
-        leaves_days_law = 0
-        leaves_days_all = 0
-        for days in self.worked_days_line_ids:
-            worked_days_entry = worked_days_entry + (days.number_of_days if days.work_entry_type_id.is_leave == False else 0)
-            leaves_days_law = leaves_days_law + (days.number_of_days if days.work_entry_type_id.is_leave and days.work_entry_type_id.deduct_deductions == 'law' else 0)
-            leaves_days_all = leaves_days_all + (days.number_of_days if days.work_entry_type_id.is_leave and days.work_entry_type_id.deduct_deductions == 'all' else 0)
+
+
+    def get_locadict_payroll(self):
         employee = self.employee_id
         contract = self.contract_id
         year = self.date_from.year
+        rules_dict = {}
+        inputs_dict = {line.code: line for line in self.input_line_ids if line.code}
+        leaved_days_dict = {line.leave_id.holiday_status_id.code: line for line in self.leave_ids if line.leave_id.holiday_status_id.code}
+        worked_days_dict = {line.code: line for line in self.worked_days_line_ids if line.code}
         annual_parameters = self.env['hr.annual.parameters'].search([('year', '=', year)])
-        #Se eliminan registros actuales para el periodo ejecutado de Retención en la fuente
-        self.env['hr.employee.deduction.retention'].search([('employee_id', '=', employee.id),('year', '=', self.date_from.year),('month', '=', self.date_from.month)]).unlink()
-        self.env['hr.employee.rtefte'].search([('employee_id', '=', employee.id),('year', '=', self.date_from.year),('month', '=', self.date_from.month)]).unlink()
-
-        #Se obtienen las entradas de trabajo
-        date_from = datetime.combine(self.date_from, datetime.min.time())
-        date_to = datetime.combine(self.date_to, datetime.max.time())
-        #Primero, encontró una entrada de trabajo que no excedió el intervalo.
-        
+        localdict = self.env.context.get('force_payslip_localdict', None)
         if localdict == None:
             localdict = {
                 **self._get_base_local_dict(),
@@ -1061,99 +1020,120 @@ class Hr_payslip(models.Model):
                     'values_base_vacaciones': 0.0,
                     'values_base_vacdisfrutadas': 0.0,
                     'id_contract_concepts':0.0,
-                    'inherit_contrato':inherit_contrato_ded+inherit_contrato_dev,
-                    'inherit_prima':inherit_prima,
                 }
             }
-        else:
-            localdict.update({
-                'worked_days': WorkedDays(employee.id, worked_days_dict, self.env),
-                'inputs': InputLine(employee.id, inputs_dict, self.env),
-                'values_leaves_all' : localdict.get('values_leaves_all',0),
-                'values_leaves_law' : localdict.get('values_leaves_law',0),
-                #Sumatoria de valores que son base para los procesos
-                'values_base_prima': localdict.get('values_base_prima',0),
-                'values_base_cesantias': localdict.get('values_base_cesantias',0),
-                'values_base_int_cesantias': localdict.get('values_base_int_cesantias',0),
-                'values_base_compensation': localdict.get('values_base_compensation',0),
-                'values_base_vacremuneradas': localdict.get('values_base_vacremuneradas',0),
-                'values_base_vacdisfrutadas': localdict.get('values_base_vacdisfrutadas',0),
-                'inherit_contrato':inherit_contrato_ded_bases+inherit_contrato_ded+inherit_contrato_dev,
-                'inherit_prima':inherit_prima,})
-        #Ejecutar vacaciones dentro de la nómina - 16/02/2022
-        if (pay_vacations_in_payroll == True and inherit_vacation == 0 and inherit_contrato_ded+inherit_contrato_dev == 0 and inherit_prima == 0):
-            struct_original = self.struct_id.id
-            #Vacaciones
-            obj_struct_vacation = self.env['hr.payroll.structure'].search([('process', '=', 'vacaciones')])
-            self.struct_id = obj_struct_vacation.id
-            localdict, result_vac = self._get_payslip_lines_vacation(inherit_contrato=0, localdict=localdict, inherit_nomina=1)
-            self.struct_id = struct_original
-        else:
-            result_vac = {}
-        if (self.struct_id.process == 'contrato'):
-            struct_original = self.struct_id.id
-            #Vacaciones
-            obj_struct_payroll = self.env['hr.payroll.structure'].search([('process','=','vacaciones')])
-            self.struct_id = obj_struct_payroll.id
-            localdict, result_vac_l = self._get_payslip_lines_vacation(inherit_contrato=1,localdict=localdict)
-            #Continuar con la nómina
-            self.struct_id = struct_original
-        else:
-            result_vac_l = {}
-        #Cargar novedades por conceptos diferentes
-        if (contract.modality_salary != 'integral' or contract.contract_type != 'aprendizaje') :
-            if (pay_cesantias_in_payroll == True and self.pay_cesantias_in_payroll == True) or (self.struct_id.process == 'contrato'):
-                struct_original = self.struct_id.id
-                obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'intereses_cesantias')])
-                if (self.struct_id.process == 'contrato'):
-                    obj_struct_payroll = self.env['hr.payroll.structure'].search([('process','=','cesantias')])
-                self.struct_id = obj_struct_payroll.id
-                localdict, result_intcesantias = self.with_context(direct=True)._get_payslip_lines_cesantias(inherit_contrato=1, localdict=localdict)
-                #Continuar con la nómina
-                self.struct_id = struct_original
-            else:
-                result_intcesantias = {}
-            if (pay_primas_in_payroll == True and self.pay_primas_in_payroll == True) or (self.struct_id.process == 'contrato'):
-                struct_original = self.struct_id.id
-                obj_struct_payroll = self.env['hr.payroll.structure'].search([('process','=','prima')])
-                self.struct_id = obj_struct_payroll.id
-                localdict, result_prima = self._get_payslip_lines_prima(inherit_contrato=1,localdict=localdict)
-                self.struct_id = struct_original
-            else:
-                result_prima = {}
-        obj_novelties =  self.novedades_ids #self.env['hr.novelties.different.concepts'].search([('employee_id', '=', employee.id), ('date', '>=', self.date_from),('date', '<=', self.date_to)])
-        for concepts in obj_novelties:
-            if concepts.amount != 0 and inherit_prima == 0:
-                previous_amount = concepts.salary_rule_id.code in localdict and localdict[concepts.salary_rule_id.code] or 0.0
-                #set/overwrite the amount computed for this rule in the localdict
-                tot_rule = concepts.amount * 1.0 * 100 / 100.0
-                #LIQUIDACION DE CONTRATO SOLO DEV OR DED DEPENDIENTO SU ORIGEN
-                if (inherit_contrato_dev != 0 or inherit_contrato_ded != 0) and self.novelties_payroll_concepts == False and not concepts.salary_rule_id.code in ['TOTALDEV','TOTALDED','NET','IBC_R','IBC_A','IBC_P']:
-                    tot_rule = 0
-                if inherit_contrato_dev != 0 and concepts.salary_rule_id.dev_or_ded != 'devengo':                            
-                    tot_rule = 0
-                if inherit_contrato_ded != 0 and concepts.salary_rule_id.dev_or_ded != 'deduccion'and not concepts.salary_rule_id.code in ['TOTALDEV','NET',]:                            
-                    tot_rule = 0
-                if tot_rule != 0:
-                    localdict[concepts.salary_rule_id.code+'-PCD'] = tot_rule
-                    rules_dict[concepts.salary_rule_id.code+'-PCD'] = concepts.salary_rule_id
-                    localdict = _sum_salary_rule_category(localdict, concepts.salary_rule_id.category_id, tot_rule - previous_amount)
-                    localdict = _sum_salary_rule(localdict, concepts.salary_rule_id, tot_rule)
-                    result_item = concepts.salary_rule_id.code+'-PCD'+str(concepts.id)
-                    result[result_item] = {
-                        'sequence': concepts.salary_rule_id.sequence,
-                        'code': concepts.salary_rule_id.code,
-                        'name': concepts.salary_rule_id.name,
-                        'note': concepts.salary_rule_id.note,
-                        'salary_rule_id': concepts.salary_rule_id.id,
-                        'contract_id': contract.id,
-                        'employee_id': employee.id,
-                        'entity_id': concepts.partner_id.id if concepts.partner_id else False,
-                        'amount': tot_rule,
-                        'quantity': 1.0,
-                        'rate': 100,
-                        'slip_id': self.id,}
+        return localdict
 
+    def _get_payslip_lines(self,localdict=None):
+        category_mapping = {
+            'EARNINGS': ['BASIC', 'AUX', 'AUS', 'ALW', 
+                        'ACCIDENTE_TRABAJO', 'DEV_NO_SALARIAL', 'DEV_SALARIAL', 
+                        'TOTALDEV', 'HEYREC', 'COMISIONES', 'INCAPACIDAD',
+                        'LICENCIA_MATERNIDAD', 'LICENCIA_NO_REMUNERADA',
+                        'LICENCIA_REMUNERADA', 'PRESTACIONES_SOCIALES', 
+                        'PRIMA', 'VACACIONES'],
+            'BASES': ['IBC_R','IBC_A','IBC_P','BASE_PROV','BASE_PROV_VAC'],
+            'SSOCIAL': ['SSOCIAL'],
+            'DEDUCTIONS': ['DED', 'DEDUCCIONES', 'TOTALDED', 'SANCIONES', 'DESCUENTO_AFC'],
+            'PROVISIONS': ['PROV'],
+            'OUTCOME': ['NET']}
+        def _sum_salary_rule_category(localdict, category, amount):
+            if category.parent_id:
+                localdict = _sum_salary_rule_category(localdict, category.parent_id, amount)
+            localdict['categories'].dict[category.code] = localdict['categories'].dict.get(category.code, 0) + amount
+            return localdict
+        def _sum_salary_rule(localdict, rule, amount):
+            localdict['rules_computed'].dict[rule.code] = localdict['rules_computed'].dict.get(rule.code, 0) + amount
+        
+        def _result_values(rule,amount,qty,rate,entity_id,localdict,result, code_id=None):
+            previous_amount = rule.code in localdict and localdict[rule.code] or 0.0
+            tot_rule = amount * qty * rate / 100.0
+            localdict[rule.code] = tot_rule
+            rules_dict[rule.code] = rule
+            if code_id == None:
+                code_id = rule.code
+            # sum the amount for its salary category
+            localdict = _sum_salary_rule_category(localdict, rule.category_id, tot_rule - previous_amount)
+            localdict = _sum_salary_rule(localdict, rule, tot_rule)
+            result[rule.code] = {
+                'sequence': rule.sequence,
+                'code': rule.code,
+                'name': rule.name,
+                'salary_rule_id': rule.id,
+                'contract_id': self.contract_id.id,
+                'employee_id': self.employee_id.id,
+                'entity_id': entity_id or False,
+                'amount': amount,
+                'quantity': qty,
+                'rate': rate,
+                'slip_id': self.id,
+            }
+        self.ensure_one()
+        result = {}
+        result_not = {}
+        rules_dict = {}
+        rule_excluir = []
+        blacklisted_rule_ids = self.env.context.get('prevent_payslip_computation_line_ids', [])
+        pay_vacations_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_vacations_in_payroll')) or False
+        pay_cesantias_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_cesantias_in_payroll')) or False
+        pay_primas_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_primas_in_payroll')) or False        
+        employee = self.employee_id
+        contract = self.contract_id
+        #Se eliminan registros actuales para el periodo ejecutado de Retención en la fuente
+        self.env['hr.employee.deduction.retention'].search([('employee_id', '=', employee.id),('year', '=', self.date_from.year),('month', '=', self.date_from.month)]).unlink()
+        self.env['hr.employee.rtefte'].search([('employee_id', '=', employee.id),('year', '=', self.date_from.year),('month', '=', self.date_from.month)]).unlink()
+        date_from = self.date_from
+        date_to = self.date_to
+        if localdict == None:
+            localdict = self.get_locadict_payroll()
+        #Ejecutar vacaciones dentro de la nómina - 16/02/2022
+        # if (pay_vacations_in_payroll == True):
+        #     struct_original = self.struct_id.id
+        #     #Vacaciones
+        #     obj_struct_vacation = self.env['hr.payroll.structure'].search([('process', '=', 'vacaciones')])
+        #     self.struct_id = obj_struct_vacation.id
+        #     localdict, result_vac = self._get_payslip_lines_vacation(inherit_contrato=0, localdict=localdict, inherit_nomina=1)
+        #     self.struct_id = struct_original
+        # else:
+        #     result_vac = {}
+        # if (self.struct_id.process == 'contrato'):
+        #     struct_original = self.struct_id.id
+        #     #Vacaciones
+        #     obj_struct_payroll = self.env['hr.payroll.structure'].search([('process','=','vacaciones')])
+        #     self.struct_id = obj_struct_payroll.id
+        #     localdict, result_vac_l = self._get_payslip_lines_vacation(inherit_contrato=1,localdict=localdict)
+        #     #Continuar con la nómina
+        #     self.struct_id = struct_original
+        # else:
+        #     result_vac_l = {}
+        # #Cargar novedades por conceptos diferentes
+        # if (contract.modality_salary != 'integral' or contract.contract_type != 'aprendizaje') :
+        #     if (pay_cesantias_in_payroll == True and self.pay_cesantias_in_payroll == True) or (self.struct_id.process == 'contrato'):
+        #         struct_original = self.struct_id.id
+        #         obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'intereses_cesantias')])
+        #         if (self.struct_id.process == 'contrato'):
+        #             obj_struct_payroll = self.env['hr.payroll.structure'].search([('process','=','cesantias')])
+        #         self.struct_id = obj_struct_payroll.id
+        #         localdict, result_intcesantias = self.with_context(direct=True)._get_payslip_lines_cesantias(inherit_contrato=1, localdict=localdict)
+        #         #Continuar con la nómina
+        #         self.struct_id = struct_original
+        #     else:
+        #         result_intcesantias = {}
+        #     if (pay_primas_in_payroll == True and self.pay_primas_in_payroll == True) or (self.struct_id.process == 'contrato'):
+        #         struct_original = self.struct_id.id
+        #         obj_struct_payroll = self.env['hr.payroll.structure'].search([('process','=','prima')])
+        #         self.struct_id = obj_struct_payroll.id
+        #         localdict, result_prima = self._get_payslip_lines_prima(inherit_contrato=1,localdict=localdict)
+        #         self.struct_id = struct_original
+        #     else:
+        #         result_prima = {}
+        obj_novelties =  self.novedades_ids
+        for concepts in obj_novelties:
+            if concepts.amount != 0:
+                tot_rule = concepts.amount * 1.0 * 100 / 100.0
+                result_item = concepts.salary_rule_id.code+'-PCD'+str(concepts.id)
+                _result_values(concept.salary_rule_id,tot_rule,1,100,localdict,concepts.partner_id.id,result,result_item)
+                rule_excluir.append({'id':concepts.salary_rule_id.id})
         def calculate_total_rule(concept, date_from, worked_days_line_ids, employee):
             tot_rule = concept.amount
 
@@ -1167,13 +1147,11 @@ class Hr_payslip(models.Model):
                     return tot_rule
                 elif concept.aplicar == "30" and date_from.day > 16:
                     return tot_rule
-
             elif concept.input_id.modality_value == "diario":
-                qty = 1  # Default value
+                qty = 1
                 for linea in worked_days_line_ids:
                     if linea.work_entry_type_id.code == 'WORK100':
                         qty = linea.number_of_days
-
                 if concept.aplicar == "0":
                     return (tot_rule / 30) * qty
                 elif concept.aplicar == "15" and date_from.day <= 15:
@@ -1204,57 +1182,21 @@ class Hr_payslip(models.Model):
                 date_start_concept <= date_to.date() and 
                 date_end_concept >= date_from.date() and 
                 concept.amount != 0 and 
-                inherit_prima == 0 and 
                 concept.input_id.amount_select != "code" and self.settle_payroll_concepts ):
                 #localdict.update({'id_contract_concepts': concept.id})
                 tot_rule = calculate_total_rule(concept, self.date_from, self.worked_days_line_ids, employee)
                 #LIQUIDACION DE CONTRATO SOLO DEV OR DED DEPENDIENTO SU ORIGEN
-                if (inherit_contrato_dev != 0 or inherit_contrato_ded != 0) and self.novelties_payroll_concepts == False and not concept.input_id.code in ['TOTALDEV','TOTALDED','NET','IBC_R','IBC_A','IBC_P']:
-                    tot_rule = 0
-                if inherit_contrato_dev != 0 and concept.input_id.dev_or_ded != 'devengo':                            
-                    tot_rule = 0
-                if inherit_contrato_ded != 0 and concept.input_id.dev_or_ded != 'deduccion'and not concept.input_id.code in ['TOTALDEV','NET',]:                            
-                    tot_rule = 0
-                if tot_rule != 0:
-                    localdict[concept.input_id.code+'-PCD' + str(concept.id)] = tot_rule
-                    rules_dict[concept.input_id.code+'-PCD' + str(concept.id)] = concept.input_id
-                    # sum the amount for its salary category
-                    localdict = _sum_salary_rule_category(localdict, concept.input_id.category_id, tot_rule - previous_amount)
-                    localdict = _sum_salary_rule(localdict, concept.input_id, tot_rule)
-                    #Guardar valores de ausencias dependiendo parametrización
-                    if concept.input_id.is_leave:
-                        amount_leave = tot_rule if concept.input_id.deduct_deductions == 'all' else 0
-                        localdict['values_leaves_all'] = localdict['values_leaves_all'] + amount_leave
-                        amount_leave_law = tot_rule if concept.input_id.deduct_deductions == 'law' else 0
-                        localdict['values_leaves_law'] = localdict['values_leaves_law'] + amount_leave_law
                 result_item = concept.input_id.code + '-PCD' + str(concept.id)
-                result[result_item] = {
-                    'sequence': concept.input_id.sequence,
-                    'code': concept.input_id.code,
-                    'name': concept.input_id.name,
-                    'note': concept.input_id.note,
-                    'salary_rule_id': concept.input_id.id,
-                    'contract_id': contract.id,
-                    'employee_id': employee.id,
-                    'entity_id': entity_id or False,
-                    'loan_id': loan_id,
-                    'amount': tot_rule,
-                    'quantity': 2.00,
-                    'rate': 100,
-                    'slip_id': self.id,
-                }
+                _result_values(concept.input_id,tot_rule,1,100,localdict,entity_id,result,result_item)
+                rule_excluir.append({'id':concept.input_id.id})
         #Ejecutar las reglas salariales y su respectiva lógica
         all_rules = self.env['hr.salary.rule'].browse([])
         obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'nomina')])
         if obj_struct_payroll:
             specific_rule_codes = ['DEV_SALARIAL', 'DEV_NO_SALARIAL', 'AUX', 'COMISIONES','AUS']
-            specific_rules = self.env['hr.salary.rule'].search([
-                ('category_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)
-            ])
+            specific_rules = self.env['hr.salary.rule'].search([('category_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)])
             all_rules |= specific_rules
-            specific_rules = self.env['hr.salary.rule'].search([
-                ('category_id.parent_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)
-            ])
+            specific_rules = self.env['hr.salary.rule'].search([('category_id.parent_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)])
             all_rules |= specific_rules
         for rule in sorted(all_rules, key=lambda x: x.sequence):
             if rule.id in blacklisted_rule_ids:
@@ -1267,30 +1209,10 @@ class Hr_payslip(models.Model):
             })
             if rule._satisfy_condition(localdict):
                 # Retrieve the line name in the employee's lang
-                employee_lang = self.employee_id.lang
                 amount, qty, rate = rule._compute_rule(localdict)
-                #check if there is already a rule computed with that code
-                previous_amount = rule.code in localdict and localdict[rule.code] or 0.0
-                #set/overwrite the amount computed for this rule in the localdict
-                tot_rule = amount * qty * rate / 100.0
-                localdict[rule.code] = tot_rule
-                rules_dict[rule.code] = rule
-                # sum the amount for its salary category
-                localdict = _sum_salary_rule_category(localdict, rule.category_id, tot_rule - previous_amount)
-                localdict = _sum_salary_rule(localdict, rule, tot_rule)
-                # create/overwrite the rule in the temporary results
-                result[rule.code] = {
-                    'sequence': rule.sequence,
-                    'code': rule.code,
-                    'name': rule.name,
-                    'salary_rule_id': rule.id,
-                    'contract_id': self.contract_id.id,
-                    'employee_id': self.employee_id.id,
-                    'amount': amount,
-                    'quantity': qty,
-                    'rate': rate,
-                    'slip_id': self.id,
-                }
+                entity_id = False
+                result_item = False
+                _result_values(rule,amount, qty, rate,localdict,entity_id,result,result_item)
         #Ejecutar las reglas salariales y su respectiva lógica
         all_base_rules = self.env['hr.salary.rule'].browse([])
         obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'nomina')])
@@ -1310,37 +1232,12 @@ class Hr_payslip(models.Model):
                 'result_name': False
             })
             if rule._satisfy_condition(localdict):
-
-                # Retrieve the line name in the employee's lang
-                employee_lang = self.employee_id.lang
                 amount, qty, rate = rule._compute_rule(localdict)
                 if rule.code == 'IBC_R':
                     amount = self._compute_ibd(localdict)
-                #check if there is already a rule computed with that code
-                previous_amount = rule.code in localdict and localdict[rule.code] or 0.0
-                #set/overwrite the amount computed for this rule in the localdict
-                tot_rule = amount * qty * rate / 100.0
-                localdict[rule.code] = tot_rule
-                rules_dict[rule.code] = rule
-                # sum the amount for its salary category
-                localdict = _sum_salary_rule_category(localdict, rule.category_id, tot_rule - previous_amount)
-                localdict = _sum_salary_rule(localdict, rule, tot_rule)
-                # create/overwrite the rule in the temporary results
-                result[rule.code] = {
-                    'sequence': rule.sequence,
-                    'code': rule.code,
-                    'name': rule.name,
-                    'salary_rule_id': rule.id,
-                    'contract_id': self.contract_id.id,
-                    'employee_id': self.employee_id.id,
-                    'amount': amount,
-                    'quantity': qty,
-                    'rate': rate,
-                    'slip_id': self.id,
-                }
-        localdict = self._compute_ibd(localdict)
-        #_logger.info(localdict.items())
-        #Cargar detalle retención en la fuente si tuvo
+                entity_id = False
+                result_item = False
+                _result_values(rule,amount, qty, rate,localdict,entity_id,result,result_item)
         ranges = {
             (1, 4): "Ingreso Base",
             (5, 8): "Menos Deducciones",
@@ -1411,13 +1308,7 @@ class Hr_payslip(models.Model):
         not_lines = [(0, 0, not_line) for not_line in result_not.values()]
         self.not_line_ids = not_lines
         #Retornar resultado final de la liquidación de nómina
-        if inherit_vacation != 0 or inherit_prima != 0:
-            return result            
-        elif inherit_contrato_dev != 0 or inherit_contrato_ded != 0:  
-            return localdict,result
-        else:
-            result_finally = {**result, **result_vac, **result_vac_l, **result_intcesantias, **result_prima}
-            return result_finally.values()
+        return result            
 
     def _compute_ibd(self, localdict):
         def sum_mount_before(code):

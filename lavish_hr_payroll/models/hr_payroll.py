@@ -1236,8 +1236,9 @@ class Hr_payslip(models.Model):
                 if rule.code == 'IBC_R':
                     amount = self._compute_ibd(localdict)
                 entity_id = False
-                result_item = False
+                result_item = False 
                 _result_values(rule,amount, qty, rate,localdict,entity_id,result,result_item)
+        
         ranges = {
             (1, 4): "Ingreso Base",
             (5, 8): "Menos Deducciones",

@@ -305,8 +305,8 @@ class Payslips(BrowsableObject):
         return res and res[0] or 0.0
 
     #Retorna las horas extra & los dias efectivamente laborados del empleado
-    def get_overtime(self, employee_id, from_date, to_date, inherit_contrato = 0, aplicar = 0):
-        if inherit_contrato == 0 and aplicar != 0:
+    def get_overtime(self, employee_id, from_date, to_date,aplicar = 0):
+        if  aplicar != 0:
             from_month = from_date.month
             from_year = from_date.year
             date = str(from_year)+'-'+str(from_month)+'-01'

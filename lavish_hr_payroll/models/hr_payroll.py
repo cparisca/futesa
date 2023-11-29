@@ -1073,6 +1073,7 @@ class Hr_payslip(models.Model):
         result_not = {}
         rules_dict = {}
         rule_excluir = []
+        inherit_contrato = 0
         blacklisted_rule_ids = self.env.context.get('prevent_payslip_computation_line_ids', [])
         pay_vacations_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_vacations_in_payroll')) or False
         pay_cesantias_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.pay_cesantias_in_payroll')) or False
@@ -1132,14 +1133,12 @@ class Hr_payslip(models.Model):
             if concepts.amount != 0:
                 tot_rule = concepts.amount * 1.0 * 100 / 100.0
                 result_item = concepts.salary_rule_id.code+'-PCD'+str(concepts.id)
-                _result_values(concept.salary_rule_id,tot_rule,1,100,localdict,concepts.partner_id.id,result,result_item)
-                rule_excluir.append({'id':concepts.salary_rule_id.id})
+                _result_values(concepts.salary_rule_id,tot_rule,1,100,concepts.partner_id.id,localdict,result,result_item)
+                rule_excluir.append(concepts.salary_rule_id.id)
         def calculate_total_rule(concept, date_from, worked_days_line_ids, employee):
             tot_rule = concept.amount
-
             if concept.input_id.dev_or_ded == 'deduccion':
                 tot_rule = -tot_rule
-
             if concept.input_id.modality_value == "fijo":
                 if concept.aplicar == "0":
                     return tot_rule
@@ -1174,30 +1173,29 @@ class Hr_payslip(models.Model):
         obj_concept = contract.concepts_ids
         for concept in obj_concept.filtered(lambda l: l.state == 'done'):
             entity_id = concept.partner_id.id
-            loan_id = concept.loan_id.id 
             date_start_concept = concept.date_start if concept.date_start else datetime.strptime('01/01/1900', '%d/%m/%Y').date()
             date_end_concept = concept.date_end if concept.date_end else datetime.strptime('31/12/2080', '%d/%m/%Y').date()
-            previous_amount = concept.input_id.code in localdict and localdict[concept.input_id.code] or 0.0
             if (concept.state == 'done' and 
-                date_start_concept <= date_to.date() and 
-                date_end_concept >= date_from.date() and 
+                date_start_concept <= date_to and 
+                date_end_concept >= date_from and 
                 concept.amount != 0 and 
                 concept.input_id.amount_select != "code" and self.settle_payroll_concepts ):
                 #localdict.update({'id_contract_concepts': concept.id})
                 tot_rule = calculate_total_rule(concept, self.date_from, self.worked_days_line_ids, employee)
                 #LIQUIDACION DE CONTRATO SOLO DEV OR DED DEPENDIENTO SU ORIGEN
                 result_item = concept.input_id.code + '-PCD' + str(concept.id)
-                _result_values(concept.input_id,tot_rule,1,100,localdict,entity_id,result,result_item)
-                rule_excluir.append({'id':concept.input_id.id})
-        #Ejecutar las reglas salariales y su respectiva lógica
+                _result_values(concept.input_id,tot_rule,1,100,entity_id,localdict,result,result_item)
+                rule_excluir.append(concept.input_id.id)
+        #Ejecutar las reglas salariales y su respectiva lógica DEVENGO
         all_rules = self.env['hr.salary.rule'].browse([])
-        obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'nomina')])
-        if obj_struct_payroll:
-            specific_rule_codes = ['DEV_SALARIAL', 'DEV_NO_SALARIAL', 'AUX', 'COMISIONES','AUS']
-            specific_rules = self.env['hr.salary.rule'].search([('category_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)])
-            all_rules |= specific_rules
-            specific_rules = self.env['hr.salary.rule'].search([('category_id.parent_id.code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)])
-            all_rules |= specific_rules
+        specific_rule_codes = ['DEV_SALARIAL', 'DEV_NO_SALARIAL', 'AUX', 'COMISIONES', 'AUS']
+        specific_rules = self.env['hr.salary.rule'].search([
+            ('struct_id', '=', self.struct_id.id),
+            ('id','not in',rule_excluir),
+            '|',
+            ('category_id.code', 'in', specific_rule_codes),
+            ('category_id.parent_id.code', 'in', specific_rule_codes)])
+        all_rules |= specific_rules
         for rule in sorted(all_rules, key=lambda x: x.sequence):
             if rule.id in blacklisted_rule_ids:
                 continue
@@ -1212,16 +1210,15 @@ class Hr_payslip(models.Model):
                 amount, qty, rate = rule._compute_rule(localdict)
                 entity_id = False
                 result_item = False
-                _result_values(rule,amount, qty, rate,localdict,entity_id,result,result_item)
+                _result_values(rule,amount, qty, rate,entity_id,localdict,result,result_item)
+                #_result_values(rule,amount,qty,rate,entity_id,localdict,result, code_id=None)
         #Ejecutar las reglas salariales y su respectiva lógica
         all_base_rules = self.env['hr.salary.rule'].browse([])
-        obj_struct_payroll = self.env['hr.payroll.structure'].search([('process', '=', 'nomina')])
-        if obj_struct_payroll:
-            specific_rule_codes = ['IBC_R', 'IBC_P', 'IBC_A', 'BASE_PROV','BASE_PROV_VAC']
-            specific_rules = self.env['hr.salary.rule'].search([
-                ('code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id)
-            ])
-            all_base_rules |= specific_rules
+        specific_rule_codes = ['IBC_R', 'IBC_P', 'IBC_A', 'BASE_PROV','BASE_PROV_VAC']
+        specific_rules = self.env['hr.salary.rule'].search([
+            ('code', 'in', specific_rule_codes),('struct_id','=',self.struct_id.id),('id','not in',rule_excluir),
+        ])
+        all_base_rules |= specific_rules
         for rule in sorted(all_base_rules, key=lambda x: x.sequence):
             if rule.id in blacklisted_rule_ids:
                 continue
@@ -1237,7 +1234,7 @@ class Hr_payslip(models.Model):
                     amount = self._compute_ibd(localdict)
                 entity_id = False
                 result_item = False 
-                _result_values(rule,amount, qty, rate,localdict,entity_id,result,result_item)
+                _result_values(rule,amount, qty, rate,entity_id,localdict,result,result_item)
         
         ranges = {
             (1, 4): "Ingreso Base",
@@ -1308,8 +1305,7 @@ class Hr_payslip(models.Model):
         # Agregar reglas no aplicadas
         not_lines = [(0, 0, not_line) for not_line in result_not.values()]
         self.not_line_ids = not_lines
-        #Retornar resultado final de la liquidación de nómina
-        return result            
+        return result.values()             
 
     def _compute_ibd(self, localdict):
         def sum_mount_before(code):

@@ -49,7 +49,7 @@ class dev_skip_installment(models.Model):
                               ('cancel', 'Cancel'), ], string='State', default='draft', tracking=True)
 
     # Add by omnya
-    skip_type = fields.Selection(selection=[('postponed', 'Postponed'), ('pay_next_month', 'Pay Next Month')])
+    skip_type = fields.Selection(selection=[('postponed', 'Postponed'), ('pay_next_month', 'Pay Next Month'), ('pay_next_quat', 'proxima Quincena')])
 
     def get_url(self):
         for installment in self:
@@ -162,8 +162,8 @@ class dev_skip_installment(models.Model):
         self.state = 'confirm'
 
     def done_skip_installment(self):
-        date = self.installment_id.date + relativedelta(months=1)
         if self.skip_type == 'pay_next_month':
+            date = self.installment_id.date + relativedelta(months=1)
             vals = {
                 'name': str(self.installment_id.name) + ' - COPY',
                 'employee_id': self.employee_id and self.employee_id.id or False,

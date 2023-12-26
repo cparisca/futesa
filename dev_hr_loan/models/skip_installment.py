@@ -162,6 +162,7 @@ class dev_skip_installment(models.Model):
         self.state = 'confirm'
 
     def done_skip_installment(self):
+        vals = []
         if self.skip_type == 'pay_next_month':
             date = self.installment_id.date + relativedelta(months=1)
             vals = {
@@ -195,7 +196,7 @@ class dev_skip_installment(models.Model):
         elif payment_option == '30':
             new_date = current_date + relativedelta(months=1)
         else:
-            raise ValueError("Opción de pago no válida")
+            raise ValidationError("Opción de pago no válida")
 
         # Ajuste para febrero
         if new_date.month == 2 and new_date.day > 28:

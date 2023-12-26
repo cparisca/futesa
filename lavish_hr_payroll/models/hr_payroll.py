@@ -1085,7 +1085,7 @@ class Hr_payslip(models.Model):
                 #Valida que si la regla esta en la pestaña de Devengo & Deducciones del contrato
                 amount, qty, rate = rule._compute_rule(localdict)
                 #Validar si no tiene dias trabajados, si no tiene revisar las ausencias y sus caracteristicas para calcular la deducción
-                if rule.dev_or_ded == 'deduccion' and rule.type_concept != 'ley' and (worked_days_entry + leaves_days_all) == 0 and inherit_prima==0:
+                if rule.dev_or_ded == 'deduccion' and rule.type_concepts != 'ley' and (worked_days_entry + leaves_days_all) == 0 and inherit_prima==0:
                     amount, qty, rate = 0,1.0,100 
 
                 #LIQUIDACION DE CONTRATO SOLO DEV OR DED DEPENDIENTO SU ORIGEN
@@ -1095,7 +1095,7 @@ class Hr_payslip(models.Model):
                     else:
                         amount = round(amount, 2)
                 else:
-                    if (inherit_contrato_dev != 0 or inherit_contrato_ded != 0 or inherit_contrato_ded_bases != 0) and self.settle_payroll_concepts == False and rule.type_concept != 'ley' and not rule.code in ['TOTALDEV','TOTALDED','NET']:
+                    if (inherit_contrato_dev != 0 or inherit_contrato_ded != 0 or inherit_contrato_ded_bases != 0) and self.settle_payroll_concepts == False and rule.type_concepts != 'ley' and not rule.code in ['TOTALDEV','TOTALDED','NET']:
                         amount, qty, rate = 0,1.0,100
 
                 # PRIMA SOLAMENTE DEDUCCIONES QUE ESTEN CONFIGURADAS
@@ -1139,13 +1139,13 @@ class Hr_payslip(models.Model):
                 # create/overwrite the rule in the temporary results
                 if amount != 0 or rule.code == 'NET':
                     if rule.dev_or_ded == 'deduccion' and inherit_prima == 0:
-                        if rule.type_concept == 'ley':
+                        if rule.type_concepts == 'ley':
                             value_tmp_neto = localdict['categories'].dict.get('DEV_SALARIAL',0) + localdict['categories'].dict.get('DEV_NO_SALARIAL',0) + localdict['categories'].dict.get('PRESTACIONES_SOCIALES',0) + localdict['categories'].dict.get('DEDUCCIONES',0)
                         else:
                             value_tmp_neto = (localdict['categories'].dict.get('DEV_SALARIAL',0) + localdict['categories'].dict.get('DEV_NO_SALARIAL',0) + localdict['categories'].dict.get('PRESTACIONES_SOCIALES',0) + localdict['categories'].dict.get('DEDUCCIONES',0)) - localdict['values_leaves_law']
                     else:
                         value_tmp_neto = 1
-                    if value_tmp_neto >= 0 or rule.code == 'NET' or rule.type_concept == 'ley':
+                    if value_tmp_neto >= 0 or rule.code == 'NET' or rule.type_concepts == 'ley':
                         result[rule.code] = {
                             'sequence': rule.sequence,
                             'code': rule.code,

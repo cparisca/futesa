@@ -180,7 +180,7 @@ class dev_skip_installment(models.Model):
         else:
             payment_option = self.loan_id.apply_charge
             for line in self.loan_id.installment_lines:
-                if not line.paid:
+                if not line.is_paid:
                     new_payment_date = self.calculate_new_payment_date(line.date, payment_option)
                     vals.append((1, line.id, {'date': new_payment_date}))
                 else:

@@ -707,13 +707,13 @@ class Hr_payslip(models.Model):
                         'number_of_hours': hours_summary,
                         'amount': 0,
                     })
-        elif calendar.monthrange(self.date_to.year, self.date_to.month)[1] == 31 and self.date_to.day == 31:
-            days_to_deduct = 1
-            hours_to_deduct = 8
-            for item in res:
-                if item['work_entry_type_id'] == work_entry_type:  
-                    item['number_of_days'] -= days_to_deduct
-                    item['number_of_hours'] -= hours_to_deduct
+        # elif calendar.monthrange(self.date_to.year, self.date_to.month)[1] == 31 and self.date_to.day == 31:
+        #     days_to_deduct = 1
+        #     hours_to_deduct = 8
+        #     for item in res:
+        #         if item['work_entry_type_id'] == work_entry_type:  
+        #             item['number_of_days'] -= days_to_deduct
+        #             item['number_of_hours'] -= hours_to_deduct
         return res
     def _get_payslip_lines(self,inherit_vacation=0,inherit_prima=0,inherit_contrato_dev=0,inherit_contrato_ded_bases=0,inherit_contrato_ded=0,localdict=None):
         def _sum_salary_rule_category(localdict, category, amount):

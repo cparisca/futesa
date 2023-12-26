@@ -269,7 +269,7 @@ class employee_loan(models.Model):
                             month = int(date_start.month)
                             year = int(date_start.year)
                             vals.append((0, 0,{
-                                'name':'INS - '+self.name+ ' - '+str(i+1),
+                                'name':'INS - '+self.name+ ' - '+str(i+1)+'-'+ str(date_start.day),
                                 'employee_id':self.employee_id and self.employee_id.id or False,
                                 'date':date_start,
                                 'amount':amount,
@@ -280,7 +280,7 @@ class employee_loan(models.Model):
                             # Segunda Quincena
                             day = 30 if month != 2 else 28
                             vals.append((0, 0,{
-                                'name':'INS - '+self.name+ ' - '+str(i+1),
+                                'name':'INS - '+self.name+ ' - '+str(i+1)+'-'+ str(date_start.day),
                                 'employee_id':self.employee_id and self.employee_id.id or False,
                                 'date':date_start,
                                 'amount':amount,
@@ -297,7 +297,7 @@ class employee_loan(models.Model):
                         date_end = date_pay
                         for i in range(1, prestamo.term + 1):
                             vals.append((0, 0,{
-                                'name':'INS - '+self.name+ ' - '+str(i+1),
+                                'name':'INS - '+self.name+ ' - '+str(i+1)+'-'+ str(date_start.day),
                                 'employee_id':self.employee_id and self.employee_id.id or False,
                                 'date':date_start,
                                 'amount':amount,

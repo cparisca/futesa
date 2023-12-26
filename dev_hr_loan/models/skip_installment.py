@@ -187,7 +187,7 @@ class dev_skip_installment(models.Model):
                 else:
                     vals.append((4, line.id))
             if vals:
-                self.installment_lines = vals
+                self.loan_id.installment_lines = vals
         self.state = 'done'
         
     def calculate_new_payment_date(self, current_date, payment_option):

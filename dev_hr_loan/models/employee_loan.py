@@ -142,7 +142,7 @@ class employee_loan(models.Model):
                 count = len(loan.installment_lines)
             loan.installment_count = count
 
-    @api.onchange('term','interest_rate','interest_type')
+    @api.onchange('interest_type')
     def onchange_term_interest_type(self):
         if self.loan_type_id:
             self.term = self.loan_type_id.loan_term

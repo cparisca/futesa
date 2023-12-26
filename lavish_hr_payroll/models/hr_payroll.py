@@ -715,6 +715,15 @@ class Hr_payslip(models.Model):
         #             item['number_of_days'] -= days_to_deduct
         #             item['number_of_hours'] -= hours_to_deduct
         return res
+
+    def _compute_basic_net(self):
+        line_values = (self._origin)._get_line_values(['BASIC','BASIC002', 'BASIC003', 'NET'])
+        for payslip in self:
+            payslip.basic_wage = line_values['BASIC'][payslip._origin.id]['total'] + line_values['BASIC002'][payslip._origin.id]['total'] + line_values['BASIC003'][payslip._origin.id]['total']
+            payslip.net_wage = line_values['NET'][payslip._origin.id]['total']
+
+
+
     def _get_payslip_lines(self,inherit_vacation=0,inherit_prima=0,inherit_contrato_dev=0,inherit_contrato_ded_bases=0,inherit_contrato_ded=0,localdict=None):
         def _sum_salary_rule_category(localdict, category, amount):
             if category.parent_id:

@@ -613,11 +613,11 @@ class employee_loan(models.Model):
         default['name'] = '/'
         return super(employee_loan, self).copy(default=default)
     
-    # def unlink(self):
-    #     for loan in self:
-    #         if loan.state != 'draft':
-    #             raise ValidationError(_('Loan delete in draft state only !!!'))
-    #     return super(employee_loan,self).unlink()
+    def unlink(self):
+        for loan in self:
+            if loan.state != 'draft':
+                raise ValidationError(_('Loan delete in draft state only !!!'))
+        return super(employee_loan,self).unlink()
 
     def action_view_loan_installment(self):
         action = self.env.ref('dev_hr_loan.action_installment_line').read()[0]

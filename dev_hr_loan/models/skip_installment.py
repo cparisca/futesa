@@ -227,10 +227,10 @@ class dev_skip_installment(models.Model):
         default['name'] = '/'
         return super(dev_skip_installment, self).copy(default=default)
 
-    # def unlink(self):
-    #     for skp_installment in self:
-    #         if skp_installment.state != 'draft':
-    #             raise ValidationError(_('Skip Installment delete in draft state only !!!'))
-    #     return super(dev_skip_installment, self).unlink()
+    def unlink(self):
+        for skp_installment in self:
+            if skp_installment.state != 'draft':
+                raise ValidationError(_('Skip Installment delete in draft state only !!!'))
+        return super(dev_skip_installment, self).unlink()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

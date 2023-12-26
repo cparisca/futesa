@@ -79,7 +79,7 @@ class employee_loan(models.Model):
 
     def send_loan_detail(self):
         if self.employee_id and self.employee_id.work_email:
-            template_id = self.env['ir.model.data'].get_object_reference('dev_hr_loan',
+            template_id = self.env['ir.model.data'].check_object_reference('dev_hr_loan',
                                                              'dev_employee_loan_detail_send_mail')
 
             template_id = self.env['mail.template'].browse(template_id[1])
@@ -315,7 +315,7 @@ class employee_loan(models.Model):
             self.compute_installment()
         if self.manager_id and self.manager_id.work_email:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                                   'dev_dep_manager_request')
             mtp = self.env['mail.template']
             template_id = mtp.browse(template_id[1])
@@ -325,7 +325,7 @@ class employee_loan(models.Model):
 
 
     def get_hr_manager_email(self):
-        group_id = self.env['ir.model.data'].get_object_reference('hr', 'group_hr_manager')[1]
+        group_id = self.env['ir.model.data'].check_object_reference('hr', 'group_hr_manager')[1]
         group_ids = self.env['res.groups'].browse(group_id)
         email=''
         if group_ids:
@@ -342,7 +342,7 @@ class employee_loan(models.Model):
         email = self.get_hr_manager_email()
         if email:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'dev_hr_manager_request')
             mtp = self.env['mail.template']
             template_id = mtp.browse(template_id[1])
@@ -355,7 +355,7 @@ class employee_loan(models.Model):
         self.hr_manager_id = employee_id and employee_id.id or False
         if self.employee_id.work_email and self.hr_manager_id:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'hr_manager_confirm_loan')
 
             mtp = self.env['mail.template']
@@ -367,7 +367,7 @@ class employee_loan(models.Model):
         self.state = 'reject'
         if self.employee_id.work_email:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'dep_manager_reject_loan')
 
             mtp = self.env['mail.template']
@@ -379,7 +379,7 @@ class employee_loan(models.Model):
         self.state = 'close'
         if self.employee_id.work_email and self.hr_manager_id:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan', 'hr_manager_closed_loan')
+            template_id = ir_model_data.check_object_reference('dev_hr_loan', 'hr_manager_closed_loan')
             mtp = self.env['mail.template']
             template_id = mtp.browse(template_id[1])
             template_id.write({'email_to': self.employee_id.work_email})
@@ -393,7 +393,7 @@ class employee_loan(models.Model):
         self.hr_manager_id = employee_id and employee_id.id or False
         if self.employee_id.work_email and self.hr_manager_id:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'hr_manager_reject_loan')
 
             mtp = self.env['mail.template']

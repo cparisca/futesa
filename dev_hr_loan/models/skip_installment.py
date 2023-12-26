@@ -85,7 +85,7 @@ class dev_skip_installment(models.Model):
             raise ValidationError(_('Loan Manager and selected department manager not same'))
         if self.manager_id and self.manager_id.work_email:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'dev_skip_dep_manager_approval')
             mtp = self.env['mail.template']
             template_id = mtp.browse(template_id[1])
@@ -94,7 +94,7 @@ class dev_skip_installment(models.Model):
         self.state = 'request'
 
     def get_hr_manager_email(self):
-        group_id = self.env['ir.model.data'].get_object_reference('hr', 'group_hr_manager')[1]
+        group_id = self.env['ir.model.data'].check_object_reference('hr', 'group_hr_manager')[1]
         group_ids = self.env['res.groups'].browse(group_id)
         email = ''
         if group_ids:
@@ -110,7 +110,7 @@ class dev_skip_installment(models.Model):
         email = self.get_hr_manager_email()
         if email:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'dev_skip_ins_hr_manager_request')
             mtp = self.env['mail.template']
             template_id = mtp.browse(template_id[1])
@@ -121,7 +121,7 @@ class dev_skip_installment(models.Model):
     def dep_reject_skip_installment(self):
         if self.employee_id.work_email:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'dep_manager_reject_skip_installment')
 
             mtp = self.env['mail.template']
@@ -136,7 +136,7 @@ class dev_skip_installment(models.Model):
         self.hr_manager_id = employee_id and employee_id.id or False
         if self.employee_id.work_email and self.hr_manager_id:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'hr_manager_reject_skip_installment')
 
             mtp = self.env['mail.template']
@@ -151,7 +151,7 @@ class dev_skip_installment(models.Model):
         self.hr_manager_id = employee_id and employee_id.id or False
         if self.employee_id.work_email and self.hr_manager_id:
             ir_model_data = self.env['ir.model.data']
-            template_id = ir_model_data.get_object_reference('dev_hr_loan',
+            template_id = ir_model_data.check_object_reference('dev_hr_loan',
                                                              'hr_manager_confirm_skip_installment')
 
             mtp = self.env['mail.template']

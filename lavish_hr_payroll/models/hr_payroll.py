@@ -439,6 +439,7 @@ class Hr_payslip(models.Model):
     pay_primas_in_payroll = fields.Boolean('¿Liquidar Primas en nómina?')
     pay_vacations_in_payroll = fields.Boolean('¿Liquidar vacaciones en nómina?')
     provisiones = fields.Boolean('Provisiones')
+    no_days_worked = fields.Boolean('No tiene dias de Trabajo')
     journal_struct_id = fields.Many2one('account.journal', string='Salary Journal', domain="[('company_id', '=', company_id)]")
     earnings_ids = fields.One2many(comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Devengos')
     deductions_ids = fields.One2many(comodel_name='hr.payslip.line', compute="_compute_concepts_category", string='Conceptos de Nómina / Deducciones')
@@ -728,7 +729,7 @@ class Hr_payslip(models.Model):
                 localdict['values_base_prima'] += amount if rule.base_prima else 0
                 localdict['values_base_cesantias'] += amount if rule.base_cesantias else 0
                 localdict['values_base_int_cesantias'] += amount if rule.base_intereses_cesantias else 0
-                localdict['values_base_compensation'] += amount if rule.z_base_compensation else 0
+                localdict['values_base_compensation'] += amount if rule.base_compensation else 0
                 localdict['values_base_vacremuneradas'] += amount if rule.base_vacaciones_dinero else 0
                 localdict['values_base_vacdisfrutadas'] += amount if rule.base_vacaciones else 0
             
@@ -738,16 +739,16 @@ class Hr_payslip(models.Model):
         result = {}
         result_not = {}
         rules_dict = {}
-        if inherit_contrato_ded_bases + inherit_contrato_ded + inherit_contrato_dev == 1 and (self.date_from == self.date_to and self.z_no_days_worked):
+        if inherit_contrato_ded_bases + inherit_contrato_ded + inherit_contrato_dev == 1 and (self.date_from == self.date_to and self.no_days_worked):
             worked_days_dict = {}
         else:
             worked_days_dict = {line.code: line for line in self.worked_days_line_ids if line.code}
         inputs_dict = {line.code: line for line in self.input_line_ids if line.code}
         pay_vacations_in_payroll = bool(self.env['ir.config_parameter'].sudo().get_param(
-            'zue_hr_payroll.pay_vacations_in_payroll')) or False
+            'lavish_hr_payroll.pay_vacations_in_payroll')) or False
         vacation_days_calculate_absences = int(self.env['ir.config_parameter'].sudo().get_param(
-            'zue_hr_payroll.vacation_days_calculate_absences')) or 5
-        round_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('zue_hr_payroll.round_payroll')) or False
+            'lavish_hr_payroll.vacation_days_calculate_absences')) or 5
+        round_payroll = bool(self.env['ir.config_parameter'].sudo().get_param('lavish_hr_payroll.round_payroll')) or False
         
         worked_days_entry = 0
         leaves_days_law = 0

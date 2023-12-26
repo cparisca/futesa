@@ -35,7 +35,7 @@
             </field>
         </record>
         <!-- Formulario de empleados - campo tercero -->
-        <record id="view_zue_hr_payroll_form_employee_partner" model="ir.ui.view">
+        <record id="view_lavish_hr_payroll_form_employee_partner" model="ir.ui.view">
             <field name="name">hr.payroll.zue.hr.employee.partner.form.inherit</field>
             <field name="model">res.partner</field>
             <field name="priority">50</field>

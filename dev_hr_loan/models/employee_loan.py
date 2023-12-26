@@ -14,6 +14,44 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
+class HrPaysLipInherit(models.Model):
+    _inherit = 'hr.payslip'
+
+    installment_lines = fields.One2many(comodel_name="installment.line", inverse_name="loans_payslip_id", string="",
+                                        required=False,
+                                        compute='get_loan_ids')
+    loans = fields.Float(string="Loans", compute='get_total_loans')
+
+    @api.depends('employee_id', 'date_from', 'date_to', )
+    def get_total_loans(self):
+        loan_loan = 0
+        for rec in self:
+            rec.loans = False
+            if rec.installment_lines:
+                for line in rec.installment_lines:
+                    loan_loan = loan_loan + line.total_installment
+                rec.loans = loan_loan
+            else:
+                rec.loans = False
+
+    @api.depends('employee_id', 'date_from', 'date_to', )
+    def get_loan_ids(self):
+        self.installment_lines = False
+        loans = self.env['employee.loan'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('state', '=', 'done'),
+            ('installment_lines', '!=', False),
+        ])
+        lest = []
+        if loans:
+            for loan in loans.installment_lines:
+                if self.date_from <= loan.date <= self.date_to:
+                    lest.append(loan.id)
+            self.installment_lines = lest
+        else:
+            self.installment_lines = False
+
+
 class employee_loan(models.Model):
     _name = 'employee.loan'
     _description = 'Loan of an Employee'
@@ -60,7 +98,7 @@ class employee_loan(models.Model):
 
 
     name = fields.Char('Name',default='/',copy=False)
-    state = fields.Selection(loan_state,string='State',default='draft', track_visibility='onchange')
+    state = fields.Selection(loan_state,string='State',default='draft', tracking=True)
     employee_id = fields.Many2one('hr.employee',default=_get_employee, required="1")
     department_id = fields.Many2one('hr.department',string='Department')
     hr_manager_id = fields.Many2one('hr.employee',string='Hr Manager')

@@ -19,11 +19,12 @@ class hr_payslip(models.Model):
     installment_int = fields.Float('Installment Amount',compute='get_installment_amount')
     
     def compute_sheet(self):
-        installment_ids = self.env['installment.line'].search(
-                [('employee_id', '=', self.employee_id.id), ('loan_id.state', '=', 'done'),
-                 ('is_paid', '=', False),('date','<=',self.date_to)])
-        if installment_ids:
-            self.installment_ids = [(6, 0, installment_ids.ids)]
+        for rec in self:
+            installment_ids = self.env['installment.line'].search(
+                    [('employee_id', '=', rec.employee_id.id), ('loan_id.state', '=', 'done'),
+                     ('is_paid', '=', False),('date','<=',rec.date_to)])
+            if installment_ids:
+                rec.installment_ids = [(6, 0, installment_ids.ids)]
         return super(hr_payslip,self).compute_sheet()
         
 

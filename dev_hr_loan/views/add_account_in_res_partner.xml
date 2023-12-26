@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="id_res_partner_view_form_private" model="ir.ui.view">
+            <field name="name">res partner view form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_view_form_private"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='lang']" position="after">
+                    <field name="property_account_payable_id" required="0" invisible="1"/>
+                    <field name="property_account_receivable_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

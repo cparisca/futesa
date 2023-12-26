@@ -63,16 +63,13 @@ odoo app Loan functionality for employee | employee loan Integrated with Payroll
         'views/hr_loan_dashbord.xml',
         'views/loan_document.xml',
         'views/loan_report_views.xml',
-        ],
+        'views/add_account_in_res_partner.xml',
+    ],
     'demo': [],
     'installable': True,
     'application': True,
     'auto_install': False,
-    
-    # author and support Details =============#
     'author': 'lavish',
-    'maintainer': 'DevIntelle Consulting Service Pvt.Ltd', 
-
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

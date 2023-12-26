@@ -31,7 +31,8 @@ class installment_line(models.Model):
     total_installment = fields.Float('Total',compute='get_total_installment')
     payslip_id = fields.Many2one('hr.payslip',string='Payslip')
     is_skip = fields.Boolean('Skip Installment')
-    
+    loans_payslip_id = fields.Many2one('hr.payslip', string='')
+
     @api.depends('installment_amt','ins_interest')
     def get_total_installment(self):
         for line in self:

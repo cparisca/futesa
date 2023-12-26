@@ -98,6 +98,8 @@ For Module Support : devintelle@gmail.com  or Skype : devintelle
                             <field name="loan_type_id" attrs="{'readonly':[('state','!=','draft')]}"/>
                             <field name="start_date" attrs="{'readonly':[('state','!=','draft')]}"/>
                             <field name="term" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="type_installment" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="apply_charge" attrs="{'readonly':[('state','!=','draft')]}"/>
                             <field name="end_date"/>
                             <field name="interest_rate" attrs="{'invisible':[('is_apply_interest','!=',True)],'readonly':[('state','!=','draft')]}"/>
                             <field name="interest_type" attrs="{'invisible':[('is_apply_interest','!=',True)],'readonly':[('state','!=','draft')]}"/>

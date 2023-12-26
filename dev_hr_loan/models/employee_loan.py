@@ -124,7 +124,12 @@ class employee_loan(models.Model):
     notes = fields.Text('Reason', required="1")
     is_close = fields.Boolean('IS close',compute='is_ready_to_close')
     move_id = fields.Many2one('account.move',string='Journal Entry')
-
+    payment_id = fields.Many2one('account.payment', 'Accounting Entry', readonly=True, copy=False)
+    type_installment = fields.Selection([('period', 'N° de Periodos'),
+                                        ('counts', 'N° de Cuotas (Personalizadas)')], 'Calcular en base a', required=True, default='period')
+    apply_charge = fields.Selection([('15','Primera quincena'),
+                                    ('30','Segunda quincena'),
+                                    ('0','Siempre')],'Aplicar cobro',  required=True, help='Indica a que quincena se va a aplicar la deduccion')
     loan_document_line_ids = fields.One2many('dev.loan.document','loan_id')
     installment_count = fields.Integer(compute='get_interest_count')
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
@@ -163,7 +168,29 @@ class employee_loan(models.Model):
                     else:
                         amt += line.total_installment
             loan.paid_amount = amt
-
+    
+    @api.onchange('apply_charge')    
+    def apply_charge_function(self):
+        date_today = fields.Date.today()
+        day = int(date_today.day)
+        month = int(date_today.month)
+        year = int(date_today.year)
+        if self.apply_charge == '15':
+            month = month + 1 if month != 12 else 1
+            year = year + 1 if month == 12 else year                
+            payment_date = str(year)+'-'+str(month)+'-15'
+            self.start_date = payment_date            
+        if self.apply_charge == '30':
+            day = 30 if month != 2 else 28 
+            month = month + 1 if month != 12 else 1
+            year = year + 1 if month == 12 else year
+            payment_date = str(year)+'-'+str(month)+'-'+str(day)
+            self.start_date = payment_date
+        if self.apply_charge == '0':
+            month = month + 1 if month != 12 else 1
+            year = year + 1 if month == 12 else year                
+            payment_date = str(year)+'-'+str(month)+'-15'
+            self.start_date = payment_date 
 
 
 

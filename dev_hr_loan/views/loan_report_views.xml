@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+# Copyright 2017 - 2018 Modoolar <info@modoolar.com>
+# License LGPLv3.0 or later (https://www.gnu.org/licenses/lgpl-3.0.en.html).
+-->
+<odoo>
+<!--    <record id="installment_analytic_line_view_tree" model="ir.ui.view">-->
+<!--        <field name="name">installment.analytic.line.view.tree</field>-->
+<!--        <field name="model">installment.analytic.line.view</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <tree>-->
+<!--                <field name="name"/>-->
+<!--                <field name="employee_id"/>-->
+<!--            </tree>-->
+<!--        </field>-->
+<!--    </record>-->
+
+
+
+    <record id="view_installment_analytic_line_form" model="ir.ui.view">
+        <field name="name">view.installment.analytic.line.form</field>
+        <field name="model">installment.analytic.line.view</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="Loan Analytic Entry" create="false" edit="false">
+                <sheet string="Installment Analytic Entry">
+                    <group>
+                        <field name="name"/>
+                        <field name="employee_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record id="installment_analytic_line_view_graph" model="ir.ui.view">
+         <field name="name">installment.analytic.line.view.graph</field>
+         <field name="model">installment.analytic.line.view</field>
+         <field name="arch" type="xml">
+             <graph string="Loan Analysis" type="line">
+                 <field name="name"/>
+                    <field name="employee_id"/>
+             </graph>
+         </field>
+    </record>
+    <record id="view_installment_analytic_line_filter" model="ir.ui.view">
+        <field name="name">view.installment.analytic.line.filter</field>
+        <field name="model">installment.analytic.line.view</field>
+        <field name="arch" type="xml">
+            <search string="Search Installment Lines">
+                <field name="employee_id"/>
+                <field name="loan_id"/>
+                <field name="payslip_id"/>
+                <group string="Group By..." expand="0" >
+                    <filter string="Employee" context="{'group_by':'employee_id'}" name="group_employee_id"/>
+                    <filter string="Loan" context="{'group_by':'loan_id'}" name="group_loan_id"/>
+                    <filter string="Payslip" context="{'group_by':'payslip_id'}" name="group_payslip_id"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_installment_analytic_line_pivot" model="ir.ui.view">
+        <field name="name">view.installment.analytic.line.pivot</field>
+        <field name="model">installment.analytic.line.view</field>
+        <field name="arch" type="xml">
+            <pivot string="Loan Analysis Entries" >
+                <field name="employee_id" type="row"/>
+                <field name="name" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    
+    <record id="action_loan_report" model="ir.actions.act_window">
+		    <field name="name">Loan Analysis</field>
+		    <field name="res_model">installment.analytic.line.view</field>
+		    <!--<field name="view_type">form</field>-->
+            <field name="view_mode">graph,pivot</field>
+    </record>
+    
+    <menuitem name="Loan Analysis Report" id="menu_loan_report" parent="dev_hr_loan.menu_main_employee_loan" action="action_loan_report"/>
+    
+
+
+
+</odoo>

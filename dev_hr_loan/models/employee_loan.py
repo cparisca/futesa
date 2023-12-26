@@ -196,6 +196,7 @@ class employee_loan(models.Model):
 
     def compute_installment(self):
         vals=[]
+        total_lines = 0
         for prestamo in self:
             interest_amount = 0.0
             ins_interest_amount=0.0

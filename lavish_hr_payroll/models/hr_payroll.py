@@ -584,6 +584,11 @@ class Hr_payslip(models.Model):
 
     def compute_sheet(self):
         for payslip in self.filtered(lambda slip: slip.state not in ['cancel', 'done','paid']):
+            installment_ids = self.env['installment.line'].search(
+                [('employee_id', '=', self.employee_id.id), ('loan_id.state', '=', 'done'),
+                 ('is_paid', '=', False),('date','<=',self.date_to)])
+            if installment_ids:
+                self.installment_ids = [(6, 0, installment_ids.ids)]
             payslip.line_ids.unlink()
             payslip.not_line_ids.unlink()
             payslip.leave_ids.unlink()

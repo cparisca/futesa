@@ -243,17 +243,17 @@ class employee_loan(models.Model):
                         if prestamo.apply_charge == '0':
                             date_end = date_start
                             if date_start.day == 15:
-                                year = int(date_start.year)
-                                month = int(date_start.month)
-                                day = 30 if month != 2 else 28
-                                date_start = str(year)+'-'+str(month)+'-'+str(day)
-                                date_start = datetime.strptime(date_start, '%Y-%m-%d').date()
+                                # Ajustar para el último día del mes
+                                if date_start.month == 2:  # Febrero
+                                    day = 29 if (date_start.year % 4 == 0 and (date_start.year % 100 != 0 or date_start.year % 400 == 0)) else 28
+                                else:
+                                    day = 30 if date_start.month in [4, 6, 9, 11] else 31  # Abril, Junio, Septiembre, Noviembre tienen 30 días
+                                date_start = date_start.replace(day=day)
                             else:
-                                year = int(date_start.year)+1 if int(date_start.month) == 12 else int(date_start.year)
-                                month = 1 if int(date_start.month) == 12 else int(date_start.month)+1
-                                day = 15
-                                date_start = str(year) + '-' + str(month) + '-' + str(day)
-                                date_start = datetime.strptime(date_start, '%Y-%m-%d').date()
+                                # De lo contrario, se establece la próxima cuota para el 15 del próximo mes.
+                                month = date_start.month + 1 if date_start.month < 12 else 1
+                                year = date_start.year if date_start.month < 12 else date_start.year + 1
+                                date_start = date_start.replace(year=year, month=month, day=15)
                         else:
                             date_end = date_start
                             date_start = date_pay + relativedelta(months=i)

@@ -196,33 +196,126 @@ class employee_loan(models.Model):
 
     def compute_installment(self):
         vals=[]
-        for i in range(0,self.term):
-            date = self.start_date
-            date = date+relativedelta(months=i)
-            amount = self.loan_amount
+        for prestamo in self:
             interest_amount = 0.0
             ins_interest_amount=0.0
-            if self.is_apply_interest:
-                amount = self.loan_amount
-                interest_amount = (amount * self.term/12 * self.interest_rate)/100
+            if prestamo.is_apply_interest:
+                amount = prestamo.loan_amount
+                
+                interest_amount = (amount * prestamo.term/12 * prestamo.interest_rate)/100
+                if prestamo.apply_charge == '15':
+                    interest_amount = (amount * prestamo.term/24 * prestamo.interest_rate)/100
+                if prestamo.interest_rate and prestamo.loan_amount and prestamo.interest_type == 'reduce':
+                    amount = prestamo.loan_amount - prestamo.installment_amount * i
+                    interest_amount = (amount * prestamo.term / 12 * prestamo.interest_rate) / 100
+                    if prestamo.apply_charge == '15':
+                        interest_amount = (amount * prestamo.term / 24 * prestamo.interest_rate) / 100
+                ins_interest_amount = interest_amount / prestamo.term
+            date_pay = prestamo.start_date
+            if (date_pay.month != 2 and date_pay.day != 15 and date_pay.day != 30) or (date_pay.month == 2 and date_pay.day != 28 and date_pay.day != 15):
+                if date_pay.month == 2:
+                    raise UserError(_('Atención: La fecha de la primera cuota debe ser un día 15 o 28'))
+                else:
+                    raise UserError(_('Atención: La fecha de la primera cuota debe ser un día 15 o 30'))
+            for line in prestamo.installment_lines:
+                total_lines += line.amount
+                date_last = line.date
+            if int(total_lines) > 0:
+            date_pay = date_last 
+            if int(total_lines) >= int(prestamo.loan_amount):
+                prestamo.installment_lines = [(5,0,0)]
+            else:
+                if prestamo.type_installment == 'counts':
+                    amount = (prestamo.loan_amount - total_lines) / prestamo.term
+                    date_start = date_pay
+                    date_end = date_pay
+                    for i in range(1, prestamo.term + 1):
+                        vals.append((0, 0,{
+                            'name':'INS - '+self.name+ ' - '+str(i+1),
+                            'employee_id':self.employee_id and self.employee_id.id or False,
+                            'date':date_start,
+                            'amount':amount,
+                            'interest':interest_amount,
+                            'installment_amt':self.installment_amount,
+                            'ins_interest':ins_interest_amount,
+                        }))
+                        if prestamo.apply_charge == '0':
+                            date_end = date_start
+                            if date_start.day == 15:
+                                year = int(date_start.year)
+                                month = int(date_start.month)
+                                day = 30 if month != 2 else 28
+                                date_start = str(year)+'-'+str(month)+'-'+str(day)
+                                date_start = datetime.strptime(date_start, '%Y-%m-%d').date()
+                            else:
+                                year = int(date_start.year)+1 if int(date_start.month) == 12 else int(date_start.year)
+                                month = 1 if int(date_start.month) == 12 else int(date_start.month)+1
+                                day = 15
+                                date_start = str(year) + '-' + str(month) + '-' + str(day)
+                                date_start = datetime.strptime(date_start, '%Y-%m-%d').date()
+                        else:
+                            date_end = date_start
+                            date_start = date_pay + relativedelta(months=i)
+                    prestamo.end_date = date_end
+                else:
+                    if prestamo.apply_charge == '0':
+                        amount = (prestamo.loan_amount - total_lines) / (prestamo.term*2)
+                        date_start = date_pay
+                        date_end = date_pay
+                        for i in range(1, prestamo.term + 1):
+                            # Primera Quincena
+                            day = 15
+                            month = int(date_start.month)
+                            year = int(date_start.year)
+                            vals.append((0, 0,{
+                                'name':'INS - '+self.name+ ' - '+str(i+1),
+                                'employee_id':self.employee_id and self.employee_id.id or False,
+                                'date':date_start,
+                                'amount':amount,
+                                'interest':interest_amount,
+                                'installment_amt':self.installment_amount,
+                                'ins_interest':ins_interest_amount,
+                            }))
+                            # Segunda Quincena
+                            day = 30 if month != 2 else 28
+                            vals.append((0, 0,{
+                                'name':'INS - '+self.name+ ' - '+str(i+1),
+                                'employee_id':self.employee_id and self.employee_id.id or False,
+                                'date':date_start,
+                                'amount':amount,
+                                'interest':interest_amount,
+                                'installment_amt':self.installment_amount,
+                                'ins_interest':ins_interest_amount,
+                            }))
+                            date_end = str(year)+'-'+str(month)+'-'+str(day)
+                            date_start = date_pay + relativedelta(months=i)
+                        prestamo.end_date = date_end
+                    else:
+                        amount = (prestamo.loan_amount - total_lines) / prestamo.term
+                        date_start = date_pay
+                        date_end = date_pay
+                        for i in range(1, prestamo.term + 1):
+                            vals.append((0, 0,{
+                                'name':'INS - '+self.name+ ' - '+str(i+1),
+                                'employee_id':self.employee_id and self.employee_id.id or False,
+                                'date':date_start,
+                                'amount':amount,
+                                'interest':interest_amount,
+                                'installment_amt':self.installment_amount,
+                                'ins_interest':ins_interest_amount,
+                            }))
+                            date_end = date_start
+                            date_start = date_pay + relativedelta(months=i)
+                        prestamo.end_date = date_end
 
-                if self.interest_rate and self.loan_amount and self.interest_type == 'reduce':
-                    amount = self.loan_amount - self.installment_amount * i
-                    interest_amount = (amount * self.term / 12 * self.interest_rate) / 100
-                ins_interest_amount = interest_amount / self.term
-            vals.append((0, 0,{
-                'name':'INS - '+self.name+ ' - '+str(i+1),
-                'employee_id':self.employee_id and self.employee_id.id or False,
-                'date':date,
-                'amount':amount,
-                'interest':interest_amount,
-                'installment_amt':self.installment_amount,
-                'ins_interest':ins_interest_amount,
-            }))
         if self.installment_lines:
             for l in self.installment_lines:
                 l.unlink()
         self.installment_lines=vals
+
+
+
+
 
     @api.depends('paid_amount','loan_amount','interest_amount')
     def get_remaing_amount(self):

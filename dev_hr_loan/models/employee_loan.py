@@ -221,7 +221,7 @@ class employee_loan(models.Model):
                 total_lines += line.amount
                 date_last = line.date
             if int(total_lines) > 0:
-            date_pay = date_last 
+                date_pay = date_last 
             if int(total_lines) >= int(prestamo.loan_amount):
                 prestamo.installment_lines = [(5,0,0)]
             else:

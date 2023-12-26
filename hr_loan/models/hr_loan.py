@@ -180,7 +180,6 @@ class HrLoan(models.Model):
 
     def compute_installment(self):
         total_lines = 0
-        
         for prestamo in self:
             date_pay = prestamo.payment_date
             if (date_pay.month != 2 and date_pay.day != 15 and date_pay.day != 30) or (date_pay.month == 2 and date_pay.day != 28 and date_pay.day != 15):

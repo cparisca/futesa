@@ -178,36 +178,35 @@ class dev_skip_installment(models.Model):
             if new_inst:
                 self.installment_id.is_skip = True
         else:
-            vals = []
-            for i in range(0, self.loan_id.term):
-                start_date = self.loan_id.start_date + relativedelta(months=1)
-                date = start_date + relativedelta(months=i)
-                amount = self.loan_id.loan_amount
-                interest_amount, ins_interest_amount = 0.0, 0.0
-                if self.loan_id.is_apply_interest:
-                    amount = self.loan_id.loan_amount
-                    interest_amount = (amount * self.loan_id.term / 12 * self.loan_id.interest_rate) / 100
-
-                    if self.loan_id.interest_rate and self.loan_id.loan_amount and self.loan_id.interest_type == 'reduce':
-                        amount = self.loan_id.loan_amount - self.loan_id.installment_amount * i
-                        interest_amount = (amount * self.loan_id.term / 12 * self.loan_id.interest_rate) / 100
-                    ins_interest_amount = interest_amount / self.loan_id.term
-                vals.append((0, 0, {
-                    'name': 'INS - ' + self.loan_id.name + ' - ' + str(i + 1),
-                    'employee_id': self.loan_id.employee_id and self.loan_id.employee_id.id or False,
-                    'date': date,
-                    'amount': amount,
-                    'interest': interest_amount,
-                    'installment_amt': self.loan_id.installment_amount,
-                    'ins_interest': ins_interest_amount,
-                    'loan_id': self.installment_id.loan_id.id,
-                }))
-            if self.loan_id.installment_lines:
-                for l in self.loan_id.installment_lines:
-                    l.unlink()
-            self.loan_id.installment_lines = vals
+            payment_option = self.loan_id.apply_charge
+            for line in self.loan_id.installment_lines:
+                if not line.paid:
+                    new_payment_date = self.calculate_new_payment_date(line.date, payment_option)
+                    vals.append((1, line.id, {'date': new_payment_date}))
+                else:
+                    vals.append((4, line.id))
+            if vals:
+                self.installment_lines = vals
         self.state = 'done'
+        
+    def calculate_new_payment_date(self, current_date, payment_option):
+        if payment_option == '15' or payment_option == '0':
+            new_date = current_date + relativedelta(days=15)
+        elif payment_option == '30':
+            new_date = current_date + relativedelta(months=1)
+        else:
+            raise ValueError("Opción de pago no válida")
 
+        # Ajuste para febrero
+        if new_date.month == 2 and new_date.day > 28:
+            if new_date.year % 4 == 0 and (new_date.year % 100 != 0 or new_date.year % 400 == 0):
+                # Año bisiesto
+                new_date = new_date.replace(day=29)
+            else:
+                # No es año bisiesto
+                new_date = new_date.replace(day=28)
+
+        return new_date
     def cancel_skip_installment(self):
         self.state = 'cancel'
 

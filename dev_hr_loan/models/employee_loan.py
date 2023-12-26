@@ -204,12 +204,12 @@ class employee_loan(models.Model):
                 amount = prestamo.loan_amount
                 
                 interest_amount = (amount * prestamo.term/12 * prestamo.interest_rate)/100
-                if prestamo.apply_charge == '15':
+                if prestamo.apply_charge == '0':
                     interest_amount = (amount * prestamo.term/24 * prestamo.interest_rate)/100
                 if prestamo.interest_rate and prestamo.loan_amount and prestamo.interest_type == 'reduce':
                     amount = prestamo.loan_amount - prestamo.installment_amount * i
                     interest_amount = (amount * prestamo.term / 12 * prestamo.interest_rate) / 100
-                    if prestamo.apply_charge == '15':
+                    if prestamo.apply_charge == '0':
                         interest_amount = (amount * prestamo.term / 24 * prestamo.interest_rate) / 100
                 ins_interest_amount = interest_amount / prestamo.term
             date_pay = prestamo.start_date
@@ -274,7 +274,7 @@ class employee_loan(models.Model):
                                 'date':date_start,
                                 'amount':amount,
                                 'interest':interest_amount,
-                                'installment_amt':self.installment_amount,
+                                'installment_amt':self.installment_amount/2,
                                 'ins_interest':ins_interest_amount,
                             }))
                             # Segunda Quincena
@@ -285,7 +285,7 @@ class employee_loan(models.Model):
                                 'date':str(year)+'-'+str(month)+'-'+str(day),
                                 'amount':amount,
                                 'interest':interest_amount,
-                                'installment_amt':self.installment_amount,
+                                'installment_amt':self.installment_amount/2,
                                 'ins_interest':ins_interest_amount,
                             }))
                             date_end = str(year)+'-'+str(month)+'-'+str(day)

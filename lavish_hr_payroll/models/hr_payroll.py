@@ -1818,7 +1818,7 @@ class HrPayslipDay(models.Model):
     _description = 'Días de Nómina'
     _order = 'day'
 
-    payslip_id = fields.Many2one(comodel_name='hr.payslip', string='Nómina', required=True)
+    payslip_id = fields.Many2one(comodel_name='hr.payslip', string='Nómina', required=True, ondelete='cascade')
     day_type = fields.Selection(string='Tipo', selection=DAY_TYPE)
     day = fields.Integer(string='Día')
     name = fields.Char(string='Nombre', compute="_compute_name")

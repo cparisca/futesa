@@ -552,20 +552,24 @@ class HolidaysRequest(models.Model):
             #    raise ValidationError('La categoría de la ausencia no tiene tipo')
             amount = self.ibc
             day_count = (self.date_to.date() - self.date_from.date()).days + 1
+            smmlv_daily = self.env['hr.annual.parameters'].search([('year', '=', self.date_from.year)]).smmlv_daily
             #self.date_to and self.date_from:
             for day in range(day_count):
                 if not (date_tmp.day == 31 and type_id.novelty != 'vco' and not type_id.apply_day_31):
                     if type_id.novelty == 'ige' and sequence <= type_id.num_days_no_assume:
                         amount_real = amount / 30
+
                     elif type_id.novelty == 'irl' and sequence == 1:
                         amount_real = amount / 30
                     else:
                         amount_real = amount * type_id.get_rate_concept_id(sequence)[0] / 30
                     rule = type_id.get_rate_concept_id(sequence)[1] or type_id.eps_arl_input_id.id
+
                     if 1 <= sequence <= type_id.num_days_no_assume:
                         rule = type_id.company_input_id.id
                     if self.force_porc != 0:
                         amount_real = (amount / 30) * self.force_porc / 100
+                    amount_real = max(amount_real, smmlv_daily)
                     new_leave_line.append((0, 0, {
                         'sequence': sequence,
                         'date': date_tmp,
@@ -576,7 +580,6 @@ class HolidaysRequest(models.Model):
                     }))
                     sequence += 1
                 date_tmp += timedelta(days=1)  # Move to the next day
-
             self.line_ids = new_leave_line
             self.payroll_value = sum(x.amount for x in self.line_ids)
 
@@ -612,7 +615,7 @@ class HrLeaveLine(models.Model):
     _description = 'Lineas de Ausencia'
     _order = 'date desc'
 
-    leave_id = fields.Many2one(comodel_name='hr.leave', string='Ausencia', required=True)
+    leave_id = fields.Many2one(comodel_name='hr.leave', string='Ausencia', required=True, ondelete='cascade')
     payslip_id = fields.Many2one(comodel_name='hr.payslip', string='Nónima')
     contract_id = fields.Many2one(string='Contrato', related='leave_id.contract_id')
     rule_id = fields.Many2one('hr.salary.rule', 'Reglas Salarial')

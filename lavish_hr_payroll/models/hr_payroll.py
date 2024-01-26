@@ -1242,7 +1242,7 @@ class Hr_payslip(models.Model):
                         # Agrega el registro actual
                         html_report += f"""
                         <tr>
-                            <td>{deduction.name}</td>
+                            <td>{deduction.concept_deduction_id.name}</td>
                             <td>${deduction.result_calculation:,.2f}</td>
                         </tr>
                         """

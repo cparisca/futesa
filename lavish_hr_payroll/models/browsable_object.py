@@ -351,7 +351,7 @@ class Payslips(BrowsableObject):
         res = self.env['hr.employee.deduction.retention'].search([('employee_id', '=', employee_id),('year', '=', to_date.year),('month', '=', to_date.month),
                                                             ('concept_deduction_order','=',max_order)])
 
-        return res #and res[0] or 0.0
+        return res and res[0] #or 0.0
 
     #Obtener valor retención por codigo
     def get_deduction_retention_value(self, employee_id,to_date,code):

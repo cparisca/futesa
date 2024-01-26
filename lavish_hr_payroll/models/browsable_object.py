@@ -357,7 +357,7 @@ class Payslips(BrowsableObject):
     def get_deduction_retention_value(self, employee_id,to_date,code):
         res = self.env['hr.employee.deduction.retention'].search([('employee_id', '=', employee_id),
                                                                     ('year', '=', to_date.year),('month', '=', to_date.month),('concept_deduction_code','=',code)])
-        return res #and res[0] or 0.0
+        return res and res[0] #or 0.0
 
     #Calculo retención en la fuente ordinario
     def get_calcula_rtefte_ordinaria(self, base_rtefte_uvt):

@@ -50,8 +50,6 @@
                 <group expand="1" string="Group By">
                     <filter string="Account" name="account_id" domain="[]"
                             context="{'group_by':'account_id'}"/>
-                    <filter string="Employee" name="employee_id" domain="[]"
-                            context="{'group_by':'employee_id'}"/>
                 </group>
             </search>
         </field>

@@ -12,10 +12,6 @@ class HrPayrollPaymentLine(models.Model):
     hr_payment_id = fields.Many2one("hr.payroll.payment", copy=False, ondelete="cascade")
     move_line_id = fields.Many2one("account.move.line", copy=False, string="Line to reconcile")
     slip_id = fields.Many2one("hr.payslip", store=True)
-   # currency_id = fields.Many2one("res.currency", related="move_line_id.move_id.currency_id")
-   # employee_id = fields.Many2one("hr.employee", related="move_line_id.employee_id", store=True)
-    #debit = fields.Monetary(string="Debit", related="move_line_id.debit", currency_field='currency_id',)
-   # credit = fields.Monetary(string="Credit", related="move_line_id.credit", currency_field='currency_id',)
     balance = fields.Float(string="Balance")
     importe = fields.Float('Importe')
     tax_ids = fields.Many2many(

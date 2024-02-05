@@ -32,7 +32,6 @@
                     <!--Invisible Fields-->
                     <field name="partner_ids" invisible="1"/>
                     <field name="payment_line_ids" invisible="1"/>
-                    <field name="employee_ids" invisible="1"/>
 
                     <!--Smart buttons-->
                     <div class="oe_button_box" name="hr_payment_button_box"/>
@@ -110,7 +109,6 @@
                 <field name="state"/>
                 <field name="company_id"/>
                 <field name="group_ids" invisible="1"/>
-                <field name="employee_ids" invisible="1"/>
             </tree>
         </field>
     </record>

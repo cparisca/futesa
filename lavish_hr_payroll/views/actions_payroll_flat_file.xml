@@ -11,13 +11,15 @@
             <field name="model">hr.payroll.flat.file</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="payment_type"/>
+                    <field name="payment_type" />
                     <field name="description" />
-                    <field name="source_information"/>
-                    <field name="payslip_id"  attrs="{'invisible': [('source_information', '!=', 'lote')],'required': [('source_information', '=', 'lote')]}" />
-                    <field name="liquidations_ids" widget="many2many_tags" attrs="{'invisible': [('source_information', '=', 'lote')],'required': [('source_information', '!=', 'lote')]}" />
+                    <field name="source_information" />
+                    <field name="payslip_id"
+                        attrs="{'invisible': [('source_information', '!=', 'lote')],'required': [('source_information', '=', 'lote')]}" />
+                    <field name="liquidations_ids" widget="many2many_tags"
+                        attrs="{'invisible': [('source_information', '=', 'lote')],'required': [('source_information', '!=', 'lote')]}" />
                     <field name="transmission_date" />
-                    <field name="application_date"/>
+                    <field name="application_date" />
                 </tree>
             </field>
         </record>
@@ -58,20 +60,19 @@
                                     <field name="plane_type" />
                                     <field name="txt_file_name" invisible="1" />
                                     <field name="txt_file" filename="txt_file_name" />
+                                    <button name="download_txt" string="Descargar Archivo Plano"     type="object" />
+                                    <button name="download_excel" string="Descargar Excel"     type="object" />
                                 </tree>
                                 <form>
                                     <group>
                                         <field name="journal_id" />
                                         <field name="plane_type" />
-                                        <!--                                        <field name="txt_file_name" invisible="1"/>-->
-                                        <!--                                        <field name="txt_file" filename="txt_file_name"/>-->
-                                        <!--                                        <field name="excel_file_name" invisible="1"/>-->
-                                        <!--                                        <field name="excel_file"
-                                        filename="excel_file_name"/>-->
-                                        <button name="download_txt" string="Descargar Archivo Plano"
-                                            type="object" />
-                                        <button name="download_excel" string="Descargar Excel"
-                                            type="object" />
+                                        <field name="txt_file_name" invisible="1" />
+                                        <field name="txt_file" filename="txt_file_name" />
+                                        <field name="excel_file_name" invisible="1" />
+                                        <field name="excel_file"   filename="excel_file_name" />
+                                        <button name="download_txt" string="Descargar Archivo Plano"     type="object" />
+                                        <button name="download_excel" string="Descargar Excel"     type="object" />
                                     </group>
                                 </form>
                             </field>

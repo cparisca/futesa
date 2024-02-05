@@ -643,3 +643,8 @@ class hr_contract(models.Model):
         work_days = [int(x.dayofweek)
                      for x in self.resource_calendar_id.attendance_ids]
         return date.weekday() in work_days
+
+
+    def has_change_salary(self, date_from, date_to):
+        wages_in_period = filter(lambda x: date_from <= x.date_start <= date_to, self.change_wage_ids)
+        return len(list(wages_in_period)) >= 1

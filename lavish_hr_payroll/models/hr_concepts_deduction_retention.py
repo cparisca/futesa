@@ -33,15 +33,15 @@ class hr_concepts_deduction_retention(models.Model):
         try:
             safe_eval(self.base, localdict, mode='exec', nocopy=True)
             return localdict.get('result', 0.0)
-        except:
-            raise UserError(_('Error al ejecutar el código python del campo Base para el concepto de deducción %s (%s).') % (self.name, self.code))
+        except Exception as e:
+            raise UserError(_('Error al ejecutar el código python del campo Base para el concepto de deducción %s (%s). code(%s)') % (self.name, self.code, e))
 
     def _exec_python_code_calculation(self, localdict):
         try:
             safe_eval(self.calculation, localdict, mode='exec', nocopy=True)
             return localdict.get('result', 0.0)
-        except:
-            raise UserError(_('Error al ejecutar el código python del campo Cálculo para el concepto de deducción %s (%s).') % (self.name, self.code))
+        except Exception as e:
+            raise UserError(_('Error al ejecutar el código python del campo Cálculo para el concepto de deducción %s (%s). code(%s)') % (self.name, self.code, e))
 
     def _loop_python_code(self,localdict,encab_id):
         payslip = localdict['payslip']

@@ -71,6 +71,7 @@
                         attrs="{'invisible':[('struct_process', '!=', 'contrato')]}"
                         style="border-style:solid; padding:10px">
                         <group>
+                            <field name="no_days_worked"/>
                             <field name="date_liquidacion"
                                 attrs="{'invisible':[('struct_process', '!=', 'contrato')], 'required':[('struct_process', '=', 'contrato')], 'readonly':[('state', '=', 'done')]}" />
                             <field name="reason_retiro"

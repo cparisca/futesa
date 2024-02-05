@@ -18,7 +18,7 @@ class HrPayslip(models.Model):
 
 
     total_amount_paid = fields.Float(string="Total Loan Amount")
-
+    loan_line_ids = fields.One2many('hr.loan.line', 'payslip_id', string="Cuotas de préstamo", help="Cuota de préstamo")
     def get_inputs(self, date_from, date_to,process):
         """This Compute the other inputs to employee payslip. """
         res = []

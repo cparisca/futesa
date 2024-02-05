@@ -8,7 +8,7 @@ class Account_journal(models.Model):
     is_payroll_spreader = fields.Boolean('Es dispersor de nómina')
     plane_type = fields.Selection([('bancolombiasap', 'Bancolombia SAP'),
                                     ('bancolombiapab', 'Bancolombia PAB'),
-                                    ('davivienda1', 'Davivienda 1'),
+                                    ('davivienda1', 'Davivienda 1'), 
                                     ('occired', 'Occired'),
                                     ('avvillas1', 'AV VILLAS 1'),
                                     ('bancobogota', 'Banco Bogotá'),

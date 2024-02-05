@@ -30,14 +30,7 @@ class HrLoanType(models.Model):
                 amount_python_compute = 'result = inputs.' + self.rule_code + ' and - (inputs.' + self.rule_code + '.amount)'
                 condition_python = 'result = inputs.' + self.rule_code + ' and (inputs.' + self.rule_code + '.amount)'
 
-                deduct_rules_sequence = self.env['hr.salary.rule'].search(
-                    [('category_id', '=', self.category_id.id)], order="sequence desc", limit=1).sequence
-
-                input_type = self.env['hr.payslip.input.type'].create({
-                    'code': self.rule_code,
-                    'name': self.name,
-                })
-
+                deduct_rules_sequence = self.env['hr.salary.rule'].search([('category_id', '=', self.category_id.id)], order="sequence desc", limit=1).sequence
                 obj = self.env['hr.salary.rule'].create({
                     'name': self.name,
                     'sequence': deduct_rules_sequence,
@@ -73,7 +66,7 @@ class HrLoanType(models.Model):
                         'name': res.name,
                         'sequence': deduct_rules_sequence,
                         'dev_or_ded': "deduccion",
-                        'category_id': self.env.ref('lavish_hr_employee.DEDUCCIONES').id,
+                        'category_id': self.category_id.id,
                         'condition_select': "python",
                         'condition_python': condition_python,
                         'amount_select': "code",
@@ -187,7 +180,6 @@ class HrLoan(models.Model):
 
     def compute_installment(self):
         total_lines = 0
-        
         for prestamo in self:
             date_pay = prestamo.payment_date
             if (date_pay.month != 2 and date_pay.day != 15 and date_pay.day != 30) or (date_pay.month == 2 and date_pay.day != 28 and date_pay.day != 15):

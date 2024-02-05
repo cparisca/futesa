@@ -29,7 +29,7 @@ class hr_payroll_flat_file_detail(models.Model):
     txt_file_name = fields.Char('Archivo plano filename')
     excel_file = fields.Binary('Excel')
     excel_file_name = fields.Char('Excel filename')
-
+    liquidations_ids= fields.Many2many('hr.payslip', string='Liquidaciones', domain=[('definitive_plan', '=', False),('payslip_run_id', '=', False)])
     def download_txt(self):
         if self.txt_file:
             action = {
@@ -442,8 +442,7 @@ class hr_payroll_flat_file(models.Model):
                     tipo_producto_destino = '01' if bank.type_account == 'A' else '06'  # 01: Abono a cuenta ahorros /  06: Abono a cuenta corriente
                     no_cuenta_beneficiario = right(16 * '0' + str(bank.acc_number).replace("-", ""), 16)
             if no_cuenta_beneficiario == '':
-                raise ValidationError(
-                    _('El empleado ' + payslip.contract_id.employee_id.name + ' no tiene configurada la información bancaria, por favor verificar.'))
+                raise ValidationError( _('El empleado ' + payslip.contract_id.employee_id.name + ' no tiene configurada la información bancaria, por favor verificar.'))
 
             # Obtener valor de transacción
             valor_transaccion = 16 * '0'
@@ -1107,6 +1106,8 @@ class hr_payroll_flat_file(models.Model):
     #Ejecutar proceso
     def generate_flat_file(self):
         self.env['hr.payroll.flat.file.detail'].search([('flat_file_id','=',self.id)]).unlink()
+        self.transmission_date = fields.Datetime.now()
+        self.application_date = fields.Date.today()
         if self.flat_rule_not_included:
             file_base64 = False
             obj_payslip = self.env['hr.payslip']
@@ -1209,36 +1210,36 @@ class hr_payroll_flat_file(models.Model):
                             }
                             self.env['hr.payroll.flat.file.detail'].create(values_flat_file)
                             # Guardar en copia de seguridad
-                            if file_base64:
-                                obj_backup = self.env['lavish.payroll.flat.file.backup']
-                                values = {}
-                                if self.source_information == 'lote':
-                                    values = {
-                                        'generation_date': fields.Date.today(),
-                                        'journal_id': self.journal_id.id,
-                                        'payment_type': self.payment_type,
-                                        'company_id': self.company_id.id,
-                                        'payslip_id': self.payslip_id.id,
-                                        'transmission_date': self.transmission_date,
-                                        'application_date': self.application_date,
-                                        'description': self.description,
-                                        'txt_file': file_base64,
-                                        'txt_file_name': filename
-                                    }
-                                elif self.source_information == 'liquidacion':
-                                    values = {
-                                        'generation_date': fields.Date.today(),
-                                        'journal_id': self.journal_id.id,
-                                        'payment_type': self.payment_type,
-                                        'company_id': self.company_id.id,
-                                        'liquidations_ids': self.liquidations_ids.ids,
-                                        'transmission_date': self.transmission_date,
-                                        'application_date': self.application_date,
-                                        'description': self.description,
-                                        'txt_file': file_base64,
-                                        'txt_file_name': filename
-                                    }
-                                else:
-                                    raise ValidationError(_('No se ha configurado origen de información.'))
+                            # if file_base64:
+                            #     obj_backup = self.env['lavish.payroll.flat.file.backup']
+                            #     values = {}
+                            #     if self.source_information == 'lote':
+                            #         values = {
+                            #             'generation_date': fields.Date.today(),
+                            #             'journal_id': self.journal_id.id,
+                            #             'payment_type': self.payment_type,
+                            #             'company_id': self.company_id.id,
+                            #             'payslip_id': self.payslip_id.id,
+                            #             'transmission_date': self.transmission_date,
+                            #             'application_date': self.application_date,
+                            #             'description': self.description,
+                            #             'txt_file': file_base64,
+                            #             'txt_file_name': filename
+                            #         }
+                            #     elif self.source_information == 'liquidacion':
+                            #         values = {
+                            #             'generation_date': fields.Date.today(),
+                            #             'journal_id': self.journal_id.id,
+                            #             'payment_type': self.payment_type,
+                            #             'company_id': self.company_id.id,
+                            #             'liquidations_ids': self.liquidations_ids.ids,
+                            #             'transmission_date': self.transmission_date,
+                            #             'application_date': self.application_date,
+                            #             'description': self.description,
+                            #             'txt_file': file_base64,
+                            #             'txt_file_name': filename
+                            #         }
+                            #     else:
+                            #         raise ValidationError(_('No se ha configurado origen de información.'))
 
-                                obj_backup.create(values)
+                            #     obj_backup.create(values)

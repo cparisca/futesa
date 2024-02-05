@@ -8,7 +8,7 @@
     'author': "Thomas Greg and Sons Limited",
     'category': 'Payroll',
     'version': '15.0.0',
-    'depends': ['hr_payroll', 'lavish_hr_social_security','account'],
+    'depends': ['hr_payroll','account'],
     'data': [
         # 'data/ir_sequence.xml',
         # 'security/res_groups.xml',

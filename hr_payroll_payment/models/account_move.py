@@ -5,6 +5,10 @@ from odoo import fields, models, api, _
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
+
+    date_start = fields.Date(string="Initial Date", required=True, copy=False)
+    date_end = fields.Date(sring="End Date", required=True, copy=False)
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Cuenta analítica')
     is_payroll = fields.Boolean('Pago a Terceros')
     lotes = fields.One2many('hr.payslip.run','move_id',string='lotes de nomina')
     nominas = fields.One2many('hr.payslip','invoice_id',string='lotes de nomina')

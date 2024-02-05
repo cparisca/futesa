@@ -17,6 +17,11 @@ class account_move_line(models.Model):
 class account_move(models.Model):
     _inherit = 'account.move'
 
+    hr_paylip_ids = fields.Many2many("hr.payslip")
+    hr_paylip_run_ids = fields.Many2many("hr.payslip.run")
+    hr_paylip_ss_ids = fields.Many2many("hr.payroll.social.security")
+    is_payroll = fields.Boolean('Pago a Terceros')
+
     def hr_accounting_public_employees(self):
         for record in self:
             for line in record.line_ids:

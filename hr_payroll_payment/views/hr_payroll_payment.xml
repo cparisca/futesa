@@ -19,20 +19,9 @@
                             attrs="{'invisible': [('apply_txt_generator', '=', False)]}"/> -->
                     <field name="state" widget="statusbar" statusbar_visible="draft,validated,generated"/>
                 </header>
-                <div class="alert text-center alert-info" role="alert" style="margin-bottom:2px;"
-                    attrs="{'invisible': [('is_sequence', '!=', False)]}">
-                    The sequence for this payment draft request not is defined for
-                    <b>
-                        <field name="company_id" nolabel="1" readonly="1"/>
-                    </b>
-                    company.
-                    Define a new sequence in technical configuration for this company.
-                </div>
                 <sheet>
                     <!--Invisible Fields-->
-                    <field name="partner_ids" invisible="1"/>
-                    <field name="payment_line_ids" invisible="1"/>
-
+                    <field name="partner_id" invisible="1"/>
                     <!--Smart buttons-->
                     <div class="oe_button_box" name="hr_payment_button_box"/>
 
@@ -108,7 +97,6 @@
                 <field name="analytic_account_id" required="1"/>
                 <field name="state"/>
                 <field name="company_id"/>
-                <field name="group_ids" invisible="1"/>
             </tree>
         </field>
     </record>

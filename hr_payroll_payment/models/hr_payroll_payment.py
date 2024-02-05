@@ -16,9 +16,8 @@ class HrPayrollPayment(models.Model):
     description = fields.Text(string="Description", copy=False, required=True)
     reference = fields.Char(string="Reference", default="/")
     company_id = fields.Many2one("res.company", required=True, readonly=True, default=lambda self: self.env.company)
-    partner_ids = fields.Many2many("res.partner", string="Partners")
+    partner_id = fields.Many2many("res.partner", string="Partners")
     payment_line_ids = fields.One2many("hr.payroll.payment.line", 'hr_payment_id', string="Payment Lines")
-    group_ids = fields.One2many("hr.group.partner", "hr_payment_id", string="Partners grouped")
     analytic_account_id = fields.Many2one('account.analytic.account', string='Cuenta analítica')
     state = fields.Selection(
         selection=[('draft', 'Draft'),

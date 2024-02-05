@@ -5,7 +5,7 @@
     'summary': """Process and management payroll payments""",
     'description': """Process and management payroll payments""",
 
-    'author': "Thomas Greg and Sons Limited",
+    'author': "Lavishg",
     'category': 'Payroll',
     'version': '15.0.0',
     'depends': ['hr_payroll','account'],

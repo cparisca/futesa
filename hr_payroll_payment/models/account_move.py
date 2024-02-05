@@ -9,7 +9,9 @@ class AccountMove(models.Model):
     lotes = fields.One2many('hr.payslip.run','move_id',string='lotes de nomina')
     nominas = fields.One2many('hr.payslip','invoice_id',string='lotes de nomina')
     hr_ss = fields.One2many('hr.payroll.social.security','invoice_id',string='lotes de nomina')
-    
+    hr_paylip_ids = fields.Many2many("hr.payslip")
+    hr_paylip_run_ids = fields.Many2many("hr.payslip.run")
+    hr_paylip_ss_ids = fields.Many2many("hr.payroll.social.security")
     
 class hr_payroll_social_security(models.Model):
     _inherit = 'hr.payroll.social.security'

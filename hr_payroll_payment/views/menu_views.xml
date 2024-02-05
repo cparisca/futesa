@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem name="Payment request" id="hr_payroll_payment_menu"
+              parent="hr_payroll.menu_hr_payroll_payslips"
+              action="hr_payroll_payment_act_window"
+              groups="hr_payroll_payment.payment_request_user"/>
+
+    <menuitem
+            id="move_payroll_invoice_menu"
+            name="Payroll Invoice"
+            parent="account.menu_finance_payables"
+            action="hr_payroll_payment.action_out_payroll_pipeline"
+            sequence="9"/>
+</odoo>

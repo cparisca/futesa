@@ -28,6 +28,7 @@
     'data': [
         #'data/res.city.csv',
         'data/res_country_state.xml',
+        'data/l10n_latam.identification.type.csv',
         #'data/res.bank.csv',
         'security/ir.model.access.csv',
         'views/journal.xml',

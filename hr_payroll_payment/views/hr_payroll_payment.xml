@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_payroll_payment_form_view" model="ir.ui.view">
+        <field name="name">hr.payroll.payment.form</field>
+        <field name="model">hr.payroll.payment</field>
+        <field name="arch" type="xml">
+            <form string="Payment Draft Request">
+                <header>
+
+                    <!-- <button name="action_draft" string="Set to Draft" class="oe_highlight" states="canceled" type="object"/>
+                    <button name="action_search" string="Search" states="draft" type="object" class="oe_read_only"/>
+                    <button name="action_post" string="Post" type="object" class="oe_highlight oe_read_only" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_approval" string="Approve" states="request_approval" class="oe_highlight oe_read_only"
+                            type="object" groups="hr_payroll_payment.payment_request_manager"/>
+                    <button name="action_cancel" string="Cancel" states="validated,request_approval,generated" class="oe_read_only" type="object"/>
+                    <button name="action_process" string="Generate" states="validated" class="oe_read_only oe_highlight" type="object"/>
+                    <button name="action_values_wizard" string="Plain Text" class="oe_read_only oe_highlight" type="object"
+                            attrs="{'invisible': [('apply_txt_generator', '=', False)]}"/> -->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validated,generated"/>
+                </header>
+                <div class="alert text-center alert-info" role="alert" style="margin-bottom:2px;"
+                    attrs="{'invisible': [('is_sequence', '!=', False)]}">
+                    The sequence for this payment draft request not is defined for
+                    <b>
+                        <field name="company_id" nolabel="1" readonly="1"/>
+                    </b>
+                    company.
+                    Define a new sequence in technical configuration for this company.
+                </div>
+                <sheet>
+                    <!--Invisible Fields-->
+                    <field name="partner_ids" invisible="1"/>
+                    <field name="payment_line_ids" invisible="1"/>
+                    <field name="employee_ids" invisible="1"/>
+
+                    <!--Smart buttons-->
+                    <div class="oe_button_box" name="hr_payment_button_box"/>
+
+                    <!--Ribbon Labels-->
+                    <widget name="web_ribbon" title="Paid" bg_color="bg-success"
+                            attrs="{'invisible': [('state', '!=', 'validated')]}"/>
+                    <widget name="web_ribbon" title="In Payment" bg_color="bg-warning"
+                            attrs="{'invisible': [('state', '!=', 'request_approval')]}"/>
+
+                    <div class="oe_title">
+                        <label for="display_name"/>
+                        <h1>
+                            <field name="display_name"/>
+                        </h1>
+                    </div>
+
+                    <group name="row">
+                        <group name="col1">
+                            <label for="date_start" string="From"/>
+                            <div class="row">
+                                <div class="col-5">
+                                    <field name="date_start"/>
+                                </div>
+                                <div class="col-2" attrs="{'invisible': [('date_start', '=', False)]}">
+                                    <strong class="mr8">to</strong>
+                                </div>
+                                <div class="col-5" attrs="{'invisible': [('date_start', '=', False)]}">
+                                    <field name="date_end"/>
+                                </div>
+                            </div>
+                            <field name="analytic_account_id" required="1"/>
+                            <field name="description"/>
+                        </group>
+                        <group name="col2">
+                            <field name="company_id"/>
+                            <field name="create_date" attrs="{'invisible': [('create_date', '=', False)]}"/>
+                            <field name="create_uid" attrs="{'invisible': [('create_uid', '=', False)]}"/>
+                            <field name="reference" readonly="1" force_save="1" attrs="{'invisible': [('reference', '=', '/')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="partners" string="Lineas de Totales" >
+                            <field name="payment_line_ids" mode="tree"/>
+                        </page>
+                        <page name="nominas" string="Nominas" >
+                            <field name="hr_paylip_ids" mode="tree" create="0" />
+                        </page>
+                        <page name="lotes" string="Lotes" >
+                            <field name="hr_paylip_run_ids" mode="tree" create="0" />
+                        </page>
+                        <page name="ss" string="Seguridad Social" >
+                            <field name="hr_paylip_ss_ids" mode="tree" create="0" />
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_payroll_payment_tree_view" model="ir.ui.view">
+        <field name="name">hr.payroll.payment.tree</field>
+        <field name="model">hr.payroll.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Payment Draft Request" default_order="create_date desc">
+                <field name="display_name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="reference"/>
+                <field name="analytic_account_id" required="1"/>
+                <field name="state"/>
+                <field name="company_id"/>
+                <field name="group_ids" invisible="1"/>
+                <field name="employee_ids" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_payroll_payment_search_view" model="ir.ui.view">
+        <field name="name">hr.payroll.payment.search.view</field>
+        <field name="model">hr.payroll.payment</field>
+        <field name="arch" type="xml">
+            <search string="Payment Draft Request">
+
+                <group expand="1" string="Group By">
+                    <filter string="State" name="state" domain="[]"
+                            context="{'group_by':'state'}"/>
+                    <filter string="Cuenta Analitica" name="analytic_account_id" domain="[]"
+                            context="{'group_by':'analytic_account_id'}"/>              
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="hr_payroll_payment_act_window" model="ir.actions.act_window">
+        <field name="name">Payment Draft Request</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.payroll.payment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                There are no Payments Draft Request click create to add new request.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="hr_payment_txt_generator_view_form" model="ir.ui.view">
+        <field name="name">hr.payment.txt.generator.view.form</field>
+        <field name="model">hr.payment.txt.generator</field>
+        <field name="arch" type="xml">
+            <form string="TXT Payroll payment Generator">
+                <sheet>
+                    <!--Invisible fields-->
+                    <field name="partners"/>
+                    <group>
+                        <group>
+                            <field name="list_employees" invisible="1" force_save="1"/>
+                            <field name="company_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="journal_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="payment_txt_config_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="attachment_name" invisible="1"/>
+                            <field name="attachment_id" filename="attachment_name"/>
+                            <button name="load_employee_excel" string="Process Attachment" type="object" class="btn-primary"
+                            attrs="{'invisible': [('attachment_id', '=', False)]}"/>
+                        </group>
+                        <group name="right">
+                            <div>
+                                <p>
+                                    To generate an plain text for payroll payment to
+                                    <strong><field name="partners"/></strong>
+                                    is a must define model txt configuration.
+                                    The plain text content will be defined for the line
+                                    configuration contained in the el txt configuration.
+                                </p>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="employees" string="Employees">
+                            <field name="employee_ids" mode="tree" domain="list_employees" options="{'no_create': True, 'no_edit': True, 'no_open': True}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="identification_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button name="start" string="Start" type="object" class="btn-primary"/>
+                        <button special="cancel" string="Close" class="btn-secondary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

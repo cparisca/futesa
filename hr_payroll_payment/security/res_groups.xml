@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.module.category" id="hr_payment_draft_request_category">
+            <field name="name">Payroll: Payment Request</field>
+            <field name="sequence">80</field>
+        </record>
+
+        <record id="payment_request_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="hr_payment_draft_request_category"/>
+        </record>
+
+        <record id="payment_request_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="hr_payment_draft_request_category"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="implied_ids" eval="[(4, ref('hr_payroll_payment.payment_request_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

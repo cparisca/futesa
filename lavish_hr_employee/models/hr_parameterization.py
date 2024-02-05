@@ -98,6 +98,7 @@ class hr_categories_salary_rules(models.Model):
     
     group_payroll_voucher = fields.Boolean('Agrupar comprobante de nómina')
     sequence = fields.Integer(tracking=True)
+
 #Contabilización reglas salariales
 class hr_salary_rule_accounting(models.Model):
     _name ='hr.salary.rule.accounting'

@@ -74,7 +74,7 @@ class HrPayslipRun(models.Model):
     time_process = fields.Char(string='Tiempo ejecución')
     observations = fields.Text('Observaciones')
     definitive_plan = fields.Boolean(string='Plano definitivo generado')
-    
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Cuenta analítica')
     
     def compute_sheet_thread(self):
         for rec in self:

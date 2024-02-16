@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data>
+        <record id="confirmation_close_loan_wizard" model="ir.ui.view">
+            <field name="name">confirmation.close.loan.form</field>
+            <field name="model">confirmation.close.loan</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <span>
+                                Are you sure to close the loan?</span>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="compute_sheet" string="Accept" colspan="1" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

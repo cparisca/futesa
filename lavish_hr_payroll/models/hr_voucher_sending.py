@@ -78,7 +78,7 @@ class hr_voucher_sending(models.Model):
                         email_vals = {}
                         identificacion  = obj_payslip.employee_id.identification_id
                         nombre_empleado = obj_payslip.employee_id.name
-                        correo_envio    = obj_payslip.employee_id.work_email
+                        correo_envio    = obj_payslip.employee_id.personal_email
                         # body message
                         message = "Estimado "+ nombre_empleado + "<br/><br/>"
                         message += "Adjunto encontrará la información de la última liquidación y pago de su nómina.<br/><br/><br/>"
@@ -100,7 +100,7 @@ class hr_voucher_sending(models.Model):
                                 email_id = env['mail.mail'].create(email_vals)
                                 if email_id:
                                     email_id.send()                    
-                    except Exception as error:
+                    except Exception as e:
                         values = {
                             'voucher_id': self.id,
                             'payslip_id': obj_payslip.id,

@@ -71,7 +71,7 @@ class HolidaysRequest(models.Model):
         [record._clean_leave() for record in self]
         return super(HolidaysRequest, self).action_draft()
 
-
+    @api.onchange('employee_id')
     def _inverse_get_contract(self):
         for record in self:
             contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
@@ -99,6 +99,7 @@ class HolidaysRequest(models.Model):
     def get_amount_license(self):
         for record in self:
             contracts = record.env['hr.contract'].search([('employee_id', '=', record.employee_id.id),('state','=','open')])
+            contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
             ibc = 0.0
             amount = 0.0
             if contracts and self.date_to:
@@ -116,6 +117,9 @@ class HolidaysRequest(models.Model):
                 #    self._prepare_leave_line()
                 if record.line_ids:
                     record.payroll_value = sum(x.amount for x in record.line_ids)
+            if len(contract_id) > 1:
+                raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
+            record.contract_id = contract_id
 
     def get_wage_in_date(self,process_date,contracts):
         wage_in_date = contracts.wage

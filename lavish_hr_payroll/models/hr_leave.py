@@ -74,7 +74,7 @@ class HolidaysRequest(models.Model):
 
     def _inverse_get_contract(self):
         for record in self:
-            contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('state', '=', 'open')])
+            contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
             #if not contract_id:
             #   raise ValidationError('El emplado %s no tiene contrato en proceso' % (record.employee_id.name))
             if len(contract_id) > 1:

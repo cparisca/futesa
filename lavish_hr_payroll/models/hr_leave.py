@@ -71,7 +71,7 @@ class HolidaysRequest(models.Model):
         [record._clean_leave() for record in self]
         return super(HolidaysRequest, self).action_draft()
 
-    @api.onchange('employee_id')
+    @api.depends('employee_id','employee_ids')
     def _inverse_get_contract(self):
         for record in self:
             contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])

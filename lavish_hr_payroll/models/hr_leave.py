@@ -71,15 +71,16 @@ class HolidaysRequest(models.Model):
         [record._clean_leave() for record in self]
         return super(HolidaysRequest, self).action_draft()
 
-    @api.depends('employee_id','employee_ids')
+    @api.depends('employee_id','employee_ids','date_from')
     def _inverse_get_contract(self):
         for record in self:
-            contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
-            #if not contract_id:
-            #   raise ValidationError('El emplado %s no tiene contrato en proceso' % (record.employee_id.name))
-            if len(contract_id) > 1:
-                raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
-            record.contract_id = contract_id
+            if record.date_from:
+                contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
+                if not contract_id:
+                    raise ValidationError('El emplado %s no tiene contrato en proceso' % (record.employee_id.name))
+                if len(contract_id) > 1:
+                    raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
+                record.contract_id = contract_id
     
     @api.depends('leave_ids', 'leave_ids.days_used')
     def _days_used(self):

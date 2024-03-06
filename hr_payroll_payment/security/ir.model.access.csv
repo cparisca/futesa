@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+hr_payroll_payment_access,hr_payroll_payment_access,model_hr_payroll_payment,hr_payroll_payment.payment_request_user,1,1,1,1
+hr_payroll_payment_line_access,hr_payroll_payment_line_access,model_hr_payroll_payment_line,hr_payroll_payment.payment_request_user,1,1,1,1

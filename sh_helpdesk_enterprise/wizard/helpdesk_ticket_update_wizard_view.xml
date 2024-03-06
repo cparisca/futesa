@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<odoo>
+    <record id="sh_helpdesk_ticket_mass_update_wizard_form_view" model="ir.ui.view">
+        <field name="name">sh.helpdesk.ticket.mass.update.wizard.form.view</field>
+        <field name="model">sh.helpdesk.ticket.mass.update.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ticket Mass Update">
+                <group>
+                    <field name="check_sh_display_multi_user" invisible="1" />
+                    <group string="Update Assign To">
+                        <field name="helpdesks_ticket_ids" invisible="1" widget="many2many_tags" />
+                        <field name="check_assign_to" />
+                        <field name="assign_to" attrs="{'invisible': [('check_assign_to', '=', False)],'required':[('check_assign_to','=',True)]}" />
+                    </group>
+                    <group string="Update Assign To Multiuser" attrs="{'invisible': [('check_sh_display_multi_user', '=', False)]}">
+                        <field name="check_assign_to_multiuser" />
+                        <field name="ticket_update_type" attrs="{'invisible': [('check_assign_to_multiuser', '=', False)]}" widget="radio" />
+                        <field name="assign_to_multiuser" attrs="{'invisible': [('check_assign_to_multiuser', '=', False)],'required':[('check_assign_to_multiuser','=',True)]}" widget="many2many_tags" />
+                    </group>
+                    <group string="Update Stage">
+                        <field name="check_helpdesks_state" />
+                        <field name="helpdesk_stages" attrs="{'invisible': [('check_helpdesks_state', '=', False)],'required':[('check_helpdesks_state','=',True)]}" />
+                    </group>
+                    <!-- ADD/REMOVE FOLLOWER  -->
+                    <group string="Add/Remove Follower">
+                        <field name="check_add_remove" />
+                        <field name="helpdesks_ticket_ids" invisible="1" widget="many2many_tags" />
+                        <field name="followers" widget="many2many_tags" attrs="{'invisible': [('check_add_remove', '=', False)],'required':[('check_add_remove','=',True)]}" />
+                        <field name="ticket_follower_update_type" widget="radio" attrs="{'invisible': [('check_add_remove', '=', False)]}" />
+                    </group>
+                </group>
+                <footer>
+                    <button name="update_record" class="btn btn-primary" type="object" string="Done" />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="sh_helpdesk_ticket_mass_update_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Ticket Mass Update</field>
+        <field name="res_model">sh.helpdesk.ticket.mass.update.wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

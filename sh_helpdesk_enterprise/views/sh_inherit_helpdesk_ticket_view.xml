@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sh_helpdesk_ticket_search_view" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.search.view</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group"  position="after">
+               
+                <searchpanel>
+                    <field name="company_id" icon="fa-building" />
+                    <field name="state" icon="fa-folder" />
+                    <field name="stage_id" icon="fa-folder" />
+                    <field name="ticket_type_id" icon="fa-folder" />
+                    <field name="team_id" icon="fa-user-plus" />
+                    <field name="user_id" icon="fa-users" />
+                    <field name="partner_id" icon="fa-users" />
+                    <field name="category_id" icon="fa-list" />
+                    <field name="sub_category_id" icon="fa-list-alt" />
+                    <field name="priority" icon="fa-level-up" />
+                </searchpanel>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="helpdesk_ticket_view_form_inherit_sh_helpdesk_enterprise" model="ir.ui.view">
+        <field name='name'>helpdesk.ticket.form.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header"  position="inside">
+               
+                <button name="action_approve" type="object" string="Approve" class="oe_highlight" attrs="{'invisible':['|','|',('cancel_stage_boolean','=',True),('done_stage_boolean','=',True),('closed_stage_boolean','=',True)]}" />
+                <button name="action_reply" type="object" string="Reply" class="oe_highlight" />
+                <button name="action_done" type="object" string="Resolved Ticket" class="oe_highlight" attrs="{'invisible':[('done_button_boolean','=',False)]}" />
+                <button name="action_closed" type="object" string="Close Ticket" class="oe_highlight" attrs="{'invisible':[('done_stage_boolean','=',False)]}" />
+                <button name="action_cancel" type="object" string="Cancel Ticket" class="oe_highlight" attrs="{'invisible':[('cancel_button_boolean','=',False)]}" />
+                <button name="action_open" type="object" string="Re-Open Ticket" class="oe_highlight" attrs="{'invisible':[('open_boolean','=',False)]}" />
+                <button name="action_send_whatsapp" type="object" string="Send By Whatsapp" class="oe_highlight" groups="sh_helpdesk_enterprise.helpdesk_group_whatsapp" />
+                <button name="preview_ticket" type="object" string="Preview" />
+            </xpath>
+            <xpath expr="//field[@name='team_id']" position="before">
+                <field name="state" />
+                <field name="done_stage_boolean" invisible="1" />
+                <field name="cancel_stage_boolean" invisible="1" />
+                <field name="closed_stage_boolean" invisible="1" />
+                <field name="reopen_stage_boolean" invisible="1" />
+                <field name="cancel_button_boolean" invisible="1" />
+                <field name="rating_bool" invisible="1" />
+                <field name="done_button_boolean" invisible="1" />
+                <field name="open_boolean" invisible="1" />
+                <field name="sh_display_multi_user" invisible="1" />
+                <field name="category_bool" invisible="1" />
+                <field name="sub_category_bool" invisible="1" />
+                <field name="ticket_from_website" invisible="1" />
+                <field name="sh_display_product" invisible="1" />
+                <field name="ticket_allocated" invisible="1" />
+                <field name="sh_ticket_report_url" invisible="1" />
+                <field name="form_url" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                 <field name="sh_user_ids" widget="many2many_tags" attrs="{'invisible':[('sh_display_multi_user','=',False)]}" />
+            </xpath>
+             <xpath expr="//field[@name='use_sla']" position="after">
+                 <div class="badge badge-pill badge-primary float-right" style="padding-bottom: 10px;padding-top: 10px;font-size: 15px;background-color:orange" attrs="{'invisible':[('state','=','staff_replied')]}">Customer Replied</div>
+                    <div class="badge badge-pill badge-success float-right" style="padding-bottom: 10px;padding-top: 10px;font-size: 15px;" attrs="{'invisible':[('state','=','customer_replied')]}">Staff Replied</div>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="before">
+                <field name="category_id"  attrs="{'invisible':[('category_bool','=',False)]}"/>
+                <field name="sub_category_id" attrs="{'invisible':[('sub_category_bool','=',False)]}" />
+            </xpath>
+              <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="create_date" />
+                <field name="write_date" />
+                <field name="sh_due_date" />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="person_name" />
+            </xpath>
+            <xpath expr="//field[@name='email_cc']" position="after">
+                <field name="replied_date" />
+                <field name="product_ids" widget="many2many_tags"  attrs="{'invisible':[('sh_display_product','=',False)]}"/>
+                <field name="sh_ticket_alarm_ids" widget="many2many_tags"/>
+            </xpath>
+            <xpath expr="//field[@name='description']" position="after">
+                <notebook groups="helpdesk.group_helpdesk_manager">
+                    <page string="Customer Rating" attrs="{'invisible':[('rating_bool','=',False)]}">
+                            <group>
+                                <group>
+                                    <field name="priority_new" widget="priority"/>
+                                    <field name="customer_comment" />
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Other Information"  >
+                            <group >
+                                <group string="Ticket Closed Information">
+                                    <field name="close_date" />
+                                    <field name="close_by" />
+                                    <field name="comment" />
+                                </group>
+                                <group string="Ticket Cancelled Information">
+                                    <field name="cancel_date" />
+                                    <field name="cancel_by" />
+                                    <field name="cancel_reason" />
+                                </group>
+                            </group>
+                        </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="helpdesk_ticket_view_tree_inherit_sh_helpdesk_enterprise" model="ir.ui.view">
+        <field name='name'>helpdesk.ticket.tree.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="category_bool" invisible="1" />
+                <field name="sub_category_bool" invisible="1" />
+                <field name="create_date" />
+                <field name="write_date" />
+                <field name="category_id"  attrs="{'invisible':[('category_bool','=',False)]}"/>
+                <field name="sub_category_id" attrs="{'invisible':[('sub_category_bool','=',False)]}" />
+                
+            </xpath>
+        </field>
+    </record>
+
+     <record id="helpdesk_ticket_view_kanban_inherit_sh_helpdesk_enterprise" model="ir.ui.view">
+        <field name='name'>helpdesk.ticket.kanban.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_kanban_content')]" position="inside">
+                <div>
+                    <field name="state" widget="badge" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="sh_helpdesk_ticket_calendar" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.calendar</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <calendar string="Tickets" date_start="create_date" color="user_id">
+                <field name="name" />
+                <field name="partner_id" />
+                <field name="stage_id" />
+            </calendar>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="helpdesk_ticket_pivot">
+        <field name="name">helpdesk.ticket.pivot</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <pivot string="Tickets" disable_linking="True">
+                <field name="create_date" interval="month" type="row" />
+                <field name="stage_id" type="col" />
+                <field name="partner_id" type="row" />
+            </pivot>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="sh_helpdesk_ticket_graph">
+        <field name="name">helpdesk.ticket.graph</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <graph string="Tickets">
+                <field name="stage_id" type="col" />
+                <field name="user_id" type="row" />
+            </graph>
+        </field>
+    </record>
+       <!-- <record id="helpdesk_ticket_action" model="ir.actions.act_window">
+			<field name="name">Helpdesk Tickets</field>
+			<field name="res_model">helpdesk.ticket</field>
+			<field name="view_mode">kanban,tree,form,pivot,graph,calendar,activity</field>
+			<field name="help" type="html">
+				<p class="oe_view_nocontent_create">Create a New Ticket</p>
+			</field>
+		</record> -->
+    <record id="helpdesk.helpdesk_ticket_action_main_my" model="ir.actions.act_window">
+        <field name="name">Helpdesk Tickets</field>
+        <field name="res_model">helpdesk.ticket</field>
+        <field name="search_view_id" ref="helpdesk.helpdesk_tickets_view_search"/>
+        <field name="context">{'search_default_my_ticket': True, 'search_default_is_open': True, 'default_user_id': uid}</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph,calendar,activity</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">Create a New Ticket</p>
+        </field>
+    </record>
+
+    <record id="helpdesk.helpdesk_ticket_action_main_tree" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="res_model">helpdesk.ticket</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph,calendar,activity</field>
+        <field name="search_view_id" ref="helpdesk.helpdesk_tickets_view_search"/>
+        <field name="context">{'search_default_is_open': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tickets found. Let's create one!
+                </p><p>To get things done, use activities and statuses on tickets. <br/>
+                Chat in real-time or by email to collaborate efficiently.
+            </p>
+        </field>
+    </record>
+</odoo>

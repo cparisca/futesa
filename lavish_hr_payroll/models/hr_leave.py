@@ -32,8 +32,8 @@ class HolidaysRequest(models.Model):
     sequence = fields.Char('Numero')
     employee_identification = fields.Char('Identificación empleado')
     branch_id = fields.Many2one(related='employee_id.branch_id', string='Sucursal', store=True)
-    unpaid_absences = fields.Boolean(related='holiday_status_id.unpaid_absences', string='Ausencia no remunerada',store=True)
-    contract_id = fields.Many2one(comodel_name='hr.contract', string='Contrato', compute='_inverse_get_contract',store=True)
+    unpaid_absences = fields.Boolean(related='holiday_status_id.unpaid_absences', string='Ausencia no remunerada', store=True)
+    contract_id = fields.Many2one(comodel_name='hr.contract', string='Contrato', compute='_inverse_get_contract', domain="[('employee_id', '=', employee_id)]", readonly=False, store=True)
     #Campos para vacaciones
     is_vacation = fields.Boolean(related='holiday_status_id.is_vacation', string='Es vacaciones',store=True)
     business_days = fields.Integer(string='Días habiles')
@@ -71,15 +71,16 @@ class HolidaysRequest(models.Model):
         [record._clean_leave() for record in self]
         return super(HolidaysRequest, self).action_draft()
 
-
+    @api.depends('employee_id','employee_ids')
     def _inverse_get_contract(self):
         for record in self:
-            contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('state', '=', 'open')])
-            #if not contract_id:
-            #   raise ValidationError('El emplado %s no tiene contrato en proceso' % (record.employee_id.name))
-            if len(contract_id) > 1:
-                raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
-            record.contract_id = contract_id
+            if record.employee_id:
+                contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id),('state', '=', 'open')])
+                if not contract_id:
+                   raise ValidationError('El emplado %s no tiene contrato en proceso' % (record.employee_id.name))
+                if len(contract_id) > 1:
+                    raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
+                record.contract_id = contract_id.id
     
     @api.depends('leave_ids', 'leave_ids.days_used')
     def _days_used(self):
@@ -99,6 +100,7 @@ class HolidaysRequest(models.Model):
     def get_amount_license(self):
         for record in self:
             contracts = record.env['hr.contract'].search([('employee_id', '=', record.employee_id.id),('state','=','open')])
+            contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
             ibc = 0.0
             amount = 0.0
             if contracts and self.date_to:
@@ -116,6 +118,9 @@ class HolidaysRequest(models.Model):
                 #    self._prepare_leave_line()
                 if record.line_ids:
                     record.payroll_value = sum(x.amount for x in record.line_ids)
+            if len(contract_id) > 1:
+                raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
+            record.contract_id = contract_id.id
 
     def get_wage_in_date(self,process_date,contracts):
         wage_in_date = contracts.wage

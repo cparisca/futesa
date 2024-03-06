@@ -98,7 +98,7 @@ class HolidaysRequest(models.Model):
     @api.onchange('date_from', 'date_to', 'employee_id', 'holiday_status_id', 'number_of_days')
     def get_amount_license(self):
         for record in self:
-            contracts = record.env['hr.contract'].search([('employee_id', '=', record.employee_id.id),('state','=','open')])
+            contracts = record.env['hr.contract'].search([('employee_id', '=', record.employee_id.id),('state','=','open')],limit=1)
             contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
             ibc = 0.0
             amount = 0.0

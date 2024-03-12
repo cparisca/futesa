@@ -76,8 +76,6 @@ class HolidaysRequest(models.Model):
         for record in self:
             if record.date_from:
                 contract_id = self.env['hr.contract'].search([('employee_id', '=', record.employee_id.id), ('date_start','>=',record.date_from.date()), ('state', '=', 'open')])
-                if not contract_id:
-                    raise ValidationError('El emplado %s no tiene contrato en proceso' % (record.employee_id.name))
                 if len(contract_id) > 1:
                     raise ValidationError('El emplado %s tiene %s contratos en proceso' % (record.employee_id.name, len(contract_id)))
                 record.contract_id = contract_id
